@@ -349,6 +349,7 @@ class Simulation:
         self.rt.budget.restore(self.db.get_meta("budget"))
         self.rt.ledger.reset_counts(self.clock.step - 1)
         self.db.set_meta("status", RunStatus.RUNNING.value)
+        self.db.set_meta("stop_detail", None)  # an earlier stop no longer describes a resumed run
         self.db.commit()
         self._timed = self._timed_snapshots()
 

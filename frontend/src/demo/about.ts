@@ -24,6 +24,18 @@ export function playerDid(kinds: Iterable<string>): string | null {
   return parts.length ? listOf(parts) : null;
 }
 
+/** "plans, wishes and replies": what the model wrote in a recording, naming only what happened in it. */
+export function modelWrote(kinds: Iterable<string>): string {
+  const seen = new Set(kinds);
+  const parts = ["plans", seen.has("request") ? "wishes" : "", seen.has("chat") ? "replies" : "", seen.has("conversation") ? "conversations" : ""];
+  return listOf(parts.filter(Boolean));
+}
+
+/** "morning" for a recording that ends by 1 PM, "afternoon" for one that starts after noon, else "day". */
+export function partOfDay(startHour: number, endHour: number): string {
+  return endHour <= 13 ? "morning" : startHour >= 12 ? "afternoon" : "day";
+}
+
 const WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
 /** "Three residents", "25 residents". */
 export const residentsWord = (n: number) => `${WORDS[n] ?? n} resident${n === 1 ? "" : "s"}`;

@@ -19,11 +19,11 @@ Every setting is tagged as **paper**, **released code**, **engineering choice** 
 deviation.
 
 > **What has actually been validated.** All of it runs offline with a deterministic mock model
-> and hash embeddings: 179 Python tests and 27 front-end tests pass, a five-agent and a 25-agent
+> and hash embeddings: 179 Python tests and 29 front-end tests pass, a five-agent and a 25-agent
 > two-day simulation complete, and evaluation, interviews, exports, replay, the viewer, a ten-run
 > reflection experiment and the town game work on them. **No hosted model API has been called**
 > (no credentials were available). One local open-weight model has: Llama 3.2 3B through a real
-> Ollama, on four CPU cores, ran the three-resident town for its first morning hours (see
+> Ollama, on four CPU cores, ran the three-resident town from 07:00 to 18:00 in 493 calls (see
 > [`docs/game.md`](docs/game.md)). That shows the local path works end to end; it is not evidence
 > about how Claude-driven or open-weight agents behave. Mock runs are labeled MOCK everywhere;
 > their outcomes are structural demonstrations, never research results.
@@ -219,7 +219,7 @@ The full list, with sources, is in the spec (§3 and §6). In short:
 ```bash
 pytest             # 179 tests, offline, about 30 seconds
 ruff check src tests examples
-cd frontend && npm ci && npm test && npm run typecheck   # 27 front-end unit tests
+cd frontend && npm ci && npm test && npm run typecheck   # 29 front-end unit tests
 ```
 
 They cover the mechanisms that could invalidate an experiment: the recency formula and

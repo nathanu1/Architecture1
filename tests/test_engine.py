@@ -75,6 +75,7 @@ def test_budget_exhaustion_rolls_back_and_resume_finishes(tmp_path):
     c2 = Simulation(sim_config(PAIR, extra=("budget.max_calls=100000",)), tmp_path / "c", embedding_provider=MockHashEmbedding(128), provider=MockLLM(seed=5))
     c2.run(max_steps=60 - stopped_at)
     assert content(c2) == content(a)
+    assert c2.db.get_meta("stop_detail") is None  # the budget stop no longer describes the resumed run
 
 
 def test_perception_uses_the_start_of_step_snapshot(tmp_path):

@@ -3,9 +3,9 @@ import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Button, IconButton } from "../components/ui";
 import { viewHref } from "../lib/route";
-import { formatTime } from "../lib/time";
+import { formatTime, hourOf } from "../lib/time";
 import { useTown } from "../store";
-import { playerDid, recordedWith, residentsWord } from "./about";
+import { modelWrote, partOfDay, playerDid, recordedWith, residentsWord } from "./about";
 import { demoPlayer } from "./api";
 import type { Player } from "./player";
 
@@ -27,17 +27,24 @@ export function Welcome() {
   const [player, setPlayer] = useState<Player | null>(null);
   useEffect(() => {
     let alive = true;
-    void demoPlayer().then((p) => alive && setPlayer(p));
+    void demoPlayer().then((p) => {
+      if (!alive) return;
+      if (!seen()) p.control("pause"); // the recording waits until the reader starts it
+      setPlayer(p);
+    });
     return () => {
       alive = false;
     };
   }, []);
   if (!open || !info || !player) return null;
   const how = recordedWith(info);
-  const did = playerDid(player.events.map((e) => e.kind));
-  const span = `from ${formatTime(player.timeAt(player.first))} to ${formatTime(player.timeAt(player.last))}`;
+  const kinds = player.events.map((e) => e.kind);
+  const did = playerDid(kinds);
+  const [from, to] = [player.timeAt(player.first), player.timeAt(player.last)];
+  const span = `from ${formatTime(from)} to ${formatTime(to)}`;
   const close = () => {
     setOpen(false);
+    player.control("resume");
     try {
       window.localStorage.setItem(KEY, "1");
     } catch {
@@ -59,7 +66,7 @@ export function Welcome() {
     >
       <div className="flex items-start gap-2">
         <h2 id="welcome-title" className="flex-1 font-display text-lg font-bold leading-snug">
-          A recorded morning in Smallville
+          A recorded {partOfDay(hourOf(from), hourOf(to))} in Smallville
         </h2>
         <IconButton label="Close" icon={X} onClick={close} className="size-9" />
       </div>
@@ -70,7 +77,7 @@ export function Welcome() {
           "It was recorded with the mock model, so their words are placeholders. "
         ) : (
           <>
-            Their plans, replies and conversations were written by{" "}
+            Their {modelWrote(kinds)} were written by{" "}
             <span translate="no" className="font-semibold">
               {how.model}
             </span>
@@ -79,7 +86,7 @@ export function Welcome() {
         )}
         It plays back here without any server or model.
       </p>
-      <ul className="mt-3 space-y-2">
+      <ul className="mt-3 hidden space-y-2 sm:block">
         {tips.map(({ icon: Icon, text }) => (
           <li key={text} className="flex gap-2.5 text-sm">
             <Icon size={20} weight="fill" color="#f2792b" aria-hidden="true" className="mt-0.5 shrink-0" />

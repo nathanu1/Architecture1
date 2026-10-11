@@ -55,14 +55,29 @@ validator and its one repair attempt. The decoding schema is stored with each ca
 
 > **Validation status.** The adapters are tested against a fake HTTP server that follows the
 > documented APIs (`tests/fake_ollama.py`), including a full three-resident simulation and its
-> call-free replay. They were also run against a real Ollama 0.40.2 (CPU only, four cores) with
-> Llama 3.2 3B Instruct (Q4_K_M) and `nomic-embed-text`: the three-resident town ran from 07:00
-> to 07:30 in 56 model calls and about 10 minutes, every task validated except three hour
-> decompositions whose durations did not add up (those hours stayed single tasks, as designed),
-> and the run replays to an identical state with no model calls. Calls took 2 to 40 seconds;
-> the hourly schedule was the slowest. Before the decoding schema, the same model failed while
-> seeding memories (its importance ratings were valid in 1 of 12 tries; with it, 12 of 12). LM
-> Studio has not been tried.
+> call-free replay. They were also run for real, on a CPU-only machine with four cores:
+>
+> * **Ollama 0.40.2 with Llama 3.2 3B Instruct (Q4_K_M) and `nomic-embed-text`** ran the
+>   three-resident town from 07:00 to 18:00 on Monday (with `configs/game/demo_actions.jsonl`
+>   and a few more chats and two inner-voice lines). 493 model calls took about 55 minutes of
+>   model time (median 3 s per call, 90th percentile 16 s, longest 55 s). 427 of 460 first
+>   attempts were valid. Apart from one hourly schedule, fixed by its repair, every invalid
+>   answer was an hour decomposition whose durations did not add up: 3 of 33 succeeded, and the
+>   other 30 hours stayed single tasks, as designed. The run replays to an identical state with
+>   no model calls.
+> * What the residents did is plausible but plain. Their day plans, wishes and replies to the
+>   player stay in character; Klaus reflected once (three questions, fifteen insights, each
+>   citing only statements he was shown). They saw each other 26 times with talking offered and
+>   chose to carry on every time, so no resident-to-resident conversation happened, even after
+>   an inner-voice nudge. There were slips: Isabella called tomorrow's party "tonight", and Klaus
+>   "visited the library" from his dorm desk.
+> * Before the decoding schema, the same model failed while seeding memories (its importance
+>   ratings were valid in 1 of 12 tries; with it, 12 of 12).
+> * The OpenAI-compatible adapter was checked against llama.cpp's `llama-server` (chat with a
+>   JSON schema, and embeddings). LM Studio has not been tried.
+>
+> One run of one small model is a smoke test of the local path, not a result about agent
+> behavior.
 
 ## What you can do, and what the residents experience
 
@@ -177,7 +192,10 @@ step, and the research inspector's data at the end of the run. `npm run build:de
 same interface in a demo mode that plays those files: play, pause, three speeds, a timeline to
 drag, and chips for the moments worth seeing (chats, gifts, builds, wishes, resident
 conversations). Everything is view-only; chatting, gifts and building need a live town. The demo
-page uses hash links (`#inspector`) so it works inside frames that cannot change their path.
+page uses hash links (`#inspector`) so it works inside frames that cannot change their path. It
+names the model that wrote the residents' words (or says it was the mock) and claims only what
+the recording contains; it opens fifteen game minutes before the player's first action and waits
+until the welcome card is dismissed.
 
 ## Research inspector
 

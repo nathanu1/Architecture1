@@ -22,14 +22,21 @@ function load<T>(name: string): Promise<T> {
 
 const READ_ONLY = "this is a recording, so nothing in it can change. Run ga play to play the town yourself";
 
-/** Where the recording opens: shortly before the first thing the player does. */
-const OPEN_AT = 300;
+const PLAYER_KINDS = new Set(["chat", "gift", "build", "whisper"]);
+const LEAD_IN = 90; // steps: fifteen game minutes
+
+/** Where a recording opens: fifteen game minutes before the first thing the player does. */
+export function openingStep(tl: Pick<Timeline, "frames" | "feed">): number {
+  const first = tl.frames[0][0];
+  const action = tl.feed.find((e) => PLAYER_KINDS.has(e.kind));
+  return action ? Math.max(first, action.step - LEAD_IN) : first;
+}
 
 let player: Promise<Player> | null = null;
 /** The one player for the page (concurrent first calls share it). */
 export function demoPlayer(): Promise<Player> {
   if (!player) {
-    player = load<Timeline>("timeline.json").then((tl) => new Player(tl, OPEN_AT));
+    player = load<Timeline>("timeline.json").then((tl) => new Player(tl, openingStep(tl)));
     player.catch(() => (player = null));
   }
   return player;
