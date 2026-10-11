@@ -1,12 +1,12 @@
-# `replan@v1`
+# `replan@v2`
 
 > Example from run `examples-main` (offline two-day pilot (MOCK)), default architecture settings. Inputs are exactly what the model was sent in that state; outputs show the format only, not model behavior.
 
-* Template: [`prompts/replan.v1.md`](../replan.v1.md) · SHA-256 `3b98254d43f4c950153f00c7db3ddd2285295d4cd040d66405a4bb445fd3cd08`
-* Source: Paper §4.3.1 p. 11 ('We then regenerate the agent's existing plan starting from the time when the reaction takes place'); released v2/new_decomp_schedule_v1.txt
+* Template: [`prompts/replan.v2.md`](../replan.v2.md) · SHA-256 `19d21a86a94a69d7a5db94ec729a32f4946d86b4a013a415217649903f62dc10`
+* Source: Paper §4.3.1 p. 11 ('We then regenerate the agent's existing plan starting from the time when the reaction takes place'); released v2/new_decomp_schedule_v1.txt; actions written with the minutes left, as in v2/task_decomp_v3.txt
 * Information scope: The agent's own schedule, the inserted action and the time; nothing about other agents beyond the inserted action's text.
 * Output model: `DecomposeOut` · max output tokens 900 · effort low
-* Calls in this run: 56 (ok 56; 0 repair attempts)
+* Calls in this run: 62 (ok 62; 0 repair attempts)
 
 ## Output schema
 
@@ -16,20 +16,20 @@
     "TaskOut": {
       "additionalProperties": false,
       "properties": {
-        "start": {
+        "activity": {
           "type": "string"
         },
         "duration_minutes": {
           "type": "integer"
         },
-        "activity": {
-          "type": "string"
+        "minutes_left": {
+          "type": "integer"
         }
       },
       "required": [
-        "start",
+        "activity",
         "duration_minutes",
-        "activity"
+        "minutes_left"
       ],
       "type": "object"
     }
@@ -52,7 +52,7 @@
 
 ## Smallest successful call
 
-Ledger call 1658 · scope `examples-main` · sim time 2023-02-13T18:21:00 · agent `wolfgang_schulz` · model `mock-llm-v1` · status `ok` · tokens 543 in / 68 out (estimated)
+Ledger call 1786 · scope `examples-main` · sim time 2023-02-13T18:20:40 · agent `wolfgang_schulz` · model `mock-llm-v1` · status `ok` · tokens 559 in / 69 out (estimated)
 
 **System**
 
@@ -80,17 +80,17 @@ Here was Wolfgang's originally planned schedule from 18:18 to 19:00:
 18:32 (14 min) have dinner (making progress)
 18:46 (14 min) have dinner (wrapping up)
 
-At February 13, 2023, 6:21 pm, Wolfgang started something unplanned: "chatting with Maria Lopez" for 4 minutes, until 18:25.
+At February 13, 2023, 6:20 pm, Wolfgang started something unplanned: "chatting with Maria Lopez" for 3 minutes, until 18:23.
 
-Write Wolfgang's revised schedule from 18:25 to 19:00 (35 minutes). Keep what still makes sense from the original plan. Each action lasts 5 to 15 minutes and the durations add up to exactly 35 minutes.
+Write Wolfgang's revised schedule from 18:23 to 19:00 (total duration in minutes: 37). Keep what still makes sense from the original plan. Each action lasts 5 to 15 minutes. After each action, write how many of the 37 minutes are left; the last action leaves 0.
 
-Respond with JSON: {"tasks": [{"start": "HH:MM", "duration_minutes": <int>, "activity": "<what>"}, ...]}
+Respond with JSON: {"tasks": [{"activity": "<what>", "duration_minutes": <int>, "minutes_left": <int>}, ...]}
 ```
 
 **Raw output**
 
 ```json
-{"tasks": [{"start": "18:25", "duration_minutes": 12, "activity": "have dinner (continuing)"}, {"start": "18:37", "duration_minutes": 12, "activity": "have dinner (making progress)"}, {"start": "18:49", "duration_minutes": 11, "activity": "have dinner (wrapping up)"}]}
+{"tasks": [{"activity": "have dinner (continuing)", "duration_minutes": 13, "minutes_left": 24}, {"activity": "have dinner (making progress)", "duration_minutes": 12, "minutes_left": 12}, {"activity": "have dinner (wrapping up)", "duration_minutes": 12, "minutes_left": 0}]}
 ```
 
 **Validated output**
@@ -99,19 +99,19 @@ Respond with JSON: {"tasks": [{"start": "HH:MM", "duration_minutes": <int>, "act
 {
   "tasks": [
     {
-      "start": "18:25",
-      "duration_minutes": 12,
-      "activity": "have dinner (continuing)"
+      "activity": "have dinner (continuing)",
+      "duration_minutes": 13,
+      "minutes_left": 24
     },
     {
-      "start": "18:37",
+      "activity": "have dinner (making progress)",
       "duration_minutes": 12,
-      "activity": "have dinner (making progress)"
+      "minutes_left": 12
     },
     {
-      "start": "18:49",
-      "duration_minutes": 11,
-      "activity": "have dinner (wrapping up)"
+      "activity": "have dinner (wrapping up)",
+      "duration_minutes": 12,
+      "minutes_left": 0
     }
   ]
 }

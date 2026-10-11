@@ -6,7 +6,7 @@
 * Source: Paper §4.1 p. 9 (prompt quoted there; core sentence kept); identity block and per-kind anchors from released v3_ChatGPT/poignancy_event_v1.txt, poignancy_chat_v1.txt, poignancy_thought_v1.txt
 * Information scope: The rating agent's own summary description and the single memory being rated.
 * Output model: `ImportanceOut` · max output tokens 64 · effort low
-* Calls in this run: 1273 (ok 1273; 0 repair attempts)
+* Calls in this run: 1359 (ok 1359; 0 repair attempts)
 
 ## Output schema
 
@@ -27,7 +27,7 @@
 
 ## Smallest successful call
 
-Ledger call 2460 · scope `examples-main` · sim time 2023-02-13T23:03:40 · agent `klaus_mueller` · model `mock-llm-v1` · status `ok` · tokens 326 in / 4 out (estimated)
+Ledger call 2445 · scope `examples-main` · sim time 2023-02-13T23:03:20 · agent `klaus_mueller` · model `mock-llm-v1` · status `ok` · tokens 326 in / 4 out (estimated)
 
 **System**
 

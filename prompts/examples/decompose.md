@@ -1,9 +1,9 @@
-# `decompose@v1`
+# `decompose@v2`
 
 > Example from run `examples-main` (offline two-day pilot (MOCK)), default architecture settings. Inputs are exactly what the model was sent in that state; outputs show the format only, not model behavior.
 
-* Template: [`prompts/decompose.v1.md`](../decompose.v1.md) · SHA-256 `44df7e8c35ec67a51a8010c569d861dcdd80359396df810f7c747ed6e203cdd4`
-* Source: Paper §4.3 p. 11 ('recursively decompose this again into 5–15 minute chunks'); Appendix A p. 21 (just-in-time); released v2/task_decomp_v3.txt
+* Template: [`prompts/decompose.v2.md`](../decompose.v2.md) · SHA-256 `dadead9cca9ca512039428be452c1c0bd4c639dfc37eccfe2aa4186afda6bd84`
+* Source: Paper §4.3 p. 11 ('recursively decompose this again into 5–15 minute chunks'); Appendix A p. 21 (just-in-time); released v2/task_decomp_v3.txt (each subtask followed by '(duration in minutes: X, minutes left: Y)')
 * Information scope: The agent's identity, dynamic summary and the hour-level plan around the activity.
 * Output model: `DecomposeOut` · max output tokens 900 · effort low
 * Calls in this run: 156 (ok 156; 0 repair attempts)
@@ -16,20 +16,20 @@
     "TaskOut": {
       "additionalProperties": false,
       "properties": {
-        "start": {
+        "activity": {
           "type": "string"
         },
         "duration_minutes": {
           "type": "integer"
         },
-        "activity": {
-          "type": "string"
+        "minutes_left": {
+          "type": "integer"
         }
       },
       "required": [
-        "start",
+        "activity",
         "duration_minutes",
-        "activity"
+        "minutes_left"
       ],
       "type": "object"
     }
@@ -52,7 +52,7 @@
 
 ## Smallest successful call
 
-Ledger call 122 · scope `examples-main` · sim time 2023-02-13T06:00:00 · agent `sam_moore` · model `mock-llm-v1` · status `ok` · tokens 582 in / 93 out (estimated)
+Ledger call 122 · scope `examples-main` · sim time 2023-02-13T06:00:00 · agent `sam_moore` · model `mock-llm-v1` · status `ok` · tokens 607 in / 95 out (estimated)
 
 **System**
 
@@ -87,15 +87,15 @@ Today is Monday February 13. Sam's schedule around this time:
 21:00–21:30 go to bed
 21:30–24:00 sleeping
 
-Decompose "have breakfast" from 06:00 to 07:00 (60 minutes) into smaller actions of 5 to 15 minutes each, in order. Durations must add up to exactly 60 minutes.
+In 5-minute increments, list the smaller actions Sam does for "have breakfast" from 06:00 to 07:00 (total duration in minutes: 60). Each action lasts 5 to 15 minutes. After each action, write how many of the 60 minutes are left; the last action leaves 0.
 
-Respond with JSON: {"tasks": [{"start": "HH:MM", "duration_minutes": <int>, "activity": "<what Sam is doing>"}, ...]}
+Respond with JSON: {"tasks": [{"activity": "<what Sam is doing>", "duration_minutes": <int>, "minutes_left": <int>}, ...]}
 ```
 
 **Raw output**
 
 ```json
-{"tasks": [{"start": "06:00", "duration_minutes": 15, "activity": "have breakfast (getting started)"}, {"start": "06:15", "duration_minutes": 15, "activity": "have breakfast (continuing)"}, {"start": "06:30", "duration_minutes": 15, "activity": "have breakfast (making progress)"}, {"start": "06:45", "duration_minutes": 15, "activity": "have breakfast (wrapping up)"}]}
+{"tasks": [{"activity": "have breakfast (getting started)", "duration_minutes": 15, "minutes_left": 45}, {"activity": "have breakfast (continuing)", "duration_minutes": 15, "minutes_left": 30}, {"activity": "have breakfast (making progress)", "duration_minutes": 15, "minutes_left": 15}, {"activity": "have breakfast (wrapping up)", "duration_minutes": 15, "minutes_left": 0}]}
 ```
 
 **Validated output**
@@ -104,24 +104,24 @@ Respond with JSON: {"tasks": [{"start": "HH:MM", "duration_minutes": <int>, "act
 {
   "tasks": [
     {
-      "start": "06:00",
+      "activity": "have breakfast (getting started)",
       "duration_minutes": 15,
-      "activity": "have breakfast (getting started)"
+      "minutes_left": 45
     },
     {
-      "start": "06:15",
+      "activity": "have breakfast (continuing)",
       "duration_minutes": 15,
-      "activity": "have breakfast (continuing)"
+      "minutes_left": 30
     },
     {
-      "start": "06:30",
+      "activity": "have breakfast (making progress)",
       "duration_minutes": 15,
-      "activity": "have breakfast (making progress)"
+      "minutes_left": 15
     },
     {
-      "start": "06:45",
+      "activity": "have breakfast (wrapping up)",
       "duration_minutes": 15,
-      "activity": "have breakfast (wrapping up)"
+      "minutes_left": 0
     }
   ]
 }

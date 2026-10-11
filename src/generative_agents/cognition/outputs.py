@@ -87,10 +87,13 @@ class HourlyScheduleOut(_Out):
     blocks: list[HourlyBlock]
 
 
+# One action as the released task_decomp_v3 prompt writes it: the activity, its duration and the
+# minutes left in the window after it (a running count for the model; the planner validates and
+# uses the durations). Comments, not docstrings: a docstring would enter the schema the model sees.
 class TaskOut(_Out):
-    start: str
-    duration_minutes: int
     activity: str
+    duration_minutes: int
+    minutes_left: int
 
 
 class DecomposeOut(_Out):
@@ -113,6 +116,12 @@ class ActionGroundingOut(_Out):
     object: str
     object_state: str
     lasting_state: str | None = None
+
+
+# Released decide_to_talk_v2: reasoning first, then yes or no.
+class TalkDecisionOut(_Out):
+    reasoning: str
+    answer: Literal["yes", "no"]
 
 
 class ReactionDecisionOut(_Out):
@@ -209,6 +218,7 @@ OUTPUT_MODELS: dict[str, type[BaseModel]] = {
         LocationChoiceOut,
         LocationPathOut,
         ActionGroundingOut,
+        TalkDecisionOut,
         ReactionDecisionOut,
         DialogueTurnOut,
         ConversationInferencesOut,

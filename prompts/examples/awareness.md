@@ -38,7 +38,7 @@
 
 ## Smallest successful call
 
-Ledger call 4916 · scope `examples-main::probe::initial` · sim time 2023-02-13T00:00:00 · agent `isabella_rodriguez` · model `mock-llm-v1` · status `ok` · tokens 183 in / 14 out (estimated)
+Ledger call 5027 · scope `examples-main::probe::initial` · sim time 2023-02-13T00:00:00 · agent `isabella_rodriguez` · model `mock-llm-v1` · status `ok` · tokens 183 in / 14 out (estimated)
 
 **System**
 

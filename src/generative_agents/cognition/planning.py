@@ -485,6 +485,7 @@ class Planner:
                     "tasks.*.activity": {"minLength": 1},
                     # one task may also take the whole block
                     "tasks.*.duration_minutes": {"minimum": min(lo, minutes), "maximum": max(hi, minutes)},
+                    "tasks.*.minutes_left": {"minimum": 0, "maximum": minutes},
                 },
             )
         except TaskFailed as exc:
@@ -636,7 +637,11 @@ class Planner:
                 sim_time=now,
                 purpose="plan:replan",
                 validate=validate,
-                constraints={"tasks.*.activity": {"minLength": 1}, "tasks.*.duration_minutes": {"minimum": lo, "maximum": hi}},
+                constraints={
+                    "tasks.*.activity": {"minLength": 1},
+                    "tasks.*.duration_minutes": {"minimum": lo, "maximum": hi},
+                    "tasks.*.minutes_left": {"minimum": 0, "maximum": rest},
+                },
             )
         except TaskFailed as exc:
             self.svc.events.log("plan_failure", now, identity.id, level="replan", error=str(exc), errors=exc.errors[:5])

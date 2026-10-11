@@ -6,7 +6,7 @@
 * Source: Paper §4.3.1 p. 11 (context summary from the queries 'What is [observer]'s relationship with the [observed entity]?' and '[Observed entity] is [action status]', summarized together); released v3_ChatGPT/summarize_chat_relationship_v2.txt
 * Information scope: Memories retrieved from the observer's own stream for the two queries.
 * Output model: `SummaryOut` · max output tokens 300 · effort low
-* Calls in this run: 212 (ok 212; 0 repair attempts)
+* Calls in this run: 203 (ok 203; 0 repair attempts)
 
 ## Output schema
 

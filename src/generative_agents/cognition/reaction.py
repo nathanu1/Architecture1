@@ -10,9 +10,11 @@ Each step, at most one newly perceived event is considered (the "focal" percept)
   stove) need it, so this is listed as an extension (D-12).
 
 Context follows the paper: memories are retrieved for "[observer]'s relationship with
-[observed]" and "[observed] is [status]", summarized, and the agent decides whether to keep
-going, react, talk or wait. "talk" is offered only when the conversation policy allows it
-(neither asleep, partner free, cooldown over, not after 23:00).
+[observed]" and "[observed] is [status]" and summarized. When the observed is another agent and
+the conversation policy allows talking (neither asleep, partner free, cooldown over, not after
+23:00), the agent is first asked whether to start a conversation, as the released code asks
+``lets_talk`` before ``lets_react``; otherwise, or if not, it decides whether to keep going,
+react or wait.
 """
 
 from __future__ import annotations
@@ -135,7 +137,11 @@ class ReactionEngine:
         status: str,
         can_talk: bool,
         observed_name: str | None = None,
+        last_chat: str | None = None,
     ) -> ReactionDecision:
+        """Talk first, then react: for another agent the released code asks whether to start a
+        conversation (``lets_talk``) and only if not whether to react or wait (``lets_react``)."""
+
         about_agent = percept.kind == "agent"
         observed = observed_name or percept.subject.rsplit(":", 1)[-1]
         try:
@@ -144,8 +150,38 @@ class ReactionEngine:
             return ReactionDecision("continue", f"context failed: {exc}", percept, call_ids=exc.call_ids)
         first = observed.split()[0] if observed else ""
         knows = about_agent and any(first and first in m.description for m in mems)
-        talk_option = f'- "talk": start a conversation with {observed}.' if (about_agent and can_talk) else ""
-        allowed = {"continue", "react", "wait"} | ({"talk"} if about_agent and can_talk else set())
+        calls = list(ctx_calls)
+        shared = {
+            "agent_summary": self.summary.description(identity, now),
+            "now": long_time(now),
+            "agent_name": identity.name,
+            "status": status,
+            "observation": percept.description,
+            "context": ctx,
+            "_observation": percept.description,
+            "_observed_is_agent": about_agent,
+            "_percept_kind": percept.kind,
+            "_knows_observed": knows,
+            "_has_news": bool(news_items(mems, percept.agent_id)),
+        }
+        if about_agent and can_talk:
+            try:
+                talk = self.svc.gateway.run(
+                    "talk_decision",
+                    {**shared, "other_name": observed, "last_chat": last_chat or ""},
+                    agent_id=identity.id,
+                    sim_time=now,
+                    purpose="reaction:talk",
+                )
+            except TaskFailed as exc:
+                calls += exc.call_ids  # no answer is not a yes: go on to the reaction decision
+            else:
+                calls += talk.call_ids
+                if talk.output.answer == "yes":
+                    return ReactionDecision(
+                        "talk", talk.output.reasoning.strip(), percept, context=ctx, call_ids=calls, trace_ids=traces, partner_id=percept.agent_id
+                    )
+        allowed = {"continue", "react", "wait"}
 
         def validate(out: Any) -> list[str]:
             errs = []
@@ -163,21 +199,7 @@ class ReactionEngine:
         try:
             out = self.svc.gateway.run(
                 "reaction",
-                {
-                    "agent_summary": self.summary.description(identity, now),
-                    "now": long_time(now),
-                    "agent_name": identity.name,
-                    "status": status,
-                    "observation": percept.description,
-                    "context": ctx,
-                    "talk_option": talk_option,
-                    "_observation": percept.description,
-                    "_observed_is_agent": about_agent,
-                    "_percept_kind": percept.kind,
-                    "_can_talk": about_agent and can_talk,
-                    "_knows_observed": knows,
-                    "_has_news": bool(news_items(mems, percept.agent_id)),
-                },
+                shared,
                 agent_id=identity.id,
                 sim_time=now,
                 purpose="reaction:decide",
@@ -185,7 +207,7 @@ class ReactionEngine:
                 constraints={"decision": {"enum": sorted(allowed)}, "duration_minutes": {"minimum": 1, "maximum": 240}},
             )
         except TaskFailed as exc:
-            return ReactionDecision("continue", f"decision failed: {exc}", percept, context=ctx, call_ids=ctx_calls + exc.call_ids, trace_ids=traces)
+            return ReactionDecision("continue", f"decision failed: {exc}", percept, context=ctx, call_ids=calls + exc.call_ids, trace_ids=traces)
         o = out.output
         return ReactionDecision(
             o.decision,
@@ -194,7 +216,6 @@ class ReactionEngine:
             new_activity=(o.new_activity or "").strip() or None,
             minutes=o.duration_minutes,
             context=ctx,
-            call_ids=ctx_calls + out.call_ids,
+            call_ids=calls + out.call_ids,
             trace_ids=traces,
-            partner_id=percept.agent_id if o.decision == "talk" else None,
         )

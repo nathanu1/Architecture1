@@ -284,15 +284,14 @@ class MockLLM:
 
     def _t_decompose(self, v: dict[str, Any], rng: random.Random) -> dict[str, Any]:
         total = int(v["_duration"])
-        start = int(v["_start_min"])
         act = v["_activity"]
         parts = chunk_minutes(total, int(v.get("_min", 5)), int(v.get("_max", 15)))
         labels = ["getting started", "focused on it", "continuing", "making progress", "taking a short break", "wrapping up"]
-        tasks, t = [], start
+        tasks, left = [], total
         for i, d in enumerate(parts):
             label = labels[0] if i == 0 else (labels[-1] if i == len(parts) - 1 else labels[1 + (i % 4)])
-            tasks.append({"start": _hhmm(t), "duration_minutes": d, "activity": f"{act} ({label})" if len(parts) > 1 else act})
-            t += d
+            left -= d
+            tasks.append({"activity": f"{act} ({label})" if len(parts) > 1 else act, "duration_minutes": d, "minutes_left": left})
         return {"tasks": tasks}
 
     def _t_replan(self, v: dict[str, Any], rng: random.Random) -> dict[str, Any]:
@@ -301,10 +300,10 @@ class MockLLM:
         original: list[tuple[int, int, str]] = v.get("_original", [])
         later = [a for s, d, a in original if s + d > start] or ["continue the day"]
         parts = chunk_minutes(remaining, int(v.get("_min", 5)), int(v.get("_max", 15))) if remaining > 0 else []
-        tasks, t = [], start
+        tasks, left = [], remaining
         for i, d in enumerate(parts):
-            tasks.append({"start": _hhmm(t), "duration_minutes": d, "activity": later[min(i, len(later) - 1)]})
-            t += d
+            left -= d
+            tasks.append({"activity": later[min(i, len(later) - 1)], "duration_minutes": d, "minutes_left": left})
         return {"tasks": tasks}
 
     # ------------------------------------------------------------------ grounding tasks
@@ -399,16 +398,17 @@ class MockLLM:
             if re.search(r"occupied|in use|closed", obs):
                 return {"decision": "wait", "reason": "It is not available right now.", "new_activity": None, "duration_minutes": 5}
             return {"decision": "continue", "reason": "Nothing needs attention.", "new_activity": None, "duration_minutes": None}
-        if not v.get("_can_talk"):
-            return {"decision": "continue", "reason": "Not a good moment to talk.", "new_activity": None, "duration_minutes": None}
+        return {"decision": "continue", "reason": "Busy with the current activity.", "new_activity": None, "duration_minutes": None}
+
+    def _t_talk_decision(self, v: dict[str, Any], rng: random.Random) -> dict[str, Any]:
         p = 0.12
         if v.get("_knows_observed"):
             p += 0.25
         if v.get("_has_news"):
             p += 0.35
         if rng.random() < p:
-            return {"decision": "talk", "reason": "They know each other and have something to say.", "new_activity": None, "duration_minutes": None}
-        return {"decision": "continue", "reason": "Busy with the current activity.", "new_activity": None, "duration_minutes": None}
+            return {"reasoning": "They know each other and have something to say.", "answer": "yes"}
+        return {"reasoning": "Busy with the current activity.", "answer": "no"}
 
     def _t_dialogue_turn(self, v: dict[str, Any], rng: random.Random) -> dict[str, Any]:
         speaker, partner = v["_speaker"], v["_partner"]

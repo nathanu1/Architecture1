@@ -1,12 +1,12 @@
-# `reaction@v1`
+# `reaction@v2`
 
 > Example from run `examples-main` (offline two-day pilot (MOCK)), default architecture settings. Inputs are exactly what the model was sent in that state; outputs show the format only, not model behavior.
 
-* Template: [`prompts/reaction.v1.md`](../reaction.v1.md) · SHA-256 `1e3f7cadce8770009f349ef25efc41d2c9fe5a99d81e1a6570ea7184a7176421`
-* Source: Paper §4.3.1 p. 11 (prompt with [Agent's Summary Description], time, status, observation, summary of relevant context, 'Should John react to the observation, and if so, what would be an appropriate reaction?'); wait option from released v2/decide_to_react_v1.txt; talk option from v2/decide_to_talk_v2.txt
+* Template: [`prompts/reaction.v2.md`](../reaction.v2.md) · SHA-256 `3108b864def573316427b1390d095276145dcfffa0ce083529dd3ca1c7b6ca89`
+* Source: Paper §4.3.1 p. 11 (prompt with [Agent's Summary Description], time, status, observation, summary of relevant context, 'Should John react to the observation, and if so, what would be an appropriate reaction?'); wait option from released v2/decide_to_react_v1.txt. Whether to talk to another agent is asked first, separately (talk_decision), as plan.py _should_react calls lets_talk before lets_react.
 * Information scope: The agent's dynamic summary, its own status, one perceived observation and the context summary built from its own memories.
 * Output model: `ReactionDecisionOut` · max output tokens 300 · effort low
-* Calls in this run: 150 (ok 150; 0 repair attempts)
+* Calls in this run: 93 (ok 93; 0 repair attempts)
 
 ## Output schema
 
@@ -59,7 +59,7 @@
 
 ## Smallest successful call
 
-Ledger call 1726 · scope `examples-main` · sim time 2023-02-13T18:25:10 · agent `wolfgang_schulz` · model `mock-llm-v1` · status `ok` · tokens 634 in / 28 out (estimated)
+Ledger call 1898 · scope `examples-main` · sim time 2023-02-13T18:25:40 · agent `wolfgang_schulz` · model `mock-llm-v1` · status `ok` · tokens 627 in / 30 out (estimated)
 
 **System**
 
@@ -85,22 +85,21 @@ It is February 13, 2023, 6:25 pm.
 Wolfgang Schulz's status: Wolfgang Schulz is have dinner (continuing) at Dorm for Oak Hill College:kitchen:kitchen sink
 Observation: Maria Lopez is have dinner (continuing)
 Summary of relevant context from Wolfgang Schulz's memory:
-Wolfgang Schulz knows Maria Lopez: Maria Lopez said to Wolfgang Schulz: "Hi Wolfgang! Did you hear? Klaus Mueller told me: This is very important -- I have a crush on Maria Lopez.". Maria Lopez is have dinner (continuing).
+Wolfgang Schulz knows Maria Lopez: Maria Lopez said to Wolfgang Schulz: "Oh, also: Klaus Mueller told me: This is very important -- I have a crush on Maria Lopez.". Maria Lopez is have dinner (continuing).
 Should Wolfgang Schulz react to the observation, and if so, what would be an appropriate reaction?
 
 Choose one decision:
 - "continue": keep doing the current activity.
 - "react": do something else now. Give the new activity and how many minutes it takes.
-
 - "wait": wait until the situation changes. Give how many minutes to wait.
 
-Respond with JSON: {"decision": "continue" | "react" | "talk" | "wait", "reason": "<one sentence>", "new_activity": "<activity or null>", "duration_minutes": <int or null>}
+Respond with JSON: {"decision": "continue" | "react" | "wait", "reason": "<one sentence>", "new_activity": "<activity or null>", "duration_minutes": <int or null>}
 ```
 
 **Raw output**
 
 ```json
-{"decision": "continue", "reason": "Not a good moment to talk.", "new_activity": null, "duration_minutes": null}
+{"decision": "continue", "reason": "Busy with the current activity.", "new_activity": null, "duration_minutes": null}
 ```
 
 **Validated output**
@@ -108,7 +107,7 @@ Respond with JSON: {"decision": "continue" | "react" | "talk" | "wait", "reason"
 ```json
 {
   "decision": "continue",
-  "reason": "Not a good moment to talk.",
+  "reason": "Busy with the current activity.",
   "new_activity": null,
   "duration_minutes": null
 }

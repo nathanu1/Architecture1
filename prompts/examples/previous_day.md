@@ -27,7 +27,7 @@
 
 ## Smallest successful call
 
-Ledger call 2527 · scope `examples-main` · sim time 2023-02-14T00:00:00 · agent `wolfgang_schulz` · model `mock-llm-v1` · status `ok` · tokens 623 in / 105 out (estimated)
+Ledger call 2512 · scope `examples-main` · sim time 2023-02-14T00:00:00 · agent `wolfgang_schulz` · model `mock-llm-v1` · status `ok` · tokens 612 in / 96 out (estimated)
 
 **System**
 
@@ -40,21 +40,20 @@ You are one component of a research simulation of believable characters, reprodu
 ```text
 Statements:
 - Sam Moore said to Wolfgang Schulz: "Hi Wolfgang! Did you hear? Maria Lopez told me: Wolfgang Schulz told me: Sam Moore told me: I am thinking of running in the upcoming local mayor election."
+- Wolfgang Schulz keeps coming back to election
 - Wolfgang Schulz keeps coming back to mayor
 - Wolfgang Schulz keeps coming back to mayor
 - Wolfgang Schulz keeps coming back to election
+- Wolfgang Schulz said to Klaus Mueller: "That sounds wonderful, I'd love to come to the party!"
 - Wolfgang Schulz said to Maria Lopez: "Oh, also: Sam Moore told me: I am thinking of running in the upcoming local mayor election."
 - Sam Moore said to Wolfgang Schulz: "Oh, also: I am thinking of running in the upcoming local mayor election."
 - Sam Moore said to Wolfgang Schulz: "Hi Wolfgang! Did you hear? I am telling people that I am running for the upcoming local mayor election."
+- Wolfgang Schulz had a conversation with Klaus Mueller. This is a conversation about a Valentine's Day party.
 - Maria Lopez said to Wolfgang Schulz: "Hi Wolfgang! Did you hear? Klaus Mueller told me: This is very important -- I have a crush on Maria Lopez."
-- Klaus Mueller said to Wolfgang Schulz: "Hi Wolfgang! Did you hear? Maria Lopez told me: This is very important -- I have a secret crush on Klaus Mueller."
-- Klaus Mueller said to Wolfgang Schulz: "Hi Wolfgang! Did you hear? Maria Lopez told me: This is very important -- I have a secret crush on Klaus Mueller."
+- Klaus Mueller said to Wolfgang Schulz: "Oh, also: Sam Moore told me: That sounds wonderful, I'd love to come to the party!."
 - Maria Lopez said to Wolfgang Schulz: "Oh, also: Klaus Mueller told me: This is very important -- I have a crush on Maria Lopez."
-- Wolfgang Schulz plans to sleeping from 00:00 to 05:00 on Monday February 13.
-- Wolfgang Schulz keeps coming back to party
-- Wolfgang Schulz said to Sam Moore: "That sounds wonderful, I'd love to come to the party!"
-- Wolfgang Schulz said to Sam Moore: "Oh, also: Maria Lopez told me: Klaus Mueller told me: This is very important -- I have a crush on Maria Lopez."
-- Sam Moore said to Wolfgang Schulz: "Hi Wolfgang! Did you hear? I am telling people that I am running for the upcoming local mayor election."
+- Maria Lopez said to Wolfgang Schulz: "Hi Wolfgang! Did you hear? Isabella Rodriguez told me: Sam Moore told me: Maria Lopez told me: Wolfgang Schulz told me: Sam Moore told me: I am thinking of running in the upcoming local mayor election."
+- Wolfgang Schulz said to Klaus Mueller: "Oh, also: Maria Lopez told me: Klaus Mueller told me: This is very important -- I have a crush on Maria Lopez."
 
 Given the statements above, summarize Wolfgang Schulz's Monday February 13 in two or three sentences, written in the third person. Include anything Wolfgang should remember while planning Tuesday February 14; if there is scheduling information, be as specific as the statements are (date, time and place).
 
@@ -64,14 +63,14 @@ Respond with JSON: {"summary": "..."}
 **Raw output**
 
 ```json
-{"summary": "Wolfgang Schulz followed their routine on Monday February 13. To remember: Sam Moore said to Wolfgang Schulz: \"Hi Wolfgang! Did you hear? Maria Lopez told me: Wolfgang Schulz told me: Sam Moore told me: I am thinking of running in the upcoming local mayor election.\"; Wolfgang Schulz said to Maria Lopez: \"Oh, also: Sam Moore told me: I am thinking of running in the upcoming local mayor election.\"."}
+{"summary": "Wolfgang Schulz followed their routine on Monday February 13. To remember: Sam Moore said to Wolfgang Schulz: \"Hi Wolfgang! Did you hear? Maria Lopez told me: Wolfgang Schulz told me: Sam Moore told me: I am thinking of running in the upcoming local mayor election.\"; Wolfgang Schulz said to Klaus Mueller: \"That sounds wonderful, I'd love to come to the party!\"."}
 ```
 
 **Validated output**
 
 ```json
 {
-  "summary": "Wolfgang Schulz followed their routine on Monday February 13. To remember: Sam Moore said to Wolfgang Schulz: \"Hi Wolfgang! Did you hear? Maria Lopez told me: Wolfgang Schulz told me: Sam Moore told me: I am thinking of running in the upcoming local mayor election.\"; Wolfgang Schulz said to Maria Lopez: \"Oh, also: Sam Moore told me: I am thinking of running in the upcoming local mayor election.\"."
+  "summary": "Wolfgang Schulz followed their routine on Monday February 13. To remember: Sam Moore said to Wolfgang Schulz: \"Hi Wolfgang! Did you hear? Maria Lopez told me: Wolfgang Schulz told me: Sam Moore told me: I am thinking of running in the upcoming local mayor election.\"; Wolfgang Schulz said to Klaus Mueller: \"That sounds wonderful, I'd love to come to the party!\"."
 }
 ```
 

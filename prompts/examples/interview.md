@@ -27,7 +27,7 @@
 
 ## Smallest successful call
 
-Ledger call 5505 · scope `examples-main::interview::appendix_b::no_memory_stream` · sim time 2023-02-15T00:01:00 · agent `klaus_mueller` · model `mock-llm-v1` · status `ok` · tokens 341 in / 17 out (estimated)
+Ledger call 5616 · scope `examples-main::interview::appendix_b::no_memory_stream` · sim time 2023-02-15T00:01:00 · agent `klaus_mueller` · model `mock-llm-v1` · status `ok` · tokens 341 in / 17 out (estimated)
 
 **System**
 

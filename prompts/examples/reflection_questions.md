@@ -6,7 +6,7 @@
 * Source: Paper §4.2 p. 10 ('Given only the information above, what are 3 most salient high-level questions we can answer about the subjects in the statements?'); released v2/generate_focal_pt_v1.txt
 * Information scope: The agent's most recent memory records (100 in paper mode).
 * Output model: `ReflectionQuestionsOut` · max output tokens 300 · effort low
-* Calls in this run: 28 (ok 28; 0 repair attempts)
+* Calls in this run: 31 (ok 31; 0 repair attempts)
 
 ## Output schema
 
@@ -30,7 +30,7 @@
 
 ## Smallest successful call
 
-Ledger call 746 · scope `examples-main` · sim time 2023-02-13T12:14:20 · agent `maria_lopez` · model `mock-llm-v1` · status `ok` · tokens 1222 in / 44 out (estimated)
+Ledger call 3074 · scope `examples-main` · sim time 2023-02-14T12:00:20 · agent `sam_moore` · model `mock-llm-v1` · status `ok` · tokens 1321 in / 43 out (estimated)
 
 **System**
 
@@ -41,79 +41,106 @@ You are one component of a research simulation of believable characters, reprodu
 **User**
 
 ```text
-This is very important -- you have a secret crush on Klaus Mueller
-You and Klaus Mueller have known each other for over 2 years now
-You and Klaus Mueller are close friends and classmates
-For planning, you frequent Hobbs Cafe for studying
-You are close with Ayesha Khan, who is a classmate in one of your classes and a dormmate
-You and Eddy Lin are classmates
-You know Mei Lin is a professor at your college
-You and Wolfgang Schulz are classmates and dormmates
-This is Maria Lopez's plan for Monday February 13: wake up at 10:00; 10:00 wake up and complete the morning routine; 11:00 have breakfast; 12:00 have lunch at Hobbs Cafe; 13:00 go about the daily routine (spends at least 6 hours a day Twitch streaming or gaming); 18:00 have dinner; 22:00 relax and wind down; 23:00 go to bed.
-Maria Lopez plans to sleeping from 00:00 to 10:00 on Monday February 13.
-Maria Lopez plans to wake up and complete the morning routine from 10:00 to 11:00 on Monday February 13.
-Maria Lopez plans to have breakfast from 11:00 to 12:00 on Monday February 13.
-Maria Lopez plans to have lunch at Hobbs Cafe from 12:00 to 13:00 on Monday February 13.
-Maria Lopez plans to go about the daily routine (spends at least 6 hours a day Twitch streaming or gaming) from 13:00 to 18:00 on Monday February 13.
-Maria Lopez plans to have dinner from 18:00 to 22:00 on Monday February 13.
-Maria Lopez plans to relax and wind down from 22:00 to 23:00 on Monday February 13.
-Maria Lopez plans to go to bed from 23:00 to 23:30 on Monday February 13.
-Maria Lopez plans to sleeping from 23:30 to 24:00 on Monday February 13.
-Maria Lopez is idle
-bed is idle
+Sam Moore has been spending time around Wolfgang Schulz
+Sam Moore keeps coming back to local
+Sam Moore has been spending time around Klaus Mueller
+Sam Moore keeps coming back to rodriguez
+Sam Moore keeps coming back to keeps
+Sam Moore has been spending time around Maria Lopez
+Sam Moore keeps coming back to local
+Sam Moore has been spending time around Wolfgang Schulz
+Sam Moore keeps coming back to mueller
+common room sofa is idle
+cooking area is idle
 desk is idle
+Sam Moore is relax and wind down (getting started)
+kitchen sink is idle
+refrigerator is idle
+bed is idle
+common room sofa is being used
 closet is idle
-blackboard is idle
-computer is idle
-Maria Lopez is sleeping
-bed is being slept in
-Maria Lopez is wake up and complete the morning routine (getting started)
+common room sofa is idle
+cooking area is idle
 closet is being used
+desk is idle
+Sam Moore is relax and wind down (continuing)
+kitchen sink is idle
+bed is idle
+refrigerator is idle
+closet is idle
+common room sofa is idle
+cooking area is idle
+refrigerator is being opened
+desk is idle
+Sam Moore is relax and wind down (making progress)
+kitchen sink is idle
+bed is idle
+refrigerator is idle
+closet is idle
+common room sofa is idle
+cooking area is idle
+desk is being used
+Sam Moore is go to bed
+desk is idle
+kitchen sink is idle
+bed is idle
+bed is being used
+refrigerator is idle
+closet is idle
+common room sofa is idle
+cooking area is idle
+Sam Moore is go to bed
+desk is idle
+kitchen sink is idle
+Sam Moore is sleeping
+bed is being slept in
+refrigerator is idle
+closet is idle
+common room sofa is idle
+cooking area is idle
+This is Sam Moore's plan for Tuesday February 14: wake up at 05:00; 05:00 wake up and complete the morning routine; 06:00 have breakfast; 08:00 go about the daily routine (likes to talk a walk around Johnson Park, and sit at Hobbs cafe reading); 12:00 have lunch at Hobbs Cafe; 13:00 go about the daily routine (likes to talk a walk around Johnson Park, and sit at Hobbs cafe reading); 18:00 have dinner; 20:00 relax and wind down; 21:00 go to bed.
+Sam Moore plans to sleeping from 00:00 to 05:00 on Tuesday February 14.
+Sam Moore plans to wake up and complete the morning routine from 05:00 to 06:00 on Tuesday February 14.
+Sam Moore plans to have breakfast from 06:00 to 08:00 on Tuesday February 14.
+Sam Moore plans to go about the daily routine (likes to talk a walk around Johnson Park, and sit at Hobbs cafe reading) from 08:00 to 12:00 on Tuesday February 14.
+Sam Moore plans to have lunch at Hobbs Cafe from 12:00 to 13:00 on Tuesday February 14.
+Sam Moore plans to go about the daily routine (likes to talk a walk around Johnson Park, and sit at Hobbs cafe reading) from 13:00 to 18:00 on Tuesday February 14.
+Sam Moore plans to have dinner from 18:00 to 20:00 on Tuesday February 14.
+Sam Moore plans to relax and wind down from 20:00 to 21:00 on Tuesday February 14.
+Sam Moore plans to go to bed from 21:00 to 21:30 on Tuesday February 14.
+Sam Moore plans to sleeping from 21:30 to 24:00 on Tuesday February 14.
+Sam Moore is wake up and complete the morning routine (getting started)
 bed is idle
 desk is idle
-Maria Lopez is have breakfast (getting started)
+kitchen sink is idle
+closet is being used
+refrigerator is idle
+Sam Moore is have breakfast (getting started)
 closet is idle
-computer is idle
-blackboard is idle
 cooking area is idle
-refrigerator is idle
-kitchen sink is idle
-toaster is idle
-cooking area is being used to cook
-Maria Lopez is have breakfast (getting started)
+common room sofa is idle
+bed is idle
 kitchen sink is being used
-Maria Lopez is have lunch at Hobbs Cafe (getting started)
-Klaus Mueller is have lunch at Hobbs Cafe (getting started)
-Maria Lopez said to Klaus Mueller: "Hi Klaus! Did you hear? This is very important -- I have a secret crush on Klaus Mueller."
-Klaus Mueller said to Maria Lopez: "Oh, also: This is very important -- I have a crush on Maria Lopez."
-Maria Lopez said to Klaus Mueller: "Oh, also: For planning, me frequent Hobbs Cafe for studying."
-Klaus Mueller said to Maria Lopez: "That's interesting."
-Maria Lopez said to Klaus Mueller: "It was good talking to you, Klaus. See you around!"
-Maria Lopez had a conversation with Klaus Mueller. This is a conversation about how their days are going.
-Maria Lopez is chatting with Klaus Mueller
-Klaus Mueller is chatting with Maria Lopez
-Wolfgang Schulz is have lunch (getting started)
-Maria Lopez said to Wolfgang Schulz: "Hi Wolfgang! Did you hear? Klaus Mueller told me: This is very important -- I have a crush on Maria Lopez."
-Wolfgang Schulz said to Maria Lopez: "Oh, also: Sam Moore told me: I am thinking of running in the upcoming local mayor election."
-Maria Lopez said to Wolfgang Schulz: "Oh, also: This is very important -- I have a secret crush on Klaus Mueller."
-Wolfgang Schulz said to Maria Lopez: "Oh, also: Sam Moore told me: I am telling people that I am running for the upcoming local mayor election."
-Maria Lopez said to Wolfgang Schulz: "Oh, also: For planning, me frequent Hobbs Cafe for studying."
-Wolfgang Schulz said to Maria Lopez: "It was good talking to you, Maria. See you around!"
-Maria Lopez had a conversation with Wolfgang Schulz. This is a conversation about the local mayor election.
-Maria Lopez is chatting with Wolfgang Schulz
-Wolfgang Schulz is chatting with Maria Lopez
-Klaus Mueller is chatting with Sam Moore
-Sam Moore is chatting with Klaus Mueller
-Maria Lopez is have lunch at Hobbs Cafe (getting started)
-Klaus Mueller is have lunch at Hobbs Cafe (getting started)
-Sam Moore is have lunch at Hobbs Cafe (getting started)
-cafe customer seating is idle
-piano is idle
+desk is idle
+Sam Moore is go about the daily routine (likes to talk a walk around Johnson Park, and sit at Hobbs cafe reading) (getting started)
 kitchen sink is idle
-Isabella Rodriguez is have lunch at Hobbs Cafe (getting started)
-behind the cafe counter is being used
-cooking area is idle
 refrigerator is idle
+closet is idle
+park garden is idle
+park garden is being used
+Wolfgang Schulz is go about the daily routine (goes for a run at the part in the morning, studies during the day, and exercises at his room at nigh) (continuing)
+Sam Moore said to Wolfgang Schulz: "Hi Wolfgang! Did you hear? Maria Lopez told me: Wolfgang Schulz told me: Sam Moore told me: I am thinking of running in the upcoming local mayor election."
+Wolfgang Schulz said to Sam Moore: "Oh, also: Klaus Mueller told me: Sam Moore told me: That sounds wonderful, I'd love to come to the party!."
+Sam Moore said to Wolfgang Schulz: "Wonderful, see you there, Wolfgang!"
+Sam Moore had a conversation with Wolfgang Schulz. This is a conversation about a Valentine's Day party.
+Sam Moore is chatting with Wolfgang Schulz
+Wolfgang Schulz is chatting with Sam Moore
+Sam Moore is go about the daily routine (likes to talk a walk around Johnson Park, and sit at Hobbs cafe reading) (continuing)
+Sam Moore is have lunch at Hobbs Cafe (getting started)
+Wolfgang Schulz is have lunch (getting started)
+Wolfgang Schulz said to Sam Moore: "Hi Sam! Did you hear? Klaus Mueller told me: Sam Moore told me: That sounds wonderful, I'd love to come to the party!. You should come!"
+Sam Moore said to Wolfgang Schulz: "Wonderful, see you there, Wolfgang!"
+Sam Moore had a conversation with Wolfgang Schulz. This is a conversation about a Valentine's Day party.
 
 Given only the information above, what are 3 most salient high-level questions we can answer about the subjects in the statements?
 
@@ -123,7 +150,7 @@ Respond with JSON: {"questions": ["...", "...", "..."]} with exactly 3 questions
 **Raw output**
 
 ```json
-{"questions": ["What is Maria Lopez most focused on lately?", "What is the relationship between Maria Lopez and Klaus Mueller?", "What does Maria Lopez think about maria?"]}
+{"questions": ["What is Sam Moore most focused on lately?", "What is the relationship between Sam Moore and Wolfgang Schulz?", "What does Sam Moore think about moore?"]}
 ```
 
 **Validated output**
@@ -131,9 +158,9 @@ Respond with JSON: {"questions": ["...", "...", "..."]} with exactly 3 questions
 ```json
 {
   "questions": [
-    "What is Maria Lopez most focused on lately?",
-    "What is the relationship between Maria Lopez and Klaus Mueller?",
-    "What does Maria Lopez think about maria?"
+    "What is Sam Moore most focused on lately?",
+    "What is the relationship between Sam Moore and Wolfgang Schulz?",
+    "What does Sam Moore think about moore?"
   ]
 }
 ```

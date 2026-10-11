@@ -6,7 +6,7 @@
 * Source: Paper §4.2 p. 10 ('What 5 high-level insights can you infer from the above statements? (example format: insight (because of 1, 5, 3))'); released v2/insight_and_evidence_v1.txt
 * Information scope: Memories retrieved from the agent's own stream for one reflection question, numbered so citations can be checked.
 * Output model: `ReflectionInsightsOut` · max output tokens 700 · effort medium
-* Calls in this run: 84 (ok 84; 0 repair attempts)
+* Calls in this run: 93 (ok 93; 0 repair attempts)
 
 ## Output schema
 
@@ -51,7 +51,7 @@
 
 ## Smallest successful call
 
-Ledger call 793 · scope `examples-main` · sim time 2023-02-13T12:15:00 · agent `klaus_mueller` · model `mock-llm-v1` · status `ok` · tokens 804 in / 114 out (estimated)
+Ledger call 789 · scope `examples-main` · sim time 2023-02-13T12:14:00 · agent `klaus_mueller` · model `mock-llm-v1` · status `ok` · tokens 805 in / 120 out (estimated)
 
 **System**
 
@@ -67,32 +67,32 @@ Statements about Klaus Mueller
 2. This is very important -- you have a crush on Maria Lopez
 3. Klaus Mueller said to Maria Lopez: "That's interesting."
 4. Klaus Mueller said to Maria Lopez: "Oh, also: This is very important -- I have a crush on Maria Lopez."
-5. Klaus Mueller said to Sam Moore: "Hi Sam! Did you hear? Maria Lopez told me: This is very important -- I have a secret crush on Klaus Mueller."
-6. Klaus Mueller said to Sam Moore: "Oh, also: This is very important -- I have a crush on Maria Lopez."
-7. Maria Lopez said to Klaus Mueller: "Oh, also: For planning, me frequent Hobbs Cafe for studying."
-8. Klaus Mueller had a conversation with Maria Lopez. This is a conversation about how their days are going.
-9. Maria Lopez said to Klaus Mueller: "It was good talking to you, Klaus. See you around!"
+5. Klaus Mueller had a conversation with Isabella Rodriguez. This is a conversation about a Valentine's Day party.
+6. Maria Lopez said to Klaus Mueller: "Oh, also: For planning, me frequent Hobbs Cafe for studying."
+7. Klaus Mueller had a conversation with Maria Lopez. This is a conversation about how their days are going.
+8. Maria Lopez said to Klaus Mueller: "It was good talking to you, Klaus. See you around!"
+9. Isabella Rodriguez said to Klaus Mueller: "Hi Klaus! Did you hear? I am excited to be planning a Valentine's Day party at Hobbs Cafe on February 14th from 5pm and I am eager to tell everyone to come to the party. You should come!"
 10. Klaus Mueller is chatting with Maria Lopez
 11. Klaus Mueller is sleeping
-12. Klaus Mueller had a conversation with Sam Moore. This is a conversation about the local mayor election.
+12. Klaus Mueller said to Isabella Rodriguez: "That sounds wonderful, I'd love to come to the party!"
 13. Klaus Mueller plans to have breakfast from 08:00 to 09:00 on Monday February 13.
 14. Klaus Mueller plans to have dinner from 18:00 to 22:00 on Monday February 13.
 15. Klaus Mueller plans to go to bed from 23:00 to 23:30 on Monday February 13.
-16. Sam Moore said to Klaus Mueller: "Oh, also: I am telling people that I am running for the upcoming local mayor election."
-17. Klaus Mueller is have breakfast (getting started)
-18. Maria Lopez is chatting with Klaus Mueller
-19. You and Maria Lopez are dormmates
-20. Maria Lopez is chatting with Isabella Rodriguez
-21. Klaus Mueller plans to go about the daily routine (goes to the library at Oak Hill College early in the morning, spends his days writing, and eats at H) from 13:00 to 18:00 on Monday February 13.
-22. Sam Moore said to Klaus Mueller: "Oh, also: I am thinking of running in the upcoming local mayor election."
-23. Klaus Mueller is have lunch at Hobbs Cafe (getting started)
-24. Klaus Mueller is have lunch at Hobbs Cafe (getting started)
-25. Maria Lopez is have lunch at Hobbs Cafe (getting started)
-26. Maria Lopez is have lunch at Hobbs Cafe (getting started)
-27. Klaus Mueller said to Sam Moore: "Oh, also: Maria Lopez told me: For planning, me frequent Hobbs Cafe for studying."
-28. Klaus Mueller is chatting with Sam Moore
-29. Klaus Mueller is wake up and complete the morning routine (getting started)
-30. Klaus Mueller plans to wake up and complete the morning routine from 07:00 to 08:00 on Monday February 13.
+16. Klaus Mueller is have breakfast (getting started)
+17. Maria Lopez is chatting with Klaus Mueller
+18. You and Maria Lopez are dormmates
+19. Klaus Mueller plans to go about the daily routine (goes to the library at Oak Hill College early in the morning, spends his days writing, and eats at H) from 13:00 to 18:00 on Monday February 13.
+20. Isabella Rodriguez said to Klaus Mueller: "Wonderful, see you there, Klaus!"
+21. Klaus Mueller is have lunch at Hobbs Cafe (getting started)
+22. Klaus Mueller is have lunch at Hobbs Cafe (getting started)
+23. Maria Lopez is have lunch at Hobbs Cafe (getting started)
+24. Klaus Mueller is wake up and complete the morning routine (getting started)
+25. Klaus Mueller is chatting with Isabella Rodriguez
+26. Klaus Mueller plans to wake up and complete the morning routine from 07:00 to 08:00 on Monday February 13.
+27. You and Maria Lopez are close friends and classmates
+28. Klaus Mueller plans to relax and wind down from 22:00 to 23:00 on Monday February 13.
+29. Isabella Rodriguez is have lunch at Hobbs Cafe (getting started)
+30. Klaus Mueller plans to sleeping from 00:00 to 07:00 on Monday February 13.
 
 What 5 high-level insights can you infer from the above statements? (example format: insight (because of 1, 5, 3))
 
@@ -102,7 +102,7 @@ Respond with JSON: {"insights": [{"insight": "<one sentence>", "evidence": ["<st
 **Raw output**
 
 ```json
-{"insights": [{"insight": "Klaus Mueller keeps coming back to moore", "evidence": ["12", "9"]}, {"insight": "Klaus Mueller has been spending time around Sam Moore", "evidence": ["22", "16"]}, {"insight": "Klaus Mueller keeps coming back to routine", "evidence": ["30", "1"]}, {"insight": "Klaus Mueller has been spending time around Maria Lopez", "evidence": ["7", "26", "25"]}, {"insight": "Klaus Mueller keeps coming back to lopez", "evidence": ["10"]}]}
+{"insights": [{"insight": "Klaus Mueller keeps coming back to maria", "evidence": ["4"]}, {"insight": "Klaus Mueller has been spending time around Hobbs Cafe", "evidence": ["21", "25", "20"]}, {"insight": "Klaus Mueller keeps coming back to lopez", "evidence": ["15", "11", "7"]}, {"insight": "Klaus Mueller has been spending time around Isabella Rodriguez", "evidence": ["25", "27", "1"]}, {"insight": "Klaus Mueller keeps coming back to maria", "evidence": ["14", "20", "6"]}]}
 ```
 
 **Validated output**
@@ -111,38 +111,41 @@ Respond with JSON: {"insights": [{"insight": "<one sentence>", "evidence": ["<st
 {
   "insights": [
     {
-      "insight": "Klaus Mueller keeps coming back to moore",
+      "insight": "Klaus Mueller keeps coming back to maria",
       "evidence": [
-        "12",
-        "9"
+        "4"
       ]
     },
     {
-      "insight": "Klaus Mueller has been spending time around Sam Moore",
+      "insight": "Klaus Mueller has been spending time around Hobbs Cafe",
       "evidence": [
-        "22",
-        "16"
-      ]
-    },
-    {
-      "insight": "Klaus Mueller keeps coming back to routine",
-      "evidence": [
-        "30",
-        "1"
-      ]
-    },
-    {
-      "insight": "Klaus Mueller has been spending time around Maria Lopez",
-      "evidence": [
-        "7",
-        "26",
-        "25"
+        "21",
+        "25",
+        "20"
       ]
     },
     {
       "insight": "Klaus Mueller keeps coming back to lopez",
       "evidence": [
-        "10"
+        "15",
+        "11",
+        "7"
+      ]
+    },
+    {
+      "insight": "Klaus Mueller has been spending time around Isabella Rodriguez",
+      "evidence": [
+        "25",
+        "27",
+        "1"
+      ]
+    },
+    {
+      "insight": "Klaus Mueller keeps coming back to maria",
+      "evidence": [
+        "14",
+        "20",
+        "6"
       ]
     }
   ]

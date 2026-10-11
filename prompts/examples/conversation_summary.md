@@ -27,7 +27,7 @@
 
 ## Smallest successful call
 
-Ledger call 3187 · scope `examples-main` · sim time 2023-02-14T12:11:30 · agent `isabella_rodriguez` · model `mock-llm-v1` · status `ok` · tokens 177 in / 17 out (estimated)
+Ledger call 3069 · scope `examples-main` · sim time 2023-02-14T12:00:10 · agent `wolfgang_schulz` · model `mock-llm-v1` · status `ok` · tokens 180 in / 17 out (estimated)
 
 **System**
 
@@ -39,8 +39,8 @@ You are one component of a research simulation of believable characters, reprodu
 
 ```text
 Conversation:
-Isabella Rodriguez: Hi Klaus! Did you hear? Maria Lopez told me: That sounds wonderful, I'd love to come to the party!. You should come!
-Klaus Mueller: Wonderful, see you there, Isabella!
+Wolfgang Schulz: Hi Sam! Did you hear? Klaus Mueller told me: Sam Moore told me: That sounds wonderful, I'd love to come to the party!. You should come!
+Sam Moore: Wonderful, see you there, Wolfgang!
 
 Summarize the conversation above in one sentence, describing only what was said. Start with "This is a conversation about".
 

@@ -151,12 +151,12 @@ def test_street_fire_seen_by_a_passerby(tmp_path):
     assert r and r[0]["decision"] == "react"
 
 
-TALK = {"decision": "talk", "reason": "They are friends.", "new_activity": None, "duration_minutes": None}
+TALK = {"reasoning": "They are friends.", "answer": "yes"}
 
 
 def test_nearby_friend_conversation_is_private_and_turn_by_turn(tmp_path):
     sim = make_sim(
-        tmp_path, ["isabella_rodriguez", "maria_lopez", "klaus_mueller", "sam_moore"], provider=ScriptedLLM({"reaction": [TALK]}, fallback=MockLLM(seed=5))
+        tmp_path, ["isabella_rodriguez", "maria_lopez", "klaus_mueller", "sam_moore"], provider=ScriptedLLM({"talk_decision": [TALK]}, fallback=MockLLM(seed=5))
     )
     ready(sim, {"isabella_rodriguez": (78, 19), "klaus_mueller": (80, 21), "sam_moore": (74, 21), "maria_lopez": (118, 45)})
     sim.run(max_steps=3)
@@ -181,6 +181,21 @@ def test_nearby_friend_conversation_is_private_and_turn_by_turn(tmp_path):
     partner = b if a == "isabella_rodriguez" else a
     assert not any(seed in r["prompt"] for r in sim.rt.ledger.rows(agent_id=partner))
     assert sim.svc.states.get(a).cooldown_until.get(b)
+    # the next time they meet, the talk question says when they last talked and what about (decide_to_talk_v2)
+    assert sim._last_chat(a, b).startswith("When they last talked") and sim._last_chat(a, "maria_lopez") is None
+
+
+def test_talk_is_asked_first_and_a_no_goes_on_to_react_or_wait_without_a_talk_option(tmp_path):
+    no = {"reasoning": "She is busy at the counter.", "answer": "no"}
+    sim = make_sim(tmp_path, ["isabella_rodriguez", "klaus_mueller"], provider=ScriptedLLM({"talk_decision": [no, no]}, fallback=MockLLM(seed=5)))
+    ready(sim, {"isabella_rodriguez": (78, 19), "klaus_mueller": (80, 21)})
+    sim.run(max_steps=3)
+    asked = sim.rt.ledger.rows(task="talk_decision")
+    decided = sim.rt.ledger.rows(task="reaction")
+    assert asked and decided and len(decided) == len(asked)  # released order: lets_talk, then lets_react
+    assert all('"talk"' not in r["prompt"] and "start a conversation" not in r["prompt"] for r in decided)
+    assert all(e["decision"] != "talk" for e in sim.svc.events.query("reaction"))
+    assert sim.db.query("SELECT id FROM conversations") == []
 
 
 def _dialogue(provider, max_utterances=16):

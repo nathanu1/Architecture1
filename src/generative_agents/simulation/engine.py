@@ -653,6 +653,7 @@ class Simulation:
             status=self._status(ident, st.action),
             can_talk=can_talk,
             observed_name=self.identities[focal.agent_id].name if focal.agent_id in self.identities else None,
+            last_chat=self._last_chat(aid, focal.agent_id or "") if can_talk else None,
         )
         self.svc.events.log(
             "reaction",
@@ -695,6 +696,19 @@ class Simulation:
             return f"{ident.name} is idle"
         where = f" at {act.address.split(':', 1)[-1]}" if act.address else ""
         return f"{ident.name} is {act.description}{where}"
+
+    def _last_chat(self, aid: str, pid: str) -> str | None:
+        """When the two last talked and what about, from the observer's own summary of it (the
+        released decide_to_talk_v2 prompt gives both)."""
+
+        row = self.db.one(
+            "SELECT m.created_at, m.description FROM memories m JOIN conversations c ON c.id = m.conversation_id "
+            "WHERE m.owner_id = ? AND m.origin = ? AND (',' || c.participants || ',') LIKE ? ORDER BY m.seq DESC LIMIT 1",
+            (aid, MemoryOrigin.CONVERSATION.value, f"%,{pid},%"),
+        )
+        if row is None:
+            return None
+        return f"When they last talked ({long_time(parse_iso(row['created_at']))}): {row['description']}"
 
     def _can_talk(self, aid: str, pid: str, now: datetime, views: dict[str, AgentView]) -> bool:
         if pid not in views or now.hour >= self.cfg.dialogue.no_chat_after_hour:

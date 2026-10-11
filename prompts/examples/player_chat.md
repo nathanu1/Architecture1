@@ -39,7 +39,7 @@
 
 ## Smallest successful call
 
-Ledger call 82 · scope `examples-game` · sim time 2023-02-13T10:05:00 · agent `klaus_mueller` · model `mock-llm-v1` · status `ok` · tokens 756 in / 22 out (estimated)
+Ledger call 83 · scope `examples-game` · sim time 2023-02-13T10:05:00 · agent `klaus_mueller` · model `mock-llm-v1` · status `ok` · tokens 756 in / 22 out (estimated)
 
 **System**
 

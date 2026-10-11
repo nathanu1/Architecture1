@@ -31,7 +31,7 @@
 
 ## Smallest successful call
 
-Ledger call 5649 · scope `examples-main::judge::appendix_b` · sim time n/a · agent `n/a` · model `mock-llm-v1` · status `ok` · tokens 225 in / 17 out (estimated)
+Ledger call 5760 · scope `examples-main::judge::appendix_b` · sim time n/a · agent `n/a` · model `mock-llm-v1` · status `ok` · tokens 225 in / 17 out (estimated)
 
 **System**
 

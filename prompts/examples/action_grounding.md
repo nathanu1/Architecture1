@@ -6,7 +6,7 @@
 * Source: Paper §5.1 p. 13 (the language model says what happens to the object's state, e.g. coffee machine 'off' → 'brewing coffee'); released v2/generate_event_triple_v1.txt and v3_ChatGPT/generate_obj_event_v1.txt
 * Information scope: The agent's own action, the target object's name and the condition the agent last saw it in (its own spatial memory, never the world's true state).
 * Output model: `ActionGroundingOut` · max output tokens 200 · effort low
-* Calls in this run: 711 (ok 711; 0 repair attempts)
+* Calls in this run: 709 (ok 709; 0 repair attempts)
 
 ## Output schema
 
@@ -50,7 +50,7 @@
 
 ## Smallest successful call
 
-Ledger call 2254 · scope `examples-main` · sim time 2023-02-13T21:00:00 · agent `sam_moore` · model `mock-llm-v1` · status `ok` · tokens 265 in / 30 out (estimated)
+Ledger call 2196 · scope `examples-main` · sim time 2023-02-13T21:00:00 · agent `sam_moore` · model `mock-llm-v1` · status `ok` · tokens 265 in / 30 out (estimated)
 
 **System**
 

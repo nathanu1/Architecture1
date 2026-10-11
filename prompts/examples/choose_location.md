@@ -6,7 +6,7 @@
 * Source: Paper §5.1 p. 12 (Eddy Lin area prompt: current area, known areas, 'Prefer to stay in the current area if the activity can be done there'); released v1/action_location_sector_v1.txt, action_location_object_vMar11.txt, action_object_v2.txt
 * Information scope: The agent's dynamic summary and its private, possibly stale, spatial memory only.
 * Output model: `LocationChoiceOut` · max output tokens 120 · effort low
-* Calls in this run: 1694 (ok 1694; 0 repair attempts)
+* Calls in this run: 1687 (ok 1687; 0 repair attempts)
 
 ## Output schema
 

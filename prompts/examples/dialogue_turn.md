@@ -6,7 +6,7 @@
 * Source: Paper §4.3.2 pp. 11–12 (utterance conditioned on the speaker's summarized memory about the other agent, the intended reaction and the dialogue history; continues until one agent ends it); released v3_ChatGPT/iterative_convo_v1.txt
 * Information scope: The speaker's dynamic summary, the speaker's own retrieved memories, the place, and the transcript so far. Never the partner's memories.
 * Output model: `DialogueTurnOut` · max output tokens 300 · effort medium
-* Calls in this run: 139 (ok 139; 0 repair attempts)
+* Calls in this run: 157 (ok 157; 0 repair attempts)
 
 ## Output schema
 
@@ -31,7 +31,7 @@
 
 ## Smallest successful call
 
-Ledger call 1562 · scope `examples-main` · sim time 2023-02-13T18:00:10 · agent `wolfgang_schulz` · model `mock-llm-v1` · status `ok` · tokens 614 in / 39 out (estimated)
+Ledger call 1862 · scope `examples-main` · sim time 2023-02-13T18:23:50 · agent `wolfgang_schulz` · model `mock-llm-v1` · status `ok` · tokens 605 in / 39 out (estimated)
 
 **System**
 
@@ -53,17 +53,17 @@ Current Date: Monday February 13
 Wolfgang Schulz is Hardworking, passionate, dedicated. Notably: Wolfgang Schulz keeps coming back to mayor; Wolfgang Schulz keeps coming back to election.
 Wolfgang Schulz spends the day on the usual routine. Notably: Wolfgang Schulz keeps coming back to mayor; Wolfgang Schulz keeps coming back to election.
 Wolfgang Schulz feels steady about recent progress. Notably: Sam Moore said to Wolfgang Schulz: "Hi Wolfgang! Did you hear? I am telling people that I am running for the upcoming local mayor election."; Wolfgang Schulz keeps coming back to mayor.
-It is February 13, 2023, 6:00 pm.
-Wolfgang Schulz's status: Wolfgang Schulz is have dinner (getting started) at Dorm for Oak Hill College:kitchen:kitchen sink
-Observation: Sam Moore is have dinner (getting started)
-Location: the Ville:Johnson Park:park
+It is February 13, 2023, 6:23 pm.
+Wolfgang Schulz's status: Wolfgang Schulz is have dinner (continuing) at Dorm for Oak Hill College:kitchen:kitchen sink
+Observation: Klaus Mueller is have dinner (continuing)
+Location: the Ville:Dorm for Oak Hill College:kitchen
 Summary of relevant context from Wolfgang Schulz's memory:
-Wolfgang Schulz knows Sam Moore: Sam Moore said to Wolfgang Schulz: "Oh, also: I am thinking of running in the upcoming local mayor election.". Sam Moore is have dinner (getting started).
+Wolfgang Schulz knows Klaus Mueller: Wolfgang Schulz said to Klaus Mueller: "That sounds wonderful, I'd love to come to the party!". Klaus Mueller is have dinner (continuing).
 
 
 Here is the dialogue history:
-Sam Moore: Hi Wolfgang! Did you hear? Maria Lopez told me: Wolfgang Schulz told me: Sam Moore told me: I am thinking of running in the upcoming local mayor election.
-How would Wolfgang Schulz respond to Sam Moore? Say one natural turn. End the conversation when it has run its course.
+Klaus Mueller: Hi Wolfgang! Did you hear? Maria Lopez told me: This is very important -- I have a secret crush on Klaus Mueller.
+How would Wolfgang Schulz respond to Klaus Mueller? Say one natural turn. End the conversation when it has run its course.
 
 Respond with JSON: {"utterance": "<what Wolfgang Schulz says>", "end_conversation": true | false}
 ```
