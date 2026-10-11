@@ -50,10 +50,21 @@ function memories(rows: Record<string, unknown>[], query: URLSearchParams): Reco
   return rows.filter((m) => (!kind || m.kind === kind) && (!q || String(m.description ?? "").toLowerCase().includes(q))).slice(0, limit);
 }
 
+interface ResearchIndex {
+  files: string[];
+  /** The file of each `call/`, `trace/` and `evidence/` key (the others follow from the path). */
+  owner: Record<string, string>;
+}
+
+/** The inspector's data, in one shared file and one per resident, each loaded when first needed. */
 async function research<T>(path: string): Promise<T> {
-  const data = await load<Record<string, unknown>>("research.json");
   const [route, search = ""] = path.split("?");
   const parts = route.split("/").map(decodeURIComponent);
+  const index = await load<ResearchIndex>("research/index.json");
+  const agent = parts[0] === "agent" ? parts[1] : new URLSearchParams(search).get("agent");
+  const file = agent ? `agent-${agent}` : (index.owner[parts.slice(0, 2).join("/")] ?? "shared");
+  if (!index.files.includes(file)) throw new ApiError(404, "this resident is not in the recording");
+  const data = await load<Record<string, unknown>>(`research/${file}.json`);
   if (parts[0] === "agent" && parts[2] === "memories") {
     const rows = data[`agent/${parts[1]}/memories`] as Record<string, unknown>[] | undefined;
     if (!rows) throw new ApiError(404, "this resident is not in the recording");

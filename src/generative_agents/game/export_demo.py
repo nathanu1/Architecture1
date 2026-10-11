@@ -47,35 +47,47 @@ def _dump(path: Path, data: Any) -> int:
     return len(text.encode("utf-8"))
 
 
-def _research(run_dir: Path, agents: list[str], *, memories: int = 400, traces: int = 60, calls: int = 150) -> dict[str, Any]:
-    """The inspector's reads, keyed by the path the front end asks for (``research(path)``)."""
+def _research(run_dir: Path, agents: list[str], *, memories: int = 400, traces: int = 60, calls: int = 150) -> tuple[dict[str, dict[str, Any]], dict[str, str]]:
+    """The inspector's reads, keyed by the path the front end asks for (``research(path)``), in
+    files: ``shared`` and one per resident, so a 25-resident town stays under per-file size
+    limits and the page loads only what it opens. ``owner`` names the file of each ``call/``,
+    ``trace/`` and ``evidence/`` key, which the path alone does not tell."""
 
     data = RunData(run_dir)
-    out: dict[str, Any] = {}
+    shared: dict[str, Any] = {}
+    files: dict[str, dict[str, Any]] = {"shared": shared}
+    owner: dict[str, str] = {}
     info = data.run_info()
     info["has_evaluation"] = False
     info["has_experiment"] = False
     info["recording"] = True
-    out["run"] = info
-    out["manifest"] = data.manifest()
-    out["diffusion"] = data.diffusion()
+    shared["run"] = info
+    shared["manifest"] = data.manifest()
+    shared["diffusion"] = data.diffusion()
     listed: set[int] = set()
-    out[f"calls?limit={calls}"] = rows = data.calls(task=None, agent=None, limit=calls, before=None)
+    shared[f"calls?limit={calls}"] = rows = data.calls(task=None, agent=None, limit=calls, before=None)
     listed.update(int(r["id"]) for r in rows)
     for aid in agents:
-        out[f"calls?limit={calls}&agent={aid}"] = rows = data.calls(task=None, agent=aid, limit=calls, before=None)
+        name = f"agent-{aid}"
+        mine = files[name] = {}
+        mine[f"calls?limit={calls}&agent={aid}"] = rows = data.calls(task=None, agent=aid, limit=calls, before=None)
         listed.update(int(r["id"]) for r in rows)
-        out[f"agent/{aid}"] = data.agent(aid, None)
-        out[f"agent/{aid}/memories"] = data.memories(aid, kind=None, text=None, limit=memories, before=None)
-        out[f"agent/{aid}/traces?limit={traces}"] = trace_rows = data.traces(aid, traces, None)
+        mine[f"agent/{aid}"] = data.agent(aid, None)
+        mine[f"agent/{aid}/memories"] = data.memories(aid, kind=None, text=None, limit=memories, before=None)
+        mine[f"agent/{aid}/traces?limit={traces}"] = trace_rows = data.traces(aid, traces, None)
         for t in trace_rows:
-            out[f"trace/{t['id']}"] = data.trace(t["id"])
-        out[f"agent/{aid}/reflections"] = refl = data.reflections(aid)
+            mine[f"trace/{t['id']}"] = data.trace(t["id"])
+            owner[f"trace/{t['id']}"] = name
+        mine[f"agent/{aid}/reflections"] = refl = data.reflections(aid)
         for r in refl:
-            out[f"evidence/{r['id']}"] = data.evidence(r["id"])
+            mine[f"evidence/{r['id']}"] = data.evidence(r["id"])
+            owner[f"evidence/{r['id']}"] = name
     for cid in sorted(listed):
-        out[f"call/{cid}"] = data.call(cid)
-    return out
+        call = data.call(cid)
+        name = f"agent-{call.get('agent_id')}" if f"agent-{call.get('agent_id')}" in files else "shared"
+        files[name][f"call/{cid}"] = call
+        owner[f"call/{cid}"] = name
+    return files, owner
 
 
 def export_demo(run_dir: Path, out_dir: Path, *, frame_every: int = 1, scratch: Path | None = None) -> dict[str, Any]:
@@ -161,8 +173,13 @@ def export_demo(run_dir: Path, out_dir: Path, *, frame_every: int = 1, scratch: 
         "map.json": _dump(target / "map.json", town),
         "timeline.json": _dump(target / "timeline.json", timeline),
         "objects.json": _dump(target / "objects.json", objects),
-        "research.json": _dump(target / "research.json", _research(run_dir, list(sim.order))),
     }
+    files, owner = _research(run_dir, list(sim.order))
+    (target / "research.json").unlink(missing_ok=True)  # the single-file layout of earlier exports
+    (target / "research").mkdir(exist_ok=True)
+    sizes["research/index.json"] = _dump(target / "research" / "index.json", {"files": sorted(files), "owner": owner})
+    for name, content in files.items():
+        sizes[f"research/{name}.json"] = _dump(target / "research" / f"{name}.json", content)
     if scratch is None:
         shutil.rmtree(work, ignore_errors=True)
     return {"out": str(target), "frames": len(frames), "states": len(states), "events": len(feed), "bytes": sizes}

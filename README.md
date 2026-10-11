@@ -156,7 +156,9 @@ The front end lives in `frontend/` (React, Tailwind, Three.js). Its built bundle
 running) and `npm run build`.
 
 To share a town without a server, record it, build the demo page and export the recording into it
-(`python examples/record_demo_town.py` makes the scripted morning used for the published demo):
+(`python examples/record_demo_town.py` makes the scripted mock morning used for the first published
+demo; `python examples/grow_town.py` runs a town on a real model in resumable segments while a
+scripted builder gathers motifs, grants the residents' wishes and decorates the Town Square):
 
 ```bash
 cd frontend && npm run build:demo && cd ..
@@ -269,7 +271,7 @@ prompts/                 23 versioned prompt templates (front matter names the s
 scenarios/               imported Smallville data: smallville_n25, pilot3, pilot5
 configs/                 example configurations, Appendix B question banks, game/ content
 docs/                    reproduction spec, walkthrough, experiment protocol, town game
-examples/                walkthrough.py, record_demo_town.py
+examples/                walkthrough.py, record_demo_town.py, grow_town.py
 tests/
 ```
 

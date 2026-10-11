@@ -179,7 +179,7 @@ def test_a_recorded_town_exports_as_static_demo_data_without_calls(tmp_path):
     s.stop()
     res = export_demo(tmp_path / "town", tmp_path / "site", scratch=tmp_path / "work")
     demo = tmp_path / "site" / "demo"
-    assert {p.name for p in demo.iterdir()} == {"info.json", "map.json", "timeline.json", "objects.json", "research.json"}
+    assert {p.name for p in demo.iterdir()} == {"info.json", "map.json", "timeline.json", "objects.json", "research"}
     tl = json.loads((demo / "timeline.json").read_text())
     assert len(tl["frames"]) == res["frames"] == 31 and sorted(tl["agents"]) == sorted(TRIO)
     for row in tl["frames"]:
@@ -191,9 +191,13 @@ def test_a_recorded_town_exports_as_static_demo_data_without_calls(tmp_path):
     assert chats and chats[0]["builder_line"] == "Hello Klaus!" and isinstance(chats[0]["step"], int)
     info = json.loads((demo / "info.json").read_text())
     assert info["mode"] == "replay" and len(info["residents"]) == 3
-    research = json.loads((demo / "research.json").read_text())
-    assert {"run", "manifest", "diffusion", "calls?limit=150"} <= set(research)
-    assert all(f"agent/{aid}/memories" in research for aid in tl["agents"])
-    listed = {c["id"] for c in research["calls?limit=150"]}
-    assert listed and all(f"call/{cid}" in research for cid in listed)
+    # the inspector's data: one shared file and one per resident, with an index of who owns what
+    index = json.loads((demo / "research" / "index.json").read_text())
+    assert sorted(index["files"]) == sorted(["shared"] + [f"agent-{aid}" for aid in tl["agents"]])
+    research = {name: json.loads((demo / "research" / f"{name}.json").read_text()) for name in index["files"]}
+    assert {"run", "manifest", "diffusion", "calls?limit=150"} <= set(research["shared"])
+    assert all(f"agent/{aid}/memories" in research[f"agent-{aid}"] for aid in tl["agents"])
+    listed = {c["id"] for c in research["shared"]["calls?limit=150"]}
+    assert listed and all(f"call/{cid}" in research[index["owner"][f"call/{cid}"]] for cid in listed)
+    assert all(key in research[name] for key, name in index["owner"].items())
     assert json.loads((tmp_path / "work" / "replay" / "manifest.json").read_text())["budget"]["usage"]["calls"] == 0  # replayed, not called
