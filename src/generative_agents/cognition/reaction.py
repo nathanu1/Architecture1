@@ -182,6 +182,7 @@ class ReactionEngine:
                 sim_time=now,
                 purpose="reaction:decide",
                 validate=validate,
+                constraints={"decision": {"enum": sorted(allowed)}, "duration_minutes": {"minimum": 1, "maximum": 240}},
             )
         except TaskFailed as exc:
             return ReactionDecision("continue", f"decision failed: {exc}", percept, context=ctx, call_ids=ctx_calls + exc.call_ids, trace_ids=traces)

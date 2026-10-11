@@ -34,6 +34,9 @@ from .summary import SummaryService
 
 SLEEP_RE = re.compile(r"\b(sleep|sleeping|asleep|nap|napping|in bed|go(es|ing)? to bed|bedtime)\b", re.I)
 HHMM_RE = re.compile(r"^\s*(\d{1,2}):(\d{2})\s*$")
+# The same clock times as patterns, for grammar-constrained decoding by local servers.
+CLOCK = r"^([01]?[0-9]|2[0-3]):[0-5][0-9]$"  # 00:00 to 23:59
+CLOCK_OR_MIDNIGHT = r"^(([01]?[0-9]|2[0-3]):[0-5][0-9]|24:00)$"
 
 
 def is_sleep(activity: str) -> bool:
@@ -282,6 +285,12 @@ class Planner:
             sim_time=now,
             purpose="plan:day",
             validate=validate_day,
+            constraints={
+                "wake_up_time": {"pattern": CLOCK_OR_MIDNIGHT},
+                "items": {"minItems": lo, "maxItems": hi},
+                "items.*.time": {"pattern": CLOCK},
+                "items.*.activity": {"minLength": 1},
+            },
         )
         items = [(_hm(it.time) or 0, it.activity.strip()) for it in day.output.items]
         wake = day.output.wake_up_time
@@ -342,6 +351,12 @@ class Planner:
             sim_time=now,
             purpose="plan:hourly",
             validate=validate_hours,
+            constraints={
+                "blocks": {"minItems": 1},
+                "blocks.*.start": {"pattern": CLOCK},
+                "blocks.*.end": {"pattern": CLOCK_OR_MIDNIGHT},
+                "blocks.*.activity": {"minLength": 1},
+            },
         )
         blocks: list[tuple[int, int, str]] = []
         for b in hours.output.blocks:
@@ -465,6 +480,12 @@ class Planner:
                 sim_time=now,
                 purpose="plan:decompose",
                 validate=validate,
+                constraints={
+                    "tasks": {"minItems": 1},
+                    "tasks.*.activity": {"minLength": 1},
+                    # one task may also take the whole block
+                    "tasks.*.duration_minutes": {"minimum": min(lo, minutes), "maximum": max(hi, minutes)},
+                },
             )
         except TaskFailed as exc:
             self.svc.events.log("plan_failure", now, identity.id, level="task", block=block.id, error=str(exc), errors=exc.errors[:5])
@@ -615,6 +636,7 @@ class Planner:
                 sim_time=now,
                 purpose="plan:replan",
                 validate=validate,
+                constraints={"tasks.*.activity": {"minLength": 1}, "tasks.*.duration_minutes": {"minimum": lo, "maximum": hi}},
             )
         except TaskFailed as exc:
             self.svc.events.log("plan_failure", now, identity.id, level="replan", error=str(exc), errors=exc.errors[:5])

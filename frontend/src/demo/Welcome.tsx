@@ -1,8 +1,13 @@
 import { Binoculars, Flask, Notebook as NotebookIcon, UserCircle, X } from "@phosphor-icons/react";
 import { motion, useReducedMotion } from "motion/react";
-import { useState } from "react";
-import { viewHref } from "../lib/route";
+import { useEffect, useState } from "react";
 import { Button, IconButton } from "../components/ui";
+import { viewHref } from "../lib/route";
+import { formatTime } from "../lib/time";
+import { useTown } from "../store";
+import { playerDid, recordedWith, residentsWord } from "./about";
+import { demoPlayer } from "./api";
+import type { Player } from "./player";
 
 const KEY = "smallville-demo-welcome";
 
@@ -18,7 +23,19 @@ function seen(): boolean {
 export function Welcome() {
   const [open, setOpen] = useState(() => !seen());
   const reduce = useReducedMotion();
-  if (!open) return null;
+  const info = useTown((s) => s.info);
+  const [player, setPlayer] = useState<Player | null>(null);
+  useEffect(() => {
+    let alive = true;
+    void demoPlayer().then((p) => alive && setPlayer(p));
+    return () => {
+      alive = false;
+    };
+  }, []);
+  if (!open || !info || !player) return null;
+  const how = recordedWith(info);
+  const did = playerDid(player.events.map((e) => e.kind));
+  const span = `from ${formatTime(player.timeAt(player.first))} to ${formatTime(player.timeAt(player.last))}`;
   const close = () => {
     setOpen(false);
     try {
@@ -47,8 +64,20 @@ export function Welcome() {
         <IconButton label="Close" icon={X} onClick={close} className="size-9" />
       </div>
       <p className="mt-1 text-sm text-[var(--muted)]">
-        Three residents live their day from 7 AM to 1 PM while a player chats, gives a gift, builds in the Town Square and grants a wish. It was recorded with the mock model and plays back here
-        without any server or model.
+        {residentsWord(info.residents.length)} live their day {span}
+        {did ? ` while a player ${did}` : ""}.{" "}
+        {how.mock ? (
+          "It was recorded with the mock model, so their words are placeholders. "
+        ) : (
+          <>
+            Their plans, replies and conversations were written by{" "}
+            <span translate="no" className="font-semibold">
+              {how.model}
+            </span>
+            {how.via ? `, running locally through ${how.via}` : ""}.{" "}
+          </>
+        )}
+        It plays back here without any server or model.
       </p>
       <ul className="mt-3 space-y-2">
         {tips.map(({ icon: Icon, text }) => (

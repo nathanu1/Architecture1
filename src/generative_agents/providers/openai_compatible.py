@@ -7,9 +7,10 @@ Requests: ``POST {base_url}/chat/completions`` with a system and a user message,
 ``POST {base_url}/embeddings``. An API key is read from the environment variable named in the
 config, if any (local servers usually accept anything).
 
-This follows the OpenAI wire format; it has not been exercised against LM Studio from this
-project. Servers differ in how strictly they enforce ``json_schema``; the gateway validates
-every reply and repairs or fails visibly either way.
+This follows the OpenAI wire format. It was exercised against llama.cpp's ``llama-server``
+(chat with a JSON schema and embeddings), not against LM Studio. Servers differ in how strictly
+they enforce ``json_schema``; the gateway validates every reply and repairs or fails visibly
+either way.
 """
 
 from __future__ import annotations
@@ -56,6 +57,7 @@ class OpenAICompatibleProvider:
         return {"provider": self.name, "model": self.model, "base_url": self.base_url, "seed": self.seed, "local": is_local_url(self.base_url)}
 
     def complete(self, request: LLMRequest) -> LLMResponse:
+        schema = request.decoding_schema or inline_refs(request.output_schema)
         body: dict[str, Any] = {
             "model": request.model,
             "messages": [
@@ -64,7 +66,9 @@ class OpenAICompatibleProvider:
             ],
             "max_tokens": request.max_output_tokens,
             "stream": False,
-            "response_format": {"type": "json_schema", "json_schema": {"name": request.task, "schema": inline_refs(request.output_schema), "strict": True}},
+            # Local servers decode within a grammar built from this schema, so the tighter
+            # decoding schema (offered choices, counts, ranges) applies when there is one.
+            "response_format": {"type": "json_schema", "json_schema": {"name": request.task, "schema": schema, "strict": True}},
         }
         if request.temperature is not None:
             body["temperature"] = request.temperature
@@ -80,6 +84,8 @@ class OpenAICompatibleProvider:
         message = choice.get("message") or {}
         finish = choice.get("finish_reason") or "stop"
         metadata = {"finish_reason": finish, "system_fingerprint": data.get("system_fingerprint")}
+        if request.decoding_schema is not None:
+            metadata["decoding_schema"] = request.decoding_schema
         if message.get("refusal") or finish == "content_filter":
             raise ProviderRefusal("model declined", metadata=metadata)
         if finish == "length":

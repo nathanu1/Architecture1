@@ -116,7 +116,9 @@ class OllamaProvider:
                 {"role": "user", "content": request.prompt},
             ],
             "stream": False,
-            "format": inline_refs(request.output_schema),
+            # Ollama decodes within a grammar built from this schema, so the tighter decoding
+            # schema (offered choices, counts, ranges) applies when the gateway supplies one.
+            "format": request.decoding_schema or inline_refs(request.output_schema),
             "options": options,
         }
         if self.keep_alive is not None:
@@ -142,6 +144,8 @@ class OllamaProvider:
             "num_ctx": self.num_ctx,
             "seed": self.seed,
         }
+        if request.decoding_schema is not None:
+            metadata["decoding_schema"] = request.decoding_schema
         if done_reason == "length":
             raise ProviderTruncated(f"output hit num_predict={request.max_output_tokens} before the JSON was complete", metadata=metadata)
         if not data.get("done", True) or done_reason not in ("stop", "length"):

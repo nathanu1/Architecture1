@@ -2,6 +2,7 @@ import { FilmStrip } from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
 import { formatTime } from "../lib/time";
 import { useTown } from "../store";
+import { recordedWith } from "./about";
 import { demoPlayer } from "./api";
 import type { Player } from "./player";
 
@@ -59,12 +60,25 @@ export function DemoBar() {
 
   if (!player || !clock) return null;
   const jump = (step: number) => player.seek(step);
+  const how = recordedWith(info);
   return (
     <div className="pointer-events-auto panel flex w-[min(92vw,520px)] flex-col gap-1.5 px-3 py-2">
       <div className="flex items-center gap-2">
         <FilmStrip size={16} weight="fill" color="#e2629b" aria-hidden="true" />
         <span className="font-display text-sm font-bold">Recording</span>
-        <span className="min-w-0 truncate text-xs text-[var(--muted)]">mock model, so residents’ words are placeholders</span>
+        <span className="min-w-0 truncate text-xs text-[var(--muted)]">
+          {how.mock ? (
+            "mock model, so residents’ words are placeholders"
+          ) : (
+            <>
+              words by{" "}
+              <span translate="no" className="font-semibold">
+                {how.model}
+              </span>
+              {how.via ? `, run locally through ${how.via}` : ""}
+            </>
+          )}
+        </span>
       </div>
       <div className="flex items-center gap-2">
         <span className="tabular text-[11px] font-bold text-[var(--muted)]">{formatTime(player.timeAt(player.first))}</span>

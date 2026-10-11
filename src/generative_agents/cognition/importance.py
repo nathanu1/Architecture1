@@ -21,6 +21,9 @@ ANCHORS: dict[str, tuple[str, str, str, str]] = {
 
 PLURALS = {"piece of memory": "memories", "conversation": "conversation statements", "thought": "thoughts"}
 
+# The 1-10 range the output models validate, restated for grammar-constrained decoding.
+RATING = {"rating": {"minimum": 1, "maximum": 10}}
+
 
 def is_idle_text(text: str) -> bool:
     return text.rstrip(". ").endswith("is idle")
@@ -52,6 +55,7 @@ class ImportanceScorer:
             agent_id=identity.id,
             sim_time=now,
             purpose=purpose or f"importance:{kind}",
+            constraints=RATING,
         )
         return int(result.output.rating)
 
@@ -91,6 +95,11 @@ class ImportanceScorer:
             sim_time=now,
             purpose=purpose or f"importance:batch:{kind}",
             validate=validate,
+            constraints={
+                "ratings": {"minItems": len(items), "maxItems": len(items)},
+                "ratings.*.id": {"enum": [i for i, _ in items]},
+                "ratings.*.rating": RATING["rating"],
+            },
         )
         by_id = {r.id: r.rating for r in result.output.ratings}
         return [int(by_id[i]) for i, _ in items]

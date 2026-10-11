@@ -32,6 +32,11 @@ class LLMRequest:
     # providers ignore them. They never enter cache keys (the rendered prompt does).
     variables: dict[str, Any] = field(default_factory=dict)
     attempt_kind: str = "initial"  # initial | repair
+    # A tighter copy of output_schema for servers that decode within a grammar (Ollama,
+    # llama.cpp, LM Studio): the offered choices, item counts and ranges the call's validator
+    # checks anyway. Other providers send output_schema. Built from the rendered prompt's own
+    # inputs, so it is not part of the cache key (recorded runs replay unchanged).
+    decoding_schema: dict[str, Any] | None = None
 
 
 @dataclass

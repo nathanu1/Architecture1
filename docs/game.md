@@ -35,18 +35,34 @@ ga doctor --config configs/town_ollama.yaml
 ga play --config configs/town_ollama.yaml
 ```
 
-8 GB of RAM is the minimum for an 8B model and 16 GB is comfortable. The town moves as fast as
-your machine answers: walking is instant, each resident decision is one or more model calls.
-LM Studio and llama.cpp's server work through the OpenAI-compatible adapter
-(`providers.llm.kind: openai_compatible`, `base_url: http://localhost:1234/v1` for LM Studio).
-Local runs record a cost of zero and need no API key. When the three-resident slice runs well,
-`configs/town_n25_ollama.yaml` has all 25 residents (roughly eight times the calls).
+8 GB of RAM is the minimum for an 8B model and 16 GB is comfortable. On a machine without a
+GPU, `llama3.2:3b` (about 2.0 GB) is the practical choice: `ollama pull llama3.2:3b`, then add
+`--set providers.llm.model=llama3.2:3b`. The town moves as fast as your machine answers: walking
+is instant, each resident decision is one or more model calls. LM Studio and llama.cpp's server
+work through the OpenAI-compatible adapter (`providers.llm.kind: openai_compatible`,
+`base_url: http://localhost:1234/v1` for LM Studio). Local runs record a cost of zero and need no
+API key. When the three-resident slice runs well, `configs/town_n25_ollama.yaml` has all 25
+residents (roughly eight times the calls).
 
-> **Validation status.** The Ollama and OpenAI-compatible adapters were tested against a fake
-> HTTP server that follows the documented APIs (`tests/fake_ollama.py`), including a full
-> three-resident simulation and its call-free replay. No real Ollama, LM Studio or open-weight
-> model was run while building this, because neither could be installed in the build
-> environment. Expect to tune `num_ctx`, `max_output_tokens` and timeouts on first use.
+**Small models and structured output.** Local servers decode within a grammar built from the
+JSON schema they are sent, so besides each task's schema the adapters send a tighter *decoding
+schema* that restates the call's own validation rules: the offered choices (places, themes,
+reaction options, statement numbers), exact item counts, rating and duration ranges, and clock
+times. It removes only answers the validator would reject anyway; checks a grammar cannot
+express (durations that must add up, an hourly schedule that must reach midnight) stay with the
+validator and its one repair attempt. The decoding schema is stored with each call
+(`metadata_json`) and is not part of the replay key, so runs recorded before it still replay.
+
+> **Validation status.** The adapters are tested against a fake HTTP server that follows the
+> documented APIs (`tests/fake_ollama.py`), including a full three-resident simulation and its
+> call-free replay. They were also run against a real Ollama 0.40.2 (CPU only, four cores) with
+> Llama 3.2 3B Instruct (Q4_K_M) and `nomic-embed-text`: the three-resident town ran from 07:00
+> to 07:30 in 56 model calls and about 10 minutes, every task validated except three hour
+> decompositions whose durations did not add up (those hours stayed single tasks, as designed),
+> and the run replays to an identical state with no model calls. Calls took 2 to 40 seconds;
+> the hourly schedule was the slowest. Before the decoding schema, the same model failed while
+> seeding memories (its importance ratings were valid in 1 of 12 tries; with it, 12 of 12). LM
+> Studio has not been tried.
 
 ## What you can do, and what the residents experience
 

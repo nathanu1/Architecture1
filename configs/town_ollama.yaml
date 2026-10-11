@@ -3,6 +3,8 @@
 # no charges. Pull the models once:
 #   ollama pull llama3.1:8b         # 4.9 GB; or mistral:7b (4.4 GB), llama3:8b (4.7 GB)
 #   ollama pull nomic-embed-text    # 0.3 GB
+# No GPU? `ollama pull llama3.2:3b` (2.0 GB) and add --set providers.llm.model=llama3.2:3b;
+# on four CPU cores its calls take 2 to 40 seconds.
 #   ga doctor --config configs/town_ollama.yaml
 #   ga play --config configs/town_ollama.yaml
 # The town moves as fast as your machine answers; walking is instant, thinking takes a few

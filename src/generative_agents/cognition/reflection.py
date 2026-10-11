@@ -86,6 +86,7 @@ class ReflectionEngine:
                 sim_time=now,
                 purpose="reflection:questions",
                 validate=lambda o: [] if len(o.questions) == n_q and all(q.strip() for q in o.questions) else [f"need exactly {n_q} non-empty questions"],
+                constraints={"questions": {"minItems": n_q, "maxItems": n_q}, "questions.*": {"minLength": 1}},
             )
             questions = [q.strip() for q in q_out.output.questions]
         except TaskFailed as exc:
@@ -142,6 +143,12 @@ class ReflectionEngine:
                     sim_time=now,
                     purpose="reflection:insights",
                     validate=validate,
+                    constraints={
+                        "insights": {"minItems": 1, "maxItems": n_i},
+                        "insights.*.insight": {"minLength": 1},
+                        "insights.*.evidence": {"minItems": 1},
+                        "insights.*.evidence.*": {"enum": list(handles)},
+                    },
                 )
             except TaskFailed as exc:
                 entry["failure"] = str(exc)

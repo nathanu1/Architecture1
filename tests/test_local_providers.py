@@ -5,22 +5,23 @@ from __future__ import annotations
 
 import json
 import threading
+from dataclasses import replace
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
 from fake_ollama import DIGEST, FakeOllama, MockBackedOllama
-from generative_agents.cognition.outputs import ReflectionInsightsOut
+from generative_agents.cognition.outputs import ImportanceBatchOut, ReactionDecisionOut, ReflectionInsightsOut
 from generative_agents.config import GAConfig, apply_overrides
 from generative_agents.prompting import PromptRegistry
-from generative_agents.providers.base import ProviderError, TaskFailed
+from generative_agents.providers.base import LLMRequest, ProviderError, TaskFailed
 from generative_agents.providers.embeddings import EmbeddingService
 from generative_agents.providers.gateway import GatewaySettings, LLMGateway
 from generative_agents.providers.ledger import CallLedger
 from generative_agents.providers.local_http import inline_refs
 from generative_agents.providers.ollama_provider import OllamaEmbedding, OllamaProvider, ollama_status
 from generative_agents.providers.openai_compatible import OpenAICompatibleEmbedding, OpenAICompatibleProvider
-from generative_agents.providers.schema import strict_json_schema
+from generative_agents.providers.schema import decoding_schema, strict_json_schema
 from generative_agents.simulation.budget import Budget
 from generative_agents.simulation.engine import Simulation
 from helpers import sim_config
@@ -61,6 +62,44 @@ def test_nested_output_schemas_are_inlined_for_local_decoders():
     flat = inline_refs(schema)
     assert "$ref" not in json.dumps(flat) and "$defs" not in flat
     assert flat["properties"]["insights"]["items"]["required"] == ["insight", "evidence"]
+
+
+def test_decoding_schema_restates_the_validator_for_grammar_decoders():
+    schema = strict_json_schema(ImportanceBatchOut)
+    tight = decoding_schema(
+        schema,
+        {"ratings": {"minItems": 2, "maxItems": 2}, "ratings.*.id": {"enum": ["1", "2"]}, "ratings.*.rating": {"minimum": 1, "maximum": 10}},
+    )
+    ratings = tight["properties"]["ratings"]
+    assert (ratings["minItems"], ratings["maxItems"]) == (2, 2)
+    assert ratings["items"]["properties"]["id"] == {"type": "string", "enum": ["1", "2"]}
+    assert ratings["items"]["properties"]["rating"] == {"type": "integer", "minimum": 1, "maximum": 10}
+    assert "$ref" not in json.dumps(tight) and "minItems" not in json.dumps(schema)  # the strict schema is left as it was
+    # an optional field is constrained on its non-null branch
+    opt = decoding_schema(strict_json_schema(ReactionDecisionOut), {"duration_minutes": {"minimum": 1, "maximum": 240}})
+    assert opt["properties"]["duration_minutes"]["anyOf"] == [{"type": "integer", "minimum": 1, "maximum": 240}, {"type": "null"}]
+    with pytest.raises(KeyError):
+        decoding_schema(schema, {"ratings.*.score": {"minimum": 1}})  # a misspelt path is an error, not a no-op
+
+
+def test_constraints_reach_the_local_decoder_but_not_the_replay_key():
+    with FakeOllama() as srv:
+        srv.script = [{"content": '{"rating": 4}'}, {"content": '{"rating": 5}'}]
+        gw = gateway(OllamaProvider("llama3.1:8b", base_url=srv.url))
+        v = variables("importance", memory="Isabella is planning a party")
+        gw.run("importance", v, agent_id="a", constraints={"rating": {"minimum": 1, "maximum": 10}})
+        gw.run("importance", v, agent_id="b")
+        tight, plain = (b["format"] for b in srv.chats())
+    assert tight["properties"]["rating"] == {"type": "integer", "minimum": 1, "maximum": 10}
+    assert plain["properties"]["rating"] == {"type": "integer"}
+    first, second = gw.ledger.rows()
+    assert json.loads(first["metadata_json"])["decoding_schema"] == tight  # what the server decoded within, for the record
+    assert "decoding_schema" not in json.loads(second["metadata_json"])
+    assert first["schema_json"] == second["schema_json"]  # the recorded request keeps the strict schema
+    req = LLMRequest(
+        task="importance", template_id="t", template_hash="h", system="s", prompt="p", output_schema={"type": "object"}, model="m", max_output_tokens=9
+    )
+    assert gw.request_hash(req) == gw.request_hash(replace(req, decoding_schema=tight))  # runs recorded without it still replay
 
 
 def test_truncated_output_and_missing_model_fail_visibly():
@@ -187,10 +226,11 @@ def test_openai_compatible_server_request_and_reply(monkeypatch):
     monkeypatch.setenv("LMSTUDIO_KEY", "local-key")
     try:
         gw = gateway(OpenAICompatibleProvider("llama-3.1-8b", base_url=base, api_key_env="LMSTUDIO_KEY", seed=3))
-        assert gw.run("importance", variables("importance"), agent_id="a").output.rating == 3
+        assert gw.run("importance", variables("importance"), agent_id="a", constraints={"rating": {"minimum": 1, "maximum": 10}}).output.rating == 3
         path, body, auth = _OpenAIish.seen[0]
         assert path == "/v1/chat/completions" and auth == "Bearer local-key"
         assert body["response_format"]["type"] == "json_schema" and body["response_format"]["json_schema"]["strict"] is True
+        assert body["response_format"]["json_schema"]["schema"]["properties"]["rating"] == {"type": "integer", "minimum": 1, "maximum": 10}
         assert body["seed"] == 3 and body["max_tokens"] == REG.get("importance").max_output_tokens
         row = gw.ledger.rows()[0]
         assert row["served_model"] == "lmstudio-community/llama-3.1-8b" and row["input_tokens"] == 210 and row["cost_usd"] == 0.0

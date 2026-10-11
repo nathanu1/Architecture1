@@ -118,6 +118,8 @@ export interface Info {
   residents: Resident[];
   content: Content;
   zones: Record<string, number>;
+  /** Set by `ga export-demo`: the run a recording was made from and its model ("kind:model"). */
+  recording?: { source_run: string; mode: string; model: string };
 }
 
 export interface MapPayload {

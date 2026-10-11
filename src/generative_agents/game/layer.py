@@ -431,6 +431,7 @@ class GameLayer:
             sim_time=now,
             purpose="game:request",
             validate=validate,
+            constraints={"theme": {"enum": theme_ids}, "place": {"enum": list(labels)}},
         )
         o = out.output
         place = labels[o.place]

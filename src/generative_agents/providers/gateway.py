@@ -33,7 +33,7 @@ from .base import (
 )
 from .ledger import CallLedger
 from .pricing import PriceTable
-from .schema import strict_json_schema
+from .schema import decoding_schema, strict_json_schema
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -107,10 +107,15 @@ class LLMGateway:
         sim_time: datetime | None = None,
         purpose: str | None = None,
         validate: Validator | None = None,
+        constraints: dict[str, dict[str, Any]] | None = None,
     ) -> TaskResult[Any]:
+        """Run one task. ``constraints`` restate parts of ``validate`` as JSON-schema keywords
+        (see ``providers.schema.decoding_schema``) for providers that decode within a grammar."""
+
         template = self.registry.get(task)
         system, prompt = template.render(variables)
         schema = strict_json_schema(template.output_model)
+        decoding = decoding_schema(schema, constraints) if constraints else None
         knobs = self._knobs(template)
         call_ids: list[int] = []
         all_errors: list[str] = []
@@ -133,6 +138,7 @@ class LLMGateway:
                 sim_time=sim_time,
                 variables=variables,
                 attempt_kind="initial" if attempt == 0 else "repair",
+                decoding_schema=decoding,
             )
             raw, call_id, cached = self._call(request)
             call_ids.append(call_id)

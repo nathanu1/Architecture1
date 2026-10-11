@@ -19,13 +19,14 @@ Every setting is tagged as **paper**, **released code**, **engineering choice** 
 deviation.
 
 > **What has actually been validated.** All of it runs offline with a deterministic mock model
-> and hash embeddings: 177 Python tests and 25 front-end tests pass, a five-agent and a 25-agent
+> and hash embeddings: 179 Python tests and 27 front-end tests pass, a five-agent and a 25-agent
 > two-day simulation complete, and evaluation, interviews, exports, replay, the viewer, a ten-run
-> reflection experiment and the town game work on them. **No live model has been called**: no
-> API credentials were available, and Ollama could not be installed in the build environment, so
-> the local-model adapters were tested against a fake server that follows the documented API.
-> Nothing here is evidence about how Claude-driven or open-weight agents behave. Mock runs are
-> labeled MOCK everywhere; their outcomes are structural demonstrations, never research results.
+> reflection experiment and the town game work on them. **No hosted model API has been called**
+> (no credentials were available). One local open-weight model has: Llama 3.2 3B through a real
+> Ollama, on four CPU cores, ran the three-resident town for its first morning hours (see
+> [`docs/game.md`](docs/game.md)). That shows the local path works end to end; it is not evidence
+> about how Claude-driven or open-weight agents behave. Mock runs are labeled MOCK everywhere;
+> their outcomes are structural demonstrations, never research results.
 
 ## Setup
 
@@ -132,6 +133,8 @@ ga doctor --config configs/town_ollama.yaml
 ga play --config configs/town_ollama.yaml --open
 ```
 
+Without a GPU, use the smaller `llama3.2:3b` (about 2.0 GB; add
+`--set providers.llm.model=llama3.2:3b`): on four CPU cores its calls take 2 to 40 seconds.
 This is the three-resident vertical slice (Isabella, Maria, Klaus); `configs/town_n25_ollama.yaml`
 runs all 25 once the slice works well on your machine. LM Studio and llama.cpp work through the
 OpenAI-compatible adapter (`providers.llm.kind: openai_compatible`, `base_url:
@@ -214,9 +217,9 @@ The full list, with sources, is in the spec (§3 and §6). In short:
 ## Tests
 
 ```bash
-pytest             # 177 tests, offline, about 30 seconds
+pytest             # 179 tests, offline, about 30 seconds
 ruff check src tests examples
-cd frontend && npm ci && npm test && npm run typecheck   # 25 front-end unit tests
+cd frontend && npm ci && npm test && npm run typecheck   # 27 front-end unit tests
 ```
 
 They cover the mechanisms that could invalidate an experiment: the recency formula and

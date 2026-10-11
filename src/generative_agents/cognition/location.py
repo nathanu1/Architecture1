@@ -113,6 +113,7 @@ class LocationChooser:
             sim_time=now,
             purpose=f"location:{level[0]}",
             validate=lambda o: [] if _canon(o.choice, options) else [f"choose exactly one of: {', '.join(options)}"],
+            constraints={"choice": {"enum": list(options)}},
         )
         return _canon(out.output.choice, options) or options[0], out.call_ids
 

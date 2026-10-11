@@ -13,6 +13,9 @@ import urllib.request
 from typing import Any
 
 from .base import ProviderError
+from .schema import inline_refs
+
+__all__ = ["JSONClient", "inline_refs", "is_local_url"]
 
 
 def is_local_url(url: str) -> bool:
@@ -70,29 +73,3 @@ def _error_detail(exc: urllib.error.HTTPError) -> str:
         if err:
             return str(err)
     return body[:300]
-
-
-def inline_refs(schema: dict[str, Any]) -> dict[str, Any]:
-    """Return ``schema`` with local ``$ref``s to ``$defs`` expanded in place.
-
-    Grammar-constrained decoders in local servers handle plain nested objects more reliably
-    than references, and the expanded schema is equivalent.
-    """
-
-    defs = schema.get("$defs", {})
-
-    def expand(node: Any, depth: int = 0) -> Any:
-        if depth > 32:
-            raise ValueError("schema nesting too deep to inline")
-        if isinstance(node, dict):
-            ref = node.get("$ref")
-            if isinstance(ref, str) and ref.startswith("#/$defs/"):
-                target = defs[ref.split("/")[-1]]
-                merged = {**target, **{k: v for k, v in node.items() if k != "$ref"}}
-                return expand(merged, depth + 1)
-            return {k: expand(v, depth + 1) for k, v in node.items() if k != "$defs"}
-        if isinstance(node, list):
-            return [expand(v, depth + 1) for v in node]
-        return node
-
-    return expand(schema)
