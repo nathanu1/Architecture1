@@ -14,10 +14,11 @@ describe("what a recording says about itself", () => {
     expect(recordedWith(info(undefined, { kind: "mock", model: "mock-llm-v1" })).mock).toBe(true);
   });
 
-  it("lists what the player did once each, in a fixed order", () => {
+  it("lists what the player did, in a fixed order, with counts", () => {
     const list = new Intl.ListFormat(undefined, { style: "long", type: "conjunction" });
     expect(playerDid(["chat", "build", "chat", "conversation", "gift"])).toBe(list.format(["chats with them", "gives a gift", "builds"]));
     expect(playerDid(["conversation", "request"])).toBeNull();
+    expect(playerDid(["delivered", "gift", "delivered", "gift", "gift"])).toBe(list.format(["gives 3 gifts", "grants 2 wishes"]));
     expect(residentsWord(3)).toBe("Three residents");
     expect(residentsWord(25)).toBe("25 residents");
   });

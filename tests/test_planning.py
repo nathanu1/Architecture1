@@ -58,6 +58,29 @@ def test_failed_day_plan_leaves_no_plan_and_retries_later():
     assert planner.ensure_day(ISABELLA, D0 + timedelta(minutes=31))  # script exhausted -> mock answers
 
 
+def test_an_hourly_schedule_ending_at_00_00_with_empty_blocks_is_read_not_rejected():
+    # small models write midnight as 00:00 and sometimes put an empty block before each real one
+    blocks = [
+        {"start": "00:00", "end": "00:00", "activity": "sleeping"},
+        {"start": "00:00", "end": "07:00", "activity": "sleeping"},
+        {"start": "07:00", "end": "07:00", "activity": "morning routine"},
+        {"start": "07:00", "end": "23:00", "activity": "working at the cafe"},
+        {"start": "23:00", "end": "00:00", "activity": "sleeping"},
+    ]
+    gap = {"blocks": [{"start": "00:00", "end": "07:00", "activity": "sleeping"}, {"start": "08:00", "end": "00:00", "activity": "working"}]}
+    planner, plans, rt, svc = planner_for(ScriptedLLM({"hourly_schedule": [{"blocks": blocks}]}, fallback=MockLLM(seed=11)))
+    assert planner.ensure_day(ISABELLA, D0)
+    assert [c["status"] for c in rt.ledger.rows(task="hourly_schedule")] == ["ok"]
+    hours = plans.items(ISABELLA.id, level=PlanLevel.HOUR)
+    assert [(h.start.hour, h.duration_min) for h in hours] == [(0, 420), (7, 960), (23, 60)]
+    readings = svc.events.query("plan_reading")[0]["readings"]
+    assert "block 5: read the end 00:00 as 24:00" in readings and sum("left out" in r for r in readings) == 2
+    # a real gap is still an error, repaired or failed, never filled in
+    planner2, _, rt2, _ = planner_for(ScriptedLLM({"hourly_schedule": [gap, gap]}, fallback=MockLLM(seed=11)))
+    assert not planner2.ensure_day(KLAUS, D0)
+    assert [c["status"] for c in rt2.ledger.rows(task="hourly_schedule")] == ["invalid", "invalid"]
+
+
 def test_tasks_are_decomposed_just_in_time_for_the_current_window():
     planner, plans, rt, _ = planner_for()
     planner.ensure_day(KLAUS, D0)

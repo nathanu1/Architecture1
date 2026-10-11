@@ -9,18 +9,19 @@ export function recordedWith(info: Info): { mock: boolean; model: string; via: s
   return { mock: kind === "mock" || info.recording?.mode === "mock", model: rest.join(":") || info.llm.model, via: SERVERS[kind] ?? null };
 }
 
-const DOING: [string, string][] = [
-  ["chat", "chats with them"],
-  ["gift", "gives a gift"],
-  ["build", "builds"],
-  ["delivered", "grants a wish"],
-  ["whisper", "speaks as an inner voice"],
+const DOING: [string, (n: number) => string][] = [
+  ["chat", () => "chats with them"],
+  ["gift", (n) => (n === 1 ? "gives a gift" : `gives ${n} gifts`)],
+  ["build", () => "builds"],
+  ["delivered", (n) => (n === 1 ? "grants a wish" : `grants ${n} wishes`)],
+  ["whisper", () => "speaks as an inner voice"],
 ];
 
-/** "chats with them, gives a gift and builds": what the player did in the recording, in order of kind. */
+/** "chats with them, gives 2 gifts and grants 25 wishes": what the player did, in order of kind. */
 export function playerDid(kinds: Iterable<string>): string | null {
-  const seen = new Set(kinds);
-  const parts = DOING.filter(([kind]) => seen.has(kind)).map(([, text]) => text);
+  const count = new Map<string, number>();
+  for (const k of kinds) count.set(k, (count.get(k) ?? 0) + 1);
+  const parts = DOING.filter(([kind]) => count.has(kind)).map(([kind, text]) => text(count.get(kind)!));
   return parts.length ? listOf(parts) : null;
 }
 

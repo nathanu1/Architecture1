@@ -4,15 +4,11 @@ import { formatTime } from "../lib/time";
 import { useTown } from "../store";
 import { recordedWith } from "./about";
 import { demoPlayer } from "./api";
+import { type Moment, momentsOf } from "./moments";
 import type { Player } from "./player";
 
 /** Jumps land three game minutes early (three seconds at normal speed) so the moment plays out. */
 const LEAD = 18;
-
-interface Moment {
-  step: number;
-  label: string;
-}
 
 /** The recording's timeline: drag to any time, or jump to a moment worth seeing. */
 export function DemoBar() {
@@ -29,33 +25,7 @@ export function DemoBar() {
 
   const moments = useMemo<Moment[]>(() => {
     if (!player) return [];
-    const name = (id: unknown) => info.residents.find((r) => r.id === id)?.first_name ?? "someone";
-    const out: Moment[] = [];
-    for (const e of player.events) {
-      const kind = e.kind;
-      const label =
-        kind === "chat"
-          ? `You chat with ${name(e.agent_id)}`
-          : kind === "gift"
-            ? `A gift for ${name(e.agent_id)}`
-            : kind === "request"
-              ? "Residents make wishes"
-              : kind === "build"
-                ? "You build"
-                : kind === "delivered"
-                  ? `${name(e.agent_id)}’s wish comes true`
-                  : kind === "level_up"
-                    ? `Town Pulse: ${String(e.name ?? "level up")}`
-                    : kind === "conversation"
-                      ? `${((e.participants as string[]) ?? []).map(name).join(" and ")} talk`
-                      : kind === "whisper"
-                        ? `Inner voice for ${name(e.agent_id)}`
-                        : null;
-      if (!label) continue;
-      if (out.length && out[out.length - 1].label === label && e.step - out[out.length - 1].step < 30) continue; // one chip per burst
-      out.push({ step: e.step, label });
-    }
-    return out;
+    return momentsOf(player.events, (id) => info.residents.find((r) => r.id === id)?.first_name ?? "someone");
   }, [player, info]);
 
   if (!player || !clock) return null;

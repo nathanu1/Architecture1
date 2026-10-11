@@ -57,6 +57,26 @@ def _hm(text: str) -> int | None:
     return h * 60 + mi
 
 
+def read_blocks(blocks: list[Any]) -> tuple[list[tuple[int | None, int | None, str, int]], list[str]]:
+    """Hour blocks as (start, end, activity, number) in clock minutes, with two readings that
+    change nothing about the schedule: an end of 00:00 after a later start is midnight (24:00), and
+    a block that starts and ends at the same time takes no time and is left out. Each reading is
+    noted for the plan's record; every other check stays with the validator."""
+
+    rows: list[tuple[int | None, int | None, str, int]] = []
+    notes: list[str] = []
+    for k, b in enumerate(blocks, start=1):
+        s, e = _hm(b.start), _hm(b.end)
+        if s is not None and e == 0 and s > 0:
+            e = 24 * 60
+            notes.append(f"block {k}: read the end 00:00 as 24:00")
+        if s is not None and s == e:
+            notes.append(f"block {k}: left out ({b.start} to {b.end} takes no time)")
+            continue
+        rows.append((s, e, b.activity.strip(), k))
+    return rows, notes
+
+
 def _day_start(d: date) -> datetime:
     return datetime(d.year, d.month, d.day)
 
@@ -313,21 +333,21 @@ class Planner:
 
         def validate_hours(out: Any) -> list[str]:
             errs = []
-            if not out.blocks:
+            rows, _ = read_blocks(out.blocks)
+            if not rows:
                 return ["give at least one block"]
             cursor = 0
-            for k, b in enumerate(out.blocks, start=1):
-                s, e = _hm(b.start), _hm(b.end)
+            for s, e, a, k in rows:
                 if s is None or e is None:
                     errs.append(f"block {k}: start and end must be HH:MM")
                     continue
                 if s != cursor:
-                    errs.append(f"block {k} starts at {b.start} but the previous block ended at {cursor // 60:02d}:{cursor % 60:02d}")
+                    errs.append(f"block {k} starts at {s // 60:02d}:{s % 60:02d} but the previous block ended at {cursor // 60:02d}:{cursor % 60:02d}")
                 if e <= s:
                     errs.append(f"block {k} must end after it starts")
-                if not b.activity.strip():
+                if not a:
                     errs.append(f"block {k}: empty activity")
-                cursor = e if e is not None else cursor
+                cursor = e
             if cursor != 24 * 60:
                 errs.append("the last block must end at 24:00")
             return errs
@@ -358,9 +378,12 @@ class Planner:
                 "blocks.*.activity": {"minLength": 1},
             },
         )
+        rows, readings = read_blocks(hours.output.blocks)
+        if readings:
+            svc.events.log("plan_reading", now, identity.id, level="hour", call_ids=hours.call_ids, readings=readings)
         blocks: list[tuple[int, int, str]] = []
-        for b in hours.output.blocks:
-            s, e, a = _hm(b.start) or 0, _hm(b.end) or 0, b.activity.strip()
+        for s, e, a, _k in rows:
+            s, e = s or 0, e or 0
             if blocks and blocks[-1][2] == a and blocks[-1][1] == s:
                 blocks[-1] = (blocks[-1][0], e, a)  # merge identical neighbours
             else:

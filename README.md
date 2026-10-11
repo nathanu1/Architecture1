@@ -19,7 +19,7 @@ Every setting is tagged as **paper**, **released code**, **engineering choice** 
 deviation.
 
 > **What has actually been validated.** All of it runs offline with a deterministic mock model
-> and hash embeddings: 180 Python tests and 29 front-end tests pass, a five-agent and a 25-agent
+> and hash embeddings: 181 Python tests and 31 front-end tests pass, a five-agent and a 25-agent
 > two-day simulation complete, and evaluation, interviews, exports, replay, the viewer, a ten-run
 > reflection experiment and the town game work on them. **No hosted model API has been called**
 > (no credentials were available). One local open-weight model has: Llama 3.2 3B through a real
@@ -219,9 +219,9 @@ The full list, with sources, is in the spec (§3 and §6). In short:
 ## Tests
 
 ```bash
-pytest             # 180 tests, offline, about 30 seconds
+pytest             # 181 tests, offline, about 30 seconds
 ruff check src tests examples
-cd frontend && npm ci && npm test && npm run typecheck   # 29 front-end unit tests
+cd frontend && npm ci && npm test && npm run typecheck   # 31 front-end unit tests
 ```
 
 They cover the mechanisms that could invalidate an experiment: the recency formula and

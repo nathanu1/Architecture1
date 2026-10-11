@@ -221,6 +221,10 @@ except RunStopped as stop:
     status = stop.status
     sim._abort(stop.status, stop.detail)
     log(f"stopped: {stop.detail}")
+except KeyboardInterrupt:
+    status = RunStatus.INTERRUPTED
+    sim._abort(status, "interrupted by user")
+    log("interrupted; back at the last checkpoint")
 sim.finish(status)
 sim.close()
 log(f"segment ends ({status.value}) at {sim.clock.now:%H:%M}; run again to continue")
