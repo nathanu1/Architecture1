@@ -1,9 +1,9 @@
-# `resident_request@v1`
+# `resident_request@v2`
 
 > Example from run `examples-game` (town game (MOCK)), settings that differ from the defaults: `game.enabled=True`. Inputs are exactly what the model was sent in that state; outputs show the format only, not model behavior.
 
-* Template: [`prompts/resident_request.v1.md`](../resident_request.v1.md) · SHA-256 `9fc9b8491025404867ffb79cad0f5dbadf510bb2379d1718110aae89de1d2453`
-* Source: Game layer (extension); not in the paper. A request derived from the resident's own identity, plan and memories, in the style of the paper's planning prompts (§4.3).
+* Template: [`prompts/resident_request.v2.md`](../resident_request.v2.md) · SHA-256 `ec11521bb73033b4afd6498e3bd60366203676c7fae1f7a7992abc1616d8513d`
+* Source: Game layer (extension); not in the paper. A request derived from the resident's own identity, plan and memories, in the style of the paper's planning prompts (§4.3). v2 drops the example phrase from the answer format: Llama 3.2 3B copied it (a quiet corner to read) into 19 of 22 wishes.
 * Information scope: The resident's summary description, today's plan, the resident's own memories retrieved for their wishes, places from the resident's own spatial memory, and the six kinds of things the builder makes. Never game meters or other residents' memories.
 * Output model: `ResidentRequestOut` · max output tokens 260 · effort low
 * Calls in this run: 3 (ok 3; 0 repair attempts)
@@ -44,7 +44,7 @@
 
 ## Smallest successful call
 
-Ledger call 12 · scope `examples-game` · sim time 2023-02-13T10:00:00 · agent `klaus_mueller` · model `mock-llm-v1` · status `ok` · tokens 791 in / 83 out (estimated)
+Ledger call 12 · scope `examples-game` · sim time 2023-02-13T10:00:00 · agent `klaus_mueller` · model `mock-llm-v1` · status `ok` · tokens 792 in / 73 out (estimated)
 
 **System**
 
@@ -98,13 +98,13 @@ Places Klaus Mueller knows:
 
 Thinking about Klaus Mueller's goals and days, what is one small thing Klaus Mueller would like the town builder to make, and where? Choose one kind and one place from the lists above.
 
-Respond with JSON: {"wish": "<a short phrase, e.g. a quiet corner to read>", "theme": "<one kind id from the list>", "place": "<one place exactly as listed>", "reason": "<one sentence>", "request_line": "<what Klaus Mueller says to the town builder, in the first person>"}
+Respond with JSON: {"wish": "<what Klaus Mueller would like, in a few words>", "theme": "<one kind id from the list>", "place": "<one place exactly as listed>", "reason": "<one sentence>", "request_line": "<what Klaus Mueller says to the town builder, in the first person>"}
 ```
 
 **Raw output**
 
 ```json
-{"wish": "a bookshelf for my notes", "theme": "lore", "place": "Dorm for Oak Hill College: common room", "reason": "It would make my days at the common room at Dorm for Oak Hill College nicer.", "request_line": "Could you make a bookshelf for my notes for me at the common room at Dorm for Oak Hill College? It would mean a lot."}
+{"wish": "a bookshelf for my notes", "theme": "lore", "place": "Oak Hill College: hallway", "reason": "It would make my days at the hallway at Oak Hill College nicer.", "request_line": "Could you make a bookshelf for my notes for me at the hallway at Oak Hill College? It would mean a lot."}
 ```
 
 **Validated output**
@@ -113,9 +113,9 @@ Respond with JSON: {"wish": "<a short phrase, e.g. a quiet corner to read>", "th
 {
   "wish": "a bookshelf for my notes",
   "theme": "lore",
-  "place": "Dorm for Oak Hill College: common room",
-  "reason": "It would make my days at the common room at Dorm for Oak Hill College nicer.",
-  "request_line": "Could you make a bookshelf for my notes for me at the common room at Dorm for Oak Hill College? It would mean a lot."
+  "place": "Oak Hill College: hallway",
+  "reason": "It would make my days at the hallway at Oak Hill College nicer.",
+  "request_line": "Could you make a bookshelf for my notes for me at the hallway at Oak Hill College? It would mean a lot."
 }
 ```
 

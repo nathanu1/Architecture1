@@ -17,24 +17,28 @@ const BURST = 60;
 
 /**
  * The moments worth a chip, oldest first. In a big town many things happen at once, so a burst of
- * the same sort (residents' conversations, wishes coming true, builds) becomes one chip with a
- * count, which jumps to the first of them; the player's chats, gifts and whispers keep one chip per
- * resident.
+ * the same sort (residents' conversations, wishes coming true, builds), even interleaved with other
+ * sorts, becomes one chip with a count, which jumps to the first of them; the Town Pulse chip shows
+ * the newest level; the player's chats, gifts and whispers keep one chip per resident.
  */
 export function momentsOf(events: readonly Event[], name: (id: unknown) => string): Moment[] {
-  const out: (Moment & { key: string; last: number; n: number; one: string })[] = [];
+  type Chip = Moment & { last: number; n: number; one: string };
+  const out: Chip[] = [];
+  const open = new Map<string, Chip>(); // the latest chip of each sort, joined while its burst lasts
   for (const e of events) {
     const one = single(e, name);
     if (!one) continue;
     const key = ["chat", "gift", "whisper"].includes(e.kind) ? `${e.kind}:${String(e.agent_id)}` : e.kind;
-    const prev = out[out.length - 1];
-    if (prev && prev.key === key && e.step - prev.last < BURST) {
-      prev.n += 1;
-      prev.last = e.step;
-      prev.label = many(e.kind, prev.n) ?? prev.one;
+    const chip = open.get(key);
+    if (chip && e.step - chip.last < BURST) {
+      chip.n += 1;
+      chip.last = e.step;
+      chip.label = e.kind === "level_up" ? one : (many(e.kind, chip.n) ?? chip.one);
       continue;
     }
-    out.push({ step: e.step, label: one, key, last: e.step, n: 1, one });
+    const fresh = { step: e.step, label: one, last: e.step, n: 1, one };
+    out.push(fresh);
+    open.set(key, fresh);
   }
   return out.map(({ step, label }) => ({ step, label }));
 }

@@ -73,10 +73,32 @@ validator and its one repair attempt. The decoding schema is stored with each ca
 >   "visited the library" from his dorm desk.
 > * Before the decoding schema, the same model failed while seeding memories (its importance
 >   ratings were valid in 1 of 12 tries; with it, 12 of 12).
+> * That run showed two prompt problems, both fixed by moving back toward the released prompts
+>   (spec G-3, H-7): talking was one option of the reaction decision, which the model never
+>   chose, and decompositions did not count down the minutes left.
+> * **All 25 residents** (`configs/town_n25_ollama.yaml`, same model) ran from 07:00 to 09:15
+>   with `examples/grow_town.py` as the player, after those fixes. 2,525 model calls took 4.8
+>   hours of model time (median 3 s per call, 90th percentile 19 s); 2,370 of 2,447 first
+>   attempts were valid. 41 of 74 decompositions added up (3 of 33 before). Residents now talk:
+>   asked separately, the model said yes to all 28 chances it had, the cooldown and the other
+>   conversation rules spaced them out, and 14 conversations happened (a "good morning" between
+>   the Morenos, Carmen welcoming Adam to the supply store, Klaus and Ayesha at breakfast), each
+>   of one exchange. 22 residents made a wish after 09:00; the builder granted 18 in person and
+>   placed 18 items in all, and the town reached Town Pulse level 5. The run replays to an
+>   identical state with no model calls.
+> * That run also showed a bias in our own wish prompt: its answer format gave "a quiet corner
+>   to read" as an example, and the model copied it into 19 of the 22 wishes. Version 2 of the
+>   prompt drops the example; on the same 22 recorded prompts the phrase appears in none, and
+>   the wishes follow the residents (Isabella "a cozy social area for parties", Eddy "improved
+>   music practice", Klaus "a bookshelf for my research papers"). Some are still odd (Tom named
+>   an action, "places a sign on the door", instead of a thing).
+> * With 25 residents a game hour takes from 40 minutes to several hours of model time on four
+>   cores, depending on how many residents are deciding at once: the 07:00 planning step alone
+>   was 318 calls, and a busy hour of meetings and reflections can run at a game minute per ten.
 > * The OpenAI-compatible adapter was checked against llama.cpp's `llama-server` (chat with a
 >   JSON schema, and embeddings). LM Studio has not been tried.
 >
-> One run of one small model is a smoke test of the local path, not a result about agent
+> Two runs of one small model are a smoke test of the local path, not a result about agent
 > behavior.
 
 ## What you can do, and what the residents experience

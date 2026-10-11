@@ -21,6 +21,25 @@ describe("moments on the recording's timeline", () => {
     ]);
   });
 
+  it("joins a sort across interleaved events, like a rush of wishes, builds and deliveries", () => {
+    const events = [
+      { step: 720, kind: "request", agent_id: "a" },
+      { step: 721, kind: "build" },
+      { step: 722, kind: "delivered", agent_id: "latoya_williams" },
+      { step: 722, kind: "level_up", name: "Waking Village" },
+      { step: 723, kind: "request", agent_id: "b" },
+      { step: 724, kind: "build" },
+      { step: 725, kind: "delivered", agent_id: "rajiv_patel" },
+      { step: 725, kind: "level_up", name: "Friendly Town" },
+    ];
+    expect(momentsOf(events, name)).toEqual([
+      { step: 720, label: "Residents make wishes" },
+      { step: 721, label: "You build 2 things" },
+      { step: 722, label: "2 wishes come true" },
+      { step: 722, label: "Town Pulse: Friendly Town" },
+    ]);
+  });
+
   it("keeps the player's chats one per resident", () => {
     const events = [
       { step: 5, kind: "chat", agent_id: "klaus_mueller" },

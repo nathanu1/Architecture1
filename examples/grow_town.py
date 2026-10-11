@@ -134,8 +134,9 @@ try:
         open_reqs = [r for r in requests if r["status"] == "open"]
         needed = {r["theme"] for r in open_reqs}
 
-        # gather motifs: one search every five game minutes, preferring the themes wishes need
-        if step - last["search"] >= 30:
+        # gather motifs: one search every five game minutes, every two while open wishes wait for
+        # motifs, preferring the themes they need
+        if step - last["search"] >= (12 if needed else 30):
             cool = game.store.get("cooldowns")
             placed = {p.address for p in game.store.items()}
             ready = [a for a in objects if a not in placed and not (cool.get(a) and datetime.fromisoformat(cool[a]) > now)]

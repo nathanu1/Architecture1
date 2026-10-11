@@ -1,8 +1,8 @@
 ---
 id: resident_request
-version: 1
+version: 2
 output: ResidentRequestOut
-source: "Game layer (extension); not in the paper. A request derived from the resident's own identity, plan and memories, in the style of the paper's planning prompts (§4.3)."
+source: "Game layer (extension); not in the paper. A request derived from the resident's own identity, plan and memories, in the style of the paper's planning prompts (§4.3). v2 drops the example phrase from the answer format: Llama 3.2 3B copied it (a quiet corner to read) into 19 of 22 wishes."
 scope: "The resident's summary description, today's plan, the resident's own memories retrieved for their wishes, places from the resident's own spatial memory, and the six kinds of things the builder makes. Never game meters or other residents' memories."
 max_output_tokens: 260
 effort: low
@@ -24,4 +24,4 @@ Places {{agent_name}} knows:
 
 Thinking about {{agent_name}}'s goals and days, what is one small thing {{agent_name}} would like {{builder}} to make, and where? Choose one kind and one place from the lists above.
 
-Respond with JSON: {"wish": "<a short phrase, e.g. a quiet corner to read>", "theme": "<one kind id from the list>", "place": "<one place exactly as listed>", "reason": "<one sentence>", "request_line": "<what {{agent_name}} says to {{builder}}, in the first person>"}
+Respond with JSON: {"wish": "<what {{agent_name}} would like, in a few words>", "theme": "<one kind id from the list>", "place": "<one place exactly as listed>", "reason": "<one sentence>", "request_line": "<what {{agent_name}} says to {{builder}}, in the first person>"}
