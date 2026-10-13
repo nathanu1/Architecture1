@@ -115,10 +115,23 @@ def wish_score(item_id: str, wish: str) -> int:
 objects = sorted(a for a in sim.world.address_tiles if a.count(":") == 3)
 square = next((a for a in sim.world.address_tiles if ":Town Square:" in a and a.count(":") == 2), None)
 DECOR = ["gazebo", "town_fountain", "cherry_tree", "picnic_table", "lamp_post", "bench", "flower_planter"]
+# What earlier segments did is in the action log, and the engine re-applies it on resume. A
+# segment stopped in the middle of a step resumes from an earlier checkpoint, so the builder does
+# nothing at steps it already acted on and picks up its timers from the log.
+done = game.actions.items
+acted_upto = max((a.step for a in done), default=-1)
+square_tiles = set(sim.world.address_tiles.get(square, [])) if square else set()
+
+
+def last_step(kind: str, where: set | None = None) -> int:
+    steps = [a.step for a in done if a.kind == kind and (where is None or any((op["x"], op["y"]) in where for op in a.payload.get("ops", [])))]
+    return max(steps, default=-999)
+
+
 tried: dict[str, int] = {}  # request id -> step its build was submitted
-offered: dict[str, int] = {}  # request id -> step its delivery was submitted
-greeted: set[str] = {a.payload.get("agent") for a in game.actions.items if a.kind == "chat"}
-last = {"search": -999, "decor": -999, "greet": -999, "report": -999}
+offered: dict[str, int] = {a.payload["request"]: a.step for a in done if a.kind == "deliver"}  # request id -> step its delivery was submitted
+greeted: set[str] = {a.payload.get("agent") for a in done if a.kind == "chat"}
+last = {"search": last_step("search"), "decor": last_step("build", square_tiles), "greet": last_step("chat"), "report": -999}
 
 sim.begin()
 session._ready = True
@@ -128,6 +141,9 @@ status = RunStatus.INTERRUPTED
 try:
     while sim.clock.now < until and time.monotonic() < deadline:
         step, now = sim.clock.step, sim.clock.now
+        if step <= acted_upto:  # an earlier segment already acted here
+            sim.advance()
+            continue
         counts = game.theme_counts()
         level = game.level()
         requests = game.store.requests()
