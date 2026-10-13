@@ -24,7 +24,8 @@ deviation.
 > reflection experiment and the town game work on them. **No hosted model API has been called**
 > (no credentials were available). One local open-weight model has: Llama 3.2 3B through a real
 > Ollama, on four CPU cores, ran the three-resident town from 07:00 to 18:00 in 493 calls and all
-> 25 residents from 07:00 to 09:15 in 2,525 calls (see [`docs/game.md`](docs/game.md)). That
+> 25 residents from 07:00 to 09:15 in 2,525 calls, and 35 (the 25 plus ten original newcomers)
+> from 07:00 to 09:10 in 4,537 calls (see [`docs/game.md`](docs/game.md)). That
 > shows the local path works end to end; it is not evidence
 > about how Claude-driven or open-weight agents behave. Mock runs are labeled MOCK everywhere;
 > their outcomes are structural demonstrations, never research results.

@@ -71,8 +71,8 @@ knowing nothing about the seeded events (`ga audit-scenario` checks the result a
 knowledge is still Isabella's alone, candidacy knowledge Sam's). To add more people, add houses
 and newcomers to the spec and rebuild. Start with `ga play --config configs/town_n35_ollama.yaml
 --set providers.llm.kind=mock` to check them offline: the mock town of 35 runs 07:00 to 10:00 in
-under a minute. A real model costs roughly in proportion to the number of residents, and more
-when they meet more often.
+under a minute. On a real model, cost grows faster than the number of residents, because more
+people meet more often (see the 35-resident run below).
 
 **Small models and structured output.** Local servers decode within a grammar built from the
 JSON schema they are sent, so besides each task's schema the adapters send a tighter *decoding
@@ -122,13 +122,32 @@ validator and its one repair attempt. The decoding schema is stored with each ca
 >   the wishes follow the residents (Isabella "a cozy social area for parties", Eddy "improved
 >   music practice", Klaus "a bookshelf for my research papers"). Some are still odd (Tom named
 >   an action, "places a sign on the door", instead of a thing).
+> * **35 residents** (`configs/town_n35_ollama.yaml`: the 25 plus the ten newcomers of
+>   `scenarios/smallville_n35`, same model and builder) ran from 07:00 to 09:10. 4,537 model calls
+>   took 11.2 hours of model time (median 4.7 s per call, 90th percentile 24 s); 4,292 of 4,419
+>   first attempts were valid. 66 of 118 decompositions added up, and 33 of 49 hourly schedules
+>   were valid (most failures ended a block before it started); the others fell back as designed.
+>   33 conversations happened, 21 of them with a newcomer and 12 between a newcomer and one of the
+>   original 25 (Adam introduced himself to Declan after seeing him talk with Sam). 32 residents
+>   made a wish. The newcomers' wishes follow their characters (the carpenter asked for a
+>   workbench for the garden, the retired ferry captain for a chessboard, the baker for a pastry
+>   display, the bird-watching student for a bird feeder), while the original 25 often asked for
+>   the same few things (five cozy reading nooks, four cozy atmospheres). The builder granted 14
+>   before it ran out of motifs; 18 were still open at 09:10. The run replays to an identical
+>   state with no model calls.
+> * Cost grew faster than the number of residents: the 08:00 hour took 2,005 calls and 4.3 hours
+>   of model time with 35 residents, against 732 calls and about an hour with 25, because more
+>   residents see each other more often (1,627 importance ratings, 405 interaction contexts and
+>   276 reactions in the run). Its first segment stopped in the middle of the 07:00 planning step,
+>   at the two-hour limit of the machine's background jobs; the calls already made were reused from
+>   the ledger, and `examples/grow_town.py` no longer repeats actions logged before such a stop.
 > * With 25 residents a game hour takes from 40 minutes to several hours of model time on four
 >   cores, depending on how many residents are deciding at once: the 07:00 planning step alone
 >   was 318 calls, and a busy hour of meetings and reflections can run at a game minute per ten.
 > * The OpenAI-compatible adapter was checked against llama.cpp's `llama-server` (chat with a
 >   JSON schema, and embeddings). LM Studio has not been tried.
 >
-> Two runs of one small model are a smoke test of the local path, not a result about agent
+> Three runs of one small model are a smoke test of the local path, not a result about agent
 > behavior.
 
 ## What you can do, and what the residents experience

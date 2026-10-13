@@ -3,6 +3,7 @@ import { emptyDraft, type Draft } from "./lib/build";
 import type { TownMap } from "./lib/map";
 import type { BuildCheck, ConversationLine, FeedEvent, Frame, Info, Poll, Tile } from "./types";
 import { sentence } from "./lib/text";
+import { DEMO } from "./demo/flag";
 
 export type Selection = { kind: "resident"; id: string } | { kind: "object"; address: string } | { kind: "item"; id: string } | null;
 export type NotebookTab = "requests" | "collections" | "residents" | "town";
@@ -183,7 +184,8 @@ export const useTown = create<TownState>((set, get) => ({
           break;
         }
         case "build_rejected":
-          toasts.push({ tone: "warn", title: "Could not build that", body: sentence(((ev.problems as string[]) ?? [])[0] ?? "check the red tiles") });
+          // a recording cannot be edited, so its viewer has no red tiles to check
+          if (!DEMO) toasts.push({ tone: "warn", title: "Could not build that", body: sentence(((ev.problems as string[]) ?? [])[0] ?? "check the red tiles") });
           break;
         case "rejected":
           toasts.push({ tone: "warn", title: "Not right now", body: sentence(String(ev.reason ?? "")) });
