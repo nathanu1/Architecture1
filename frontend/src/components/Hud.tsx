@@ -1,4 +1,4 @@
-import { ArrowClockwise, ArrowCounterClockwise, Binoculars, CloudMoon, FastForward, Flask, Hammer, Minus, Notebook, Pause, Play, Plus, Sun, SunHorizon, Warning } from "@phosphor-icons/react";
+import { ArrowClockwise, ArrowCounterClockwise, Binoculars, CloudMoon, FastForward, Flask, Hammer, Minus, Notebook, Pause, Play, Plus, Sun, SunHorizon, UsersThree, Warning } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import { DemoBar } from "../demo/DemoBar";
@@ -9,6 +9,22 @@ import { formatDate, formatDay, formatNumber, formatTime, hourOf } from "../lib/
 import { useTown } from "../store";
 import { LookAround } from "./LookAround";
 import { Button, IconButton, MotifCount } from "./ui";
+
+/** How many people live in town; opens the notebook's list of them (on phones it sits on the second line). */
+function ResidentsButton({ count, onOpen, className }: { count: number; onOpen: () => void; className: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      title="Everyone in town: open the list"
+      className={`inline-flex shrink-0 items-center gap-1 rounded-full bg-[var(--panel-2)] px-2 py-0.5 font-display text-xs font-semibold tabular transition-colors hover:bg-[var(--panel-hover)] active:scale-[0.98] ${className}`}
+    >
+      <UsersThree size={14} weight="bold" aria-hidden="true" />
+      {count}
+      <span className="max-sm:sr-only">residents</span>
+    </button>
+  );
+}
 
 function scene() {
   return (window as unknown as { __town?: { rotate: (d: 1 | -1) => void; zoomBy: (f: number) => void } }).__town;
@@ -68,11 +84,15 @@ export function Hud() {
           {pulse?.level ?? 1}
         </div>
         <div className="min-w-0">
-          <h1 className="font-display text-lg font-bold leading-tight" translate="no">
-            Smallville
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="font-display text-lg font-bold leading-tight" translate="no">
+              Smallville
+            </h1>
+            <ResidentsButton count={info.residents.length} onOpen={() => openNotebook("residents")} className="max-sm:hidden" />
+          </div>
           <div className="flex min-w-0 items-center gap-2">
             <span className="truncate text-xs font-bold text-[var(--muted)]">{pulse?.name ?? "Sleepy Hamlet"}</span>
+            <ResidentsButton count={info.residents.length} onOpen={() => openNotebook("residents")} className="sm:hidden" />
             <span className="relative hidden h-2 w-20 shrink-0 overflow-hidden rounded-full bg-[var(--panel-2)] sm:block" role="meter" aria-label="Town Pulse progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress * 100)}>
               <span className="absolute inset-y-0 left-0 rounded-full bg-[linear-gradient(90deg,#e2629b,#f2792b)]" style={{ width: `${Math.round(progress * 100)}%` }} />
             </span>

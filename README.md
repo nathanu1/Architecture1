@@ -19,7 +19,7 @@ Every setting is tagged as **paper**, **released code**, **engineering choice** 
 deviation.
 
 > **What has actually been validated.** All of it runs offline with a deterministic mock model
-> and hash embeddings: 181 Python tests and 32 front-end tests pass, a five-agent and a 25-agent
+> and hash embeddings: 190 Python tests and 34 front-end tests pass, a five-agent and a 25-agent
 > two-day simulation complete, and evaluation, interviews, exports, replay, the viewer, a ten-run
 > reflection experiment and the town game work on them. **No hosted model API has been called**
 > (no credentials were available). One local open-weight model has: Llama 3.2 3B through a real
@@ -92,7 +92,7 @@ A six-hour smoke run takes about five seconds: `ga run --config configs/offline_
 | `configs/experiment_reflection.yaml` / `_mock.yaml` | Reflection on vs off, five matched seeds per condition (live / offline). |
 | `configs/ollama_pilot.yaml` | Three agents, two days, `llama3.1:8b` and `nomic-embed-text` on a local Ollama. No API cost. |
 | `configs/experiment_reflection_ollama.yaml` | The reflection extension on a local model. |
-| `configs/town_mock.yaml` / `town_ollama.yaml` / `town_n25_ollama.yaml` | The town game: offline MOCK; three residents on Ollama (start here); all 25 residents on Ollama. |
+| `configs/town_mock.yaml` / `town_ollama.yaml` / `town_n25_ollama.yaml` / `town_n35_ollama.yaml` | The town game: offline MOCK; three residents on Ollama (start here); all 25 residents on Ollama; 35 residents, with ten original newcomers in a new neighborhood (an extension). |
 | `configs/game/` | Town game content: six affinity themes, motifs and gifts, catalog, paints and templates, Town Pulse levels, the Town Square, resident looks, a demo action script. |
 | `configs/defaults.yaml` | Every setting with its default, for reference. |
 | `configs/pricing.yaml` | USD per million tokens from the [published pricing page](https://platform.claude.com/docs/en/about-claude/pricing), fetched 2026-10-05. Without it, cost is reported as "unpriced". |
@@ -220,9 +220,9 @@ The full list, with sources, is in the spec (§3 and §6). In short:
 ## Tests
 
 ```bash
-pytest             # 181 tests, offline, about 30 seconds
+pytest             # 190 tests, offline, about 30 seconds
 ruff check src tests examples
-cd frontend && npm ci && npm test && npm run typecheck   # 32 front-end unit tests
+cd frontend && npm ci && npm test && npm run typecheck   # 34 front-end unit tests
 ```
 
 They cover the mechanisms that could invalidate an experiment: the recency formula and
@@ -269,7 +269,7 @@ src/generative_agents/   config, schemas, db, prompting, cli
 frontend/                town front end source: React, Tailwind, Three.js (npm run build)
 prompts/                 23 versioned prompt templates (front matter names the source of each)
   examples/              one recorded input/output per template (MOCK outputs; see its README)
-scenarios/               imported Smallville data: smallville_n25, pilot3, pilot5
+scenarios/               imported Smallville data: smallville_n25, pilot3, pilot5; smallville_n35 (an extension)
 configs/                 example configurations, Appendix B question banks, game/ content
 docs/                    reproduction spec, walkthrough, experiment protocol, town game
 examples/                walkthrough.py, record_demo_town.py, grow_town.py

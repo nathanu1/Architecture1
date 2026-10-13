@@ -477,6 +477,12 @@ export class TownScene {
   }
 
   // ================================================================== camera
+  /** Put the camera over `tile` at once (no glide), as when the town first opens. */
+  startAt(tile: Tile) {
+    this.targetGoal.set(tile[0] + 0.5, 0, tile[1] + 0.5);
+    this.target.copy(this.targetGoal);
+  }
+
   focus(tile: Tile) {
     this.targetGoal.set(tile[0] + 0.5, 0, tile[1] + 0.5);
     this.follow = null;

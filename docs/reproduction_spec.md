@@ -256,8 +256,9 @@ Everything here is class X, off unless `game.enabled: true`; design and rules in
 | S-6 | Player actions are logged and applied at step boundaries: exact replay with zero model calls; crash resume applies each action once. | prompt §6, §11 | X | `game/actions.py`, engine hooks | `test_game.py::test_a_played_run_replays_exactly_without_any_model_call`, `::test_resume_after_a_crash_reapplies_player_actions_once`, `test_game_session.py::test_a_session_resumes_from_disk_and_replays_without_calls` | |
 | S-7 | Live session: speed, pause, actions while paused, a model failure stops at the checkpoint and Retry continues; HTTP API. | user request | X | `game/session.py`, `game/api.py`, `ga play` | `test_game_session.py::test_live_session_steps_applies_actions_and_pauses`, `::test_a_model_failure_stops_at_the_checkpoint_and_retry_continues`, `::test_http_interface` | |
 | S-8 | Six configurable affinity themes, motifs, gifts, catalog, paints, templates, five Town Pulse levels. | user request | X | `configs/game/*.yaml`, `game/content.py`, `game/affinity.py` | `test_game.py::test_content_needs_exactly_six_consistent_themes`, `::test_affinities_come_from_identity_activities_and_places`, `::test_conversations_leave_social_motifs_to_collect` | Keyword scoring, no model calls. |
-| S-9 | Browser front end (diorama town, notebook, build mode) and a research inspector that is never fed back to residents. | user request | X | `frontend/` (built into `game/web/`); `/inspector` over the viewer API | `frontend/tests/*.test.ts` (32 tests) | Mock runs and mock embeddings are flagged in the inspector. |
+| S-9 | Browser front end (diorama town, notebook, build mode) and a research inspector that is never fed back to residents. | user request | X | `frontend/` (built into `game/web/`); `/inspector` over the viewer API | `frontend/tests/*.test.ts` (34 tests) | Mock runs and mock embeddings are flagged in the inspector. The town card counts the residents and opens their list; the view opens over the largest group of them. |
 | S-10 | A recorded town as a static page: replay with no calls, export frames, state changes, events and inspector data; a demo build plays them in the browser. | user request | X | `game/export_demo.py`, `ga export-demo`; `frontend/src/demo/`, `npm run build:demo` | `test_game_session.py::test_a_recorded_town_exports_as_static_demo_data_without_calls`, `frontend/tests/player.test.ts` | View-only by construction: the demo API refuses every action. Inspector data is split into a shared file and one per resident, so each file stays small enough to publish. |
+| S-11 | A bigger town: a scenario variant adds houses on open land, each copied from an existing building, and original newcomers, leaving the base town's residents, events and rules unchanged. | user request | X | `scenario/neighborhood.py`, `ga build-neighborhood`, `scenarios/smallville_n35/` (10 newcomers, 35 residents) | `test_neighborhood.py` (the committed files are what the spec builds; the 25 are unchanged; every newcomer starts in bed and can walk to town; plots must be open and reachable; texts about the seeded events are refused; a mock run) | The original map fences the town in, so the spec opens a two-tile gate. Newcomers start with no knowledge of the party, the candidacy or the election. Runs of this variant are never compared with the paper's 25-agent numbers. |
 
 ## 3. Paper vs released code: verified differences
 
@@ -339,7 +340,8 @@ Everything here is class X, off unless `game.enabled: true`; design and rules in
   validation. Location choice stays recursive (one call per level with more than one option).
 * **D-6 Ordering.** Snapshot / decide / commit instead of sequential mutation (K-2).
 * **D-7 Constraints.** Opening hours, capacity and ownership enforced under `strict-v1` (J-7).
-* **D-8 Population.** Pilot runs use documented subsets (`scenarios/pilot3`, `scenarios/pilot5`).
+* **D-8 Population.** Pilot runs use documented subsets (`scenarios/pilot3`, `scenarios/pilot5`). The
+  35-resident town (`scenarios/smallville_n35`) is an extension (S-11), not a reproduction setting.
 * **D-9 Tick and targets.** Reference 10 s. Destination tiles are the nearest reachable tile of the
   chosen address, preferring free tiles; agents may share tiles while walking, as in the code.
 * **D-10 Viewer.** Simple shapes instead of the original art. The research viewer is plain
@@ -390,7 +392,7 @@ All seven milestones are implemented, plus the local-model adapters (O-7) and th
 
 | Check | Result |
 | --- | --- |
-| Test suite (`pytest`) | 181 tests pass offline (retrieval, gateway, reflection, summaries, planning, world, behavior scenarios, engine resume/replay/budget, scenario audit, interviews, metrics, statistics, exports, experiment runner, prompt examples, CLI and viewer API, local-model adapters, town game and its live session). |
+| Test suite (`pytest`) | 190 tests pass offline (retrieval, gateway, reflection, summaries, planning, world, behavior scenarios, engine resume/replay/budget, scenario audit, interviews, metrics, statistics, exports, experiment runner, prompt examples, CLI and viewer API, local-model adapters, town game and its live session, the neighborhood builder). |
 | Scenario import | Re-importing the official checkout at `fe05a71` reproduces the committed scenario files byte for byte; the n25 audit is clean under the paper policy (party: Isabella only; candidacy: Sam only). |
 | Offline five-agent, two-day run (`configs/offline_pilot_2day.yaml`) | Completes in about a minute; evaluation, interviews (500 answers), blinded export and the viewer were exercised on it. MOCK. |
 | Offline 25-agent, two-day run | Completed in 6.6 minutes: 32,970 mock calls, about 17.9M estimated input tokens (real prompts, chars/4), 19,291 memories, 228 conversations, 3,615 reflection memories, about 0.5 GB on disk with snapshots. Evaluation took 44 s. MOCK: these numbers describe the pipeline's load, not agent behavior. |
@@ -400,7 +402,7 @@ All seven milestones are implemented, plus the local-model adapters (O-7) and th
 | Resume | A run crashed mid-way and resumed reaches the same state as an uninterrupted run, paying for no call twice. |
 | Local models (Ollama, OpenAI-compatible) | Adapters, a three-agent simulation over HTTP and its call-free replay pass against a fake server. A real Ollama 0.40.2 with Llama 3.2 3B (CPU only) ran the three-resident town from 07:00 to 18:00: 493 calls, about 55 minutes of model time, 427 of 460 first attempts valid (30 hour decompositions fell back to single tasks), no resident-to-resident conversation in 26 encounters; after the H-7 and G-3 prompt changes, all 25 residents ran from 07:00 to 09:15 (2,525 calls, 4.8 hours of model time, 14 conversations, 18 granted wishes). Both runs replay to an identical state with no calls (`docs/game.md`). The OpenAI-compatible adapter was checked against llama.cpp's `llama-server`. Not a research result. |
 | Town game | A scripted session (`configs/game/demo_actions.jsonl`) and live sessions in the browser were played with the MOCK model: chat, requests, gifts, search, building, replay and resume. MOCK. |
-| Front end | 32 unit tests; type check; a scripted browser walkthrough (desktop and phone sizes) of the town, notebook, chat, build mode and inspector. |
+| Front end | 34 unit tests; type check; a scripted browser walkthrough (desktop and phone sizes) of the town, notebook, chat, build mode and inspector. |
 | Live API | **Not run.** No credentials were available. |
 
 Known limitations: the mock model is a crude fixture (its dialogue and reflections are mechanical);

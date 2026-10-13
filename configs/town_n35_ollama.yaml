@@ -1,0 +1,35 @@
+# The bigger town: the 25 Smallville residents plus ten original newcomers in a new neighborhood
+# (scenarios/smallville_n35, an extension of the paper's setup), with the game layer, on a local model.
+# Start here only after the 25-resident town runs well on your machine: 35 residents make
+# roughly 1.5 times its calls, so each game hour takes correspondingly longer.
+#   ga play --config configs/town_n35_ollama.yaml
+run:
+  name: town-n35-ollama
+  label: "town game, 35 residents (Ollama)"
+scenario:
+  path: scenarios/smallville_n35/scenario.yaml
+  start: "2023-02-13T07:00:00"
+  end: "2023-02-15T00:01:00"
+output:
+  checkpoint_every_steps: 30
+game:
+  enabled: true
+providers:
+  llm:
+    kind: ollama
+    model: llama3.1:8b
+    base_url: http://localhost:11434
+    num_ctx: 8192
+    max_output_tokens: 768
+    temperature: 0.7
+    keep_alive: 30m
+    timeout_s: 600
+  embeddings:
+    kind: ollama
+    model: nomic-embed-text
+    dims: 768
+    base_url: http://localhost:11434
+budget:
+  max_calls: 1000000
+  max_input_tokens: null
+  max_output_tokens: null

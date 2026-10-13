@@ -604,6 +604,18 @@ def cmd_import_scenario(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_build_neighborhood(args: argparse.Namespace) -> int:
+    from .config import repo_path
+    from .scenario.audit import audit_scenario
+    from .scenario.loader import load_scenario
+    from .scenario.neighborhood import build
+
+    out = build(repo_path(args.spec))
+    rep = audit_scenario(load_scenario(out["scenario"]))
+    _print({**out, "agents": rep["agents"], "knowledge_holders": rep["knowledge_holders"], "issues": rep["issues"], "ok": rep["ok"]})
+    return 0 if rep["ok"] else 1
+
+
 def cmd_audit_scenario(args: argparse.Namespace) -> int:
     from .config import repo_path
     from .scenario.audit import audit_scenario
@@ -746,6 +758,10 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--source", required=True, help="path to a joonspk-research/generative_agents checkout")
     sp.add_argument("--out", default="scenarios")
     sp.set_defaults(func=cmd_import_scenario)
+
+    sp = sub.add_parser("build-neighborhood", help="a scenario variant with new houses and newcomers, from a neighborhood spec")
+    sp.add_argument("spec", help="e.g. scenarios/smallville_n35/neighborhood.yaml")
+    sp.set_defaults(func=cmd_build_neighborhood)
 
     sp = sub.add_parser("audit-scenario", help="check seeds, knowledge scoping, spawn tiles and places")
     sp.add_argument("--scenario", default="scenarios/smallville_n25/scenario.yaml")

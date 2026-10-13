@@ -1,0 +1,29 @@
+# Generated from neighborhood.yaml in this folder by `ga build-neighborhood`: ../smallville_n25/constraints.yaml plus the newcomers on staff.
+opening_hours:
+  the Ville:Harvey Oak Supply Store:
+    open: 08:00
+    close: '17:00'
+    staff:
+    - carmen_ortiz
+    source: paper p. 17 (stores close around 5 pm); opening time assumed
+  the Ville:The Willows Market and Pharmacy:
+    open: 08:00
+    close: '17:00'
+    staff:
+    - john_lin
+    - tom_moreno
+    - ngozi_okafor
+    source: paper p. 17 (stores close around 5 pm); opening time assumed
+  the Ville:Hobbs Cafe:
+    open: 08:00
+    close: '20:00'
+    staff:
+    - isabella_rodriguez
+    - sofie_halvorsen
+    source: 'Isabella''s authored daily_plan_req: opens at 8am, closes at 8pm'
+single_occupancy_arena_patterns:
+- bathroom
+private_room_patterns:
+- '''s room$'
+- '''s bedroom$'
+- '''s bathroom$'

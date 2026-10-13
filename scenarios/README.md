@@ -13,6 +13,12 @@ three hand-authored files that are documented in `docs/reproduction_spec.md`:
 | `pilot3/` | The official three-agent starter (Isabella, Maria, Klaus) with its own n3 history | `base_the_ville_isabella_maria_klaus`, `agent_history_init_n3.csv` |
 | `pilot5/` | Isabella, Maria, Klaus, Sam, Wolfgang from the n25 files | subset of `smallville_n25` |
 | `import_audit.json` | Where party and candidacy knowledge is seeded | generated |
+| `smallville_n35/` | **An extension, not from the paper:** the 25 unchanged, plus ten original newcomers in six new houses on open land | generated from `smallville_n35/neighborhood.yaml` by `ga build-neighborhood` |
 
 The loader applies `candidacy_seed_policy`: under the default `paper_originator_only`, the one
 statement that tells Jennifer Moore about Sam's candidacy is withheld and logged in the run.
+
+`smallville_n35` reuses `smallville_n25`'s agent files, events and opening hours; its map is
+`smallville_n25`'s with new houses copied from existing ones and a gate in the town fence, and
+its newcomers start without any knowledge of the seeded events (see `docs/game.md`, "A bigger
+town"). Edit `neighborhood.yaml` and rebuild; never edit the generated files.

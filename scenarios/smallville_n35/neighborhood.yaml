@@ -1,0 +1,283 @@
+# Smallville with a new neighborhood: the 25 residents of smallville_n25, unchanged, plus ten
+# newcomers who moved into new houses on open land in the south-east of town.
+#
+#   ga build-neighborhood scenarios/smallville_n35/neighborhood.yaml
+#
+# writes this folder's map, agents/, constraints.yaml and scenario.yaml from this file and the
+# base scenario (edit this file, not those). Every house copies an existing building tile for
+# tile (walls, door, rooms, furniture) under a new name. The newcomers and their houses are
+# original to this repository: they are not in the paper or its released data, so runs of this
+# variant are an extension and are never compared with the paper's 25-agent numbers. Newcomers
+# start without any knowledge of the seeded events (the party, the candidacy); the build refuses
+# texts that mention them, the election or the mayor.
+name: smallville_n35
+description: >-
+  smallville_n25 plus ten original newcomers in six new houses on open land (an extension, not
+  part of the paper's setup)
+base: ../smallville_n25/scenario.yaml
+map: map/the_ville_n35.json
+street_tile: [77, 33] # a street tile in the middle of town: every new room must be reachable from it
+margin: 1 # open ground left around each new house
+# The town is fenced in. A gate in the fence at the end of the lane beside the Lin family's house
+# opens the land to the south-east, where the new houses stand.
+openings:
+  - [105, 64, 105, 65]
+
+houses:
+  # two family houses in the south-east corner, below the college dorm
+  - name: Okafor family's house
+    template: Lin family's house
+    at: [107, 65]
+    rooms:
+      Mei and John Lin's bedroom: Ngozi and Daniel Okafor's bedroom
+      Eddy Lin's bedroom: Chidi Okafor's bedroom
+  - name: Halvorsen family's house
+    template: Lin family's house
+    at: [123, 65]
+    rooms:
+      Mei and John Lin's bedroom: Ingrid and Per Halvorsen's bedroom
+      Eddy Lin's bedroom: Sofie Halvorsen's bedroom
+  # and a new street of small houses along the south edge, below them
+  - name: Declan Byrne's house
+    template: Adam Smith's house
+    at: [98, 86]
+  - name: Joy Villanueva's house
+    template: Adam Smith's house
+    at: [107, 86]
+  - name: Linh Tran's house
+    template: Adam Smith's house
+    at: [116, 86]
+  - name: Omar Haddad's house
+    template: Adam Smith's house
+    at: [125, 86]
+
+# newcomers who work where the opening hours would otherwise keep them out
+staff:
+  the Ville:The Willows Market and Pharmacy: [ngozi_okafor]
+  the Ville:Hobbs Cafe: [sofie_halvorsen]
+
+public_places: &town [Hobbs Cafe, The Willows Market and Pharmacy, Harvey Oak Supply Store, The Rose and Crown Pub, Oak Hill College, Johnson Park]
+
+newcomers:
+  - id: ngozi_okafor
+    identity:
+      name: Ngozi Okafor
+      first_name: Ngozi
+      last_name: Okafor
+      age: 41
+      innate: warm, meticulous, quick-witted
+      learned: Ngozi Okafor is a pharmacy technician who has just started at the pharmacy counter of The Willows Market and
+        Pharmacy. She is warm and meticulous and remembers every customer's name.
+      currently: Ngozi Okafor moved to Smallville two weeks ago with her husband, Daniel, and their son, Chidi. She is settling
+        into her new job and wants her family to feel at home in town.
+      lifestyle: Ngozi Okafor goes to bed around 10pm, wakes up around 6am, and eats dinner around 6pm.
+      living_area: the Ville:Okafor family's house:Ngozi and Daniel Okafor's bedroom
+      daily_plan_req: Ngozi Okafor works at the pharmacy counter of The Willows Market and Pharmacy from 8am to 4pm, then
+        cooks dinner for her family.
+    seeds:
+      - Daniel Okafor is your husband; you have been married for twenty years
+      - Chidi Okafor is your son; he has just started at Oak Hill College
+      - You work at the pharmacy counter of The Willows Market and Pharmacy, where John Lin is the pharmacy shopkeeper
+      - The Halvorsen family lives next door; Ingrid Halvorsen brought you fresh bread when you moved in
+      - You moved to Smallville two weeks ago and do not know many people yet
+    knows: [Halvorsen family's house, *town]
+
+  - id: daniel_okafor
+    identity:
+      name: Daniel Okafor
+      first_name: Daniel
+      last_name: Okafor
+      age: 44
+      innate: patient, handy, soft-spoken
+      learned: Daniel Okafor is a carpenter who builds tables, chairs and shelves by hand. He loves turning old wood into
+        something useful.
+      currently: Daniel Okafor is building a workbench in the garden of his new house and looking for his first carpentry
+        customers in Smallville.
+      lifestyle: Daniel Okafor goes to bed around 10pm, wakes up around 6am, and eats dinner around 6pm.
+      living_area: the Ville:Okafor family's house:Ngozi and Daniel Okafor's bedroom
+      daily_plan_req: Daniel Okafor works on furniture in the garden of the Okafor family's house, buys wood and tools at
+        Harvey Oak Supply Store, and has lunch at Hobbs Cafe.
+    seeds:
+      - Ngozi Okafor is your wife; you have been married for twenty years
+      - Chidi Okafor is your son and you are proud of him for starting college
+      - You buy wood and tools at Harvey Oak Supply Store, where Carmen Ortiz is the shopkeeper
+      - Per Halvorsen lives next door and likes to talk about boats over the fence
+      - You moved to Smallville two weeks ago and are looking for your first carpentry customers
+    knows: [Halvorsen family's house, *town]
+
+  - id: chidi_okafor
+    identity:
+      name: Chidi Okafor
+      first_name: Chidi
+      last_name: Okafor
+      age: 18
+      innate: curious, shy, energetic
+      learned: Chidi Okafor is a first-year biology student at Oak Hill College who loves insects and birds.
+      currently: Chidi Okafor is new at Oak Hill College and hopes to make friends. He is taking notes on the birds of Johnson
+        Park for a class project.
+      lifestyle: Chidi Okafor goes to bed around midnight, wakes up around 8am, and eats dinner around 6pm.
+      living_area: the Ville:Okafor family's house:Chidi Okafor's bedroom
+      daily_plan_req: Chidi Okafor attends classes at Oak Hill College starting at 10am, studies in the college library, and
+        watches birds at Johnson Park in the afternoon.
+    seeds:
+      - Ngozi and Daniel Okafor are your parents
+      - You are a first-year student at Oak Hill College and do not know many other students yet
+      - Omar Haddad is the librarian at Oak Hill College and helped you find books about birds
+      - Per Halvorsen lives next door and knows a lot about birds
+      - You have seen Eddy Lin at Oak Hill College and would like to get to know him
+    knows: [Halvorsen family's house, *town]
+
+  - id: ingrid_halvorsen
+    identity:
+      name: Ingrid Halvorsen
+      first_name: Ingrid
+      last_name: Halvorsen
+      age: 66
+      innate: cheerful, generous, stubborn
+      learned: Ingrid Halvorsen is a retired schoolteacher who taught children to read for thirty-five years. She loves
+        gardening and baking bread.
+      currently: Ingrid Halvorsen moved to Smallville last month with her husband, Per, and their granddaughter, Sofie. She
+        is planting a vegetable garden and wants to meet her neighbors.
+      lifestyle: Ingrid Halvorsen goes to bed around 9pm, wakes up around 6am, and eats dinner around 5pm.
+      living_area: the Ville:Halvorsen family's house:Ingrid and Per Halvorsen's bedroom
+      daily_plan_req: Ingrid Halvorsen tends the garden of the Halvorsen family's house in the morning, shops at The Willows
+        Market and Pharmacy, and reads in the library at Oak Hill College in the afternoon.
+    seeds:
+      - Per Halvorsen is your husband; you have been married for forty-four years
+      - Sofie Halvorsen is your granddaughter and lives with you
+      - The Okafor family lives next door; you brought them fresh bread when they moved in
+      - You shop for groceries at The Willows Market and Pharmacy
+      - You would like to start a vegetable garden that the whole town can share
+    knows: [Okafor family's house, *town]
+
+  - id: per_halvorsen
+    identity:
+      name: Per Halvorsen
+      first_name: Per
+      last_name: Halvorsen
+      age: 69
+      innate: calm, observant, dry-humored
+      learned: Per Halvorsen is a retired ferry captain who spent forty years on the water. He keeps a notebook of every bird
+        he sees and loves a good game of chess.
+      currently: Per Halvorsen is getting to know Smallville by walking around Johnson Park every morning and is looking for
+        people to play chess with.
+      lifestyle: Per Halvorsen goes to bed around 9pm, wakes up around 5am, and eats dinner around 5pm.
+      living_area: the Ville:Halvorsen family's house:Ingrid and Per Halvorsen's bedroom
+      daily_plan_req: Per Halvorsen walks in Johnson Park every morning, reads the newspaper at Hobbs Cafe, and plays chess
+        at The Rose and Crown Pub in the evening.
+    seeds:
+      - Ingrid Halvorsen is your wife; you have been married for forty-four years
+      - Sofie Halvorsen is your granddaughter and lives with you
+      - Declan Byrne is your chess partner; you play at The Rose and Crown Pub
+      - Daniel Okafor lives next door and you like to talk with him about boats
+      - Chidi Okafor lives next door and is interested in birds, like you
+    knows: [Okafor family's house, *town]
+
+  - id: sofie_halvorsen
+    identity:
+      name: Sofie Halvorsen
+      first_name: Sofie
+      last_name: Halvorsen
+      age: 24
+      innate: creative, talkative, an early riser
+      learned: Sofie Halvorsen is a pastry baker who trained at a bakery in the city. She dreams of opening her own bakery
+        one day.
+      currently: Sofie Halvorsen lives with her grandparents, Ingrid and Per, and bakes pastries for Hobbs Cafe every
+        morning.
+      lifestyle: Sofie Halvorsen goes to bed around 9pm, wakes up around 5am, and eats dinner around 6pm.
+      living_area: the Ville:Halvorsen family's house:Sofie Halvorsen's bedroom
+      daily_plan_req: Sofie Halvorsen bakes pastries at Hobbs Cafe from 6am, helps behind the cafe counter until 1pm, and
+        tries new recipes in the kitchen at home in the afternoon.
+    seeds:
+      - Ingrid and Per Halvorsen are your grandparents; you live with them
+      - You bake pastries for Hobbs Cafe, which Isabella Rodriguez runs
+      - You dream of opening your own bakery in Smallville one day
+      - Linh Tran comes to Hobbs Cafe to sketch and you like talking with her
+    knows: [Okafor family's house, *town]
+
+  - id: linh_tran
+    identity:
+      name: Linh Tran
+      first_name: Linh
+      last_name: Tran
+      age: 29
+      innate: imaginative, quiet, observant
+      learned: Linh Tran is an illustrator who draws picture books for children. She notices small details that other people
+        miss.
+      currently: Linh Tran moved to Smallville for its quiet streets and is sketching the town's buildings and people for a
+        new picture book.
+      lifestyle: Linh Tran goes to bed around 11pm, wakes up around 8am, and eats dinner around 7pm.
+      living_area: the Ville:Linh Tran's house:main room
+      daily_plan_req: Linh Tran draws at the desk in her house in the morning and sketches people at Johnson Park and Hobbs
+        Cafe in the afternoon.
+    seeds:
+      - You moved to Smallville three weeks ago and live on the new street at the south end of town
+      - Sofie Halvorsen bakes at Hobbs Cafe and has become your friend
+      - You admire Latoya Williams's photographs and would like to meet her
+      - Omar Haddad is your neighbor and lends you books
+    knows: [*town]
+
+  - id: omar_haddad
+    identity:
+      name: Omar Haddad
+      first_name: Omar
+      last_name: Haddad
+      age: 47
+      innate: thoughtful, gentle, organized
+      learned: Omar Haddad is the new librarian at Oak Hill College. He loves old maps and helping students find exactly the
+        book they need.
+      currently: Omar Haddad is reorganizing the library at Oak Hill College and planning a weekly reading hour for the
+        town.
+      lifestyle: Omar Haddad goes to bed around 10pm, wakes up around 6am, and eats dinner around 6pm.
+      living_area: the Ville:Omar Haddad's house:main room
+      daily_plan_req: Omar Haddad works in the library at Oak Hill College from 9am to 5pm and eats lunch at Hobbs Cafe.
+    seeds:
+      - You are the new librarian at Oak Hill College
+      - Mei Lin is a professor at Oak Hill College and a colleague of yours
+      - Chidi Okafor is a first-year student who often studies in your library
+      - Linh Tran is your neighbor and borrows your books
+    knows: [*town]
+
+  - id: joy_villanueva
+    identity:
+      name: Joy Villanueva
+      first_name: Joy
+      last_name: Villanueva
+      age: 36
+      innate: lively, warm, hardworking
+      learned: Joy Villanueva is a cook who grew up in her family's restaurant. She loves feeding people and trying recipes
+        from around the world.
+      currently: Joy Villanueva has just become the cook at The Rose and Crown Pub and is writing a new menu with Arthur
+        Burton.
+      lifestyle: Joy Villanueva goes to bed around midnight, wakes up around 8am, and eats dinner around 4pm.
+      living_area: the Ville:Joy Villanueva's house:main room
+      daily_plan_req: Joy Villanueva shops for ingredients at The Willows Market and Pharmacy in the morning and cooks at The
+        Rose and Crown Pub from 2pm to 10pm.
+    seeds:
+      - Arthur Burton owns The Rose and Crown Pub and hired you as its cook
+      - You buy ingredients at The Willows Market and Pharmacy, where Tom Moreno works at the grocery counter
+      - Declan Byrne lives next door and is always the first customer at the pub in the evening
+      - You want to cook a dish from every country in the world
+    knows: [*town]
+
+  - id: declan_byrne
+    identity:
+      name: Declan Byrne
+      first_name: Declan
+      last_name: Byrne
+      age: 72
+      innate: chatty, kind, nostalgic
+      learned: Declan Byrne is a retired postman who delivered letters for forty years and still likes to know how everyone
+        is doing.
+      currently: Declan Byrne moved to Smallville this winter to enjoy a quiet retirement and is getting to know his new
+        neighbors one conversation at a time.
+      lifestyle: Declan Byrne goes to bed around 10pm, wakes up around 6am, and eats dinner around 5pm.
+      living_area: the Ville:Declan Byrne's house:main room
+      daily_plan_req: Declan Byrne walks around Johnson Park in the morning, does the crossword at Hobbs Cafe, and plays chess
+        at The Rose and Crown Pub in the evening.
+    seeds:
+      - You are a retired postman who moved to Smallville this winter
+      - Per Halvorsen is your chess partner; you play at The Rose and Crown Pub
+      - Joy Villanueva lives next door and cooks at The Rose and Crown Pub
+      - You do the crossword at Hobbs Cafe every day and chat with whoever sits nearby
+    knows: [*town]

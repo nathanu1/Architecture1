@@ -44,6 +44,36 @@ work through the OpenAI-compatible adapter (`providers.llm.kind: openai_compatib
 API key. When the three-resident slice runs well, `configs/town_n25_ollama.yaml` has all 25
 residents (roughly eight times the calls).
 
+**A bigger town: 35 residents.** Every home on the Smallville map belongs to one of its 25
+residents (the Morenos' empty bedroom is the only spare bed), so more people need more houses.
+`scenarios/smallville_n35` is the 25 residents, unchanged, plus ten newcomers in a new
+neighborhood: the Okafors (a pharmacy technician, a carpenter and their son, a first-year
+student), the Halvorsens (a retired teacher, a retired ferry captain and their granddaughter, who
+bakes for Hobbs Cafe) and four neighbors on a new street (an illustrator, the college's new
+librarian, the pub's new cook and a retired postman). They work at the town's existing places
+and know a few of its residents (Omar Haddad knows Mei Lin from the college), but the original
+25 do not know them yet. The newcomers are original to this repository, so a run of this town is
+an extension and is never compared with the paper's 25-agent numbers.
+
+```bash
+ga build-neighborhood scenarios/smallville_n35/neighborhood.yaml   # rewrites the variant's files
+ga play --config configs/town_n35_ollama.yaml
+```
+
+The spec, `neighborhood.yaml`, is the only file to edit. Each house copies an existing building
+tile for tile (walls, door, rooms and furniture: the family houses are copies of the Lins', the
+small ones of Adam Smith's) onto open land under a new name, renaming the rooms named after
+people. The land outside the town is fenced off in the original map, so the spec also opens a
+two-tile gate at the end of the lane beside the Lin family's house. The build refuses a house
+that overlaps anything, lacks a free border or has a room the streets cannot reach, and a
+newcomer whose text mentions the party, the election, the mayor or a candidacy: newcomers start
+knowing nothing about the seeded events (`ga audit-scenario` checks the result again: party
+knowledge is still Isabella's alone, candidacy knowledge Sam's). To add more people, add houses
+and newcomers to the spec and rebuild. Start with `ga play --config configs/town_n35_ollama.yaml
+--set providers.llm.kind=mock` to check them offline: the mock town of 35 runs 07:00 to 10:00 in
+under a minute. A real model costs roughly in proportion to the number of residents, and more
+when they meet more often.
+
 **Small models and structured output.** Local servers decode within a grammar built from the
 JSON schema they are sent, so besides each task's schema the adapters send a tighter *decoding
 schema* that restates the call's own validation rules: the offered choices (places, themes,
@@ -114,6 +144,11 @@ validator and its one repair attempt. The decoding schema is stored with each ca
 | **Collect sparkles** | Pick up the social motif two residents leave behind after a conversation. | No model call; themed by the words of the conversation's summary and lines. |
 | **Object state** | Set any object's state ("burning", "empty"), as in the paper. | The paper's intervention: residents perceive the new state and may react. |
 | **Whisper** | Speak as a resident's inner voice, as in the paper. | Stored as an inner-voice memory and logged as an intervention. |
+
+**Finding people.** The town card at the top left shows how many people live in town; select it
+for the notebook's list of residents, each with what they are doing and a Visit button that
+takes the camera to them. The town opens over the largest group of residents, so a morning that
+starts with everyone at home does not open on an empty square.
 
 **What never reaches a resident.** Town Pulse, friendship hearts, motif counts, affinity scores
 and request bookkeeping are game meters for the player. None of them is put into any prompt, and

@@ -10,3 +10,14 @@ looks:
   jennifer_moore: {shirt: "#C783C9", pants: "#4F4560", hair: "#B8B0A8", hair_style: bob, skin: "#EBC2A2", accessory: scarf}
   arthur_burton: {shirt: "#D45D5D", pants: "#33363F", hair: "#5A3A26", hair_style: short, skin: "#E2B08C", accessory: none}
   ayesha_khan: {shirt: "#F0B44C", pants: "#45505E", hair: "#1F1715", hair_style: long, skin: "#B98060", accessory: bow}
+  # the newcomers of scenarios/smallville_n35 (original residents, not from the paper)
+  ngozi_okafor: {shirt: "#2F8F83", pants: "#3A3F58", hair: "#1B1412", hair_style: bun, skin: "#7A4E35", accessory: glasses}
+  daniel_okafor: {shirt: "#C47A3A", pants: "#3F4A3C", hair: "#1B1412", hair_style: short, skin: "#6E452F", accessory: cap}
+  chidi_okafor: {shirt: "#5DB7E8", pants: "#353B48", hair: "#1B1412", hair_style: curly, skin: "#744A32", accessory: headphones}
+  ingrid_halvorsen: {shirt: "#E3A6C0", pants: "#55506A", hair: "#DCD6C8", hair_style: bun, skin: "#F3D2BD", accessory: scarf}
+  per_halvorsen: {shirt: "#3E6E9E", pants: "#41454F", hair: "#E6E2DA", hair_style: bald, skin: "#EFC8AE", accessory: cap}
+  sofie_halvorsen: {shirt: "#F4D35E", pants: "#5A4E6E", hair: "#E9CF8A", hair_style: long, skin: "#F5D6C2", accessory: apron}
+  linh_tran: {shirt: "#9B8AD9", pants: "#3B3A4A", hair: "#16110F", hair_style: bob, skin: "#E7BF9A", accessory: beanie}
+  omar_haddad: {shirt: "#7D9C5A", pants: "#4A4440", hair: "#3B302B", hair_style: short, skin: "#C99671", accessory: glasses}
+  joy_villanueva: {shirt: "#E86A8E", pants: "#3D3F52", hair: "#20160F", hair_style: long, skin: "#C38A64", accessory: apron}
+  declan_byrne: {shirt: "#6B8F71", pants: "#4B4B52", hair: "#EDEDED", hair_style: short, skin: "#F0C4A8", accessory: cap}

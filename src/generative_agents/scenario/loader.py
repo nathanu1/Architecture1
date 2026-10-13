@@ -108,8 +108,9 @@ def load_scenario(
     path = Path(path).resolve()
     base = path.parent
     data = yaml.safe_load(path.read_text())
-    agents_dir = _resolve(base, data.get("agents_dir", "agents"))
-    assert agents_dir is not None
+    # one folder, or several searched in order (a variant reuses its base scenario's agent files)
+    dirs = data.get("agents_dir", "agents")
+    agents_dirs = [d for d in (_resolve(base, rel) for rel in (dirs if isinstance(dirs, list) else [dirs])) if d is not None]
     ids: list[str] = list(data["agents"])
     if population:
         missing = [a for a in population if a not in ids]
@@ -123,7 +124,7 @@ def load_scenario(
     agents: dict[str, AgentSpec] = {}
     log: list[dict[str, Any]] = []
     for aid in ids:
-        f = agents_dir / f"{aid}.yaml"
+        f = next((d / f"{aid}.yaml" for d in agents_dirs if (d / f"{aid}.yaml").exists()), agents_dirs[0] / f"{aid}.yaml")
         raw_bytes = f.read_bytes()
         spec = yaml.safe_load(raw_bytes)
         identity = AgentIdentity(id=aid, **spec["identity"])

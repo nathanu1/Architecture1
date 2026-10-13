@@ -2,6 +2,7 @@ import { Check, ExclamationMark, MoonStars } from "@phosphor-icons/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../api";
 import { footprint, push, shownItems, templateOps } from "../lib/build";
+import { busiestSpot } from "../lib/crowd";
 import { activityIcon, activityLabel } from "../lib/icons";
 import { failureBody } from "../lib/text";
 import { isBefore, minutesBetween } from "../lib/time";
@@ -104,6 +105,16 @@ export function TownView() {
   }, []);
 
   useEffect(() => sceneRef.current?.updateFrame(frame), [frame]);
+  // open the camera where most residents are, once, when their first positions arrive
+  const opened = useRef(false);
+  useEffect(() => {
+    if (opened.current || !frame || !sceneRef.current) return;
+    const at = Object.values(frame.agents).flatMap((a) => (a.x !== null && a.y !== null ? [[a.x, a.y] as Tile] : []));
+    const spot = busiestSpot(at);
+    if (!spot) return;
+    opened.current = true;
+    sceneRef.current.startAt(spot);
+  }, [frame]);
   useEffect(() => {
     if (clock) sceneRef.current?.setHour(new Date(`${clock.time}Z`).getUTCHours() + new Date(`${clock.time}Z`).getUTCMinutes() / 60);
   }, [clock]);

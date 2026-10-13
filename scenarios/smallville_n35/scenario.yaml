@@ -1,0 +1,52 @@
+# Generated from neighborhood.yaml in this folder by `ga build-neighborhood`; edit the spec, not this file.
+name: smallville_n35
+description: smallville_n25 plus ten original newcomers in six new houses on open land (an extension, not part of the paper's
+  setup)
+source:
+  base: ../smallville_n25/scenario.yaml
+  spec: neighborhood.yaml
+start: '2023-02-13T00:00:00'
+seconds_per_step: 10
+map: map/the_ville_n35.json
+agents:
+- latoya_williams
+- rajiv_patel
+- abigail_chen
+- francisco_lopez
+- hailey_johnson
+- arthur_burton
+- ryan_park
+- isabella_rodriguez
+- giorgio_rossi
+- carlos_gomez
+- klaus_mueller
+- maria_lopez
+- ayesha_khan
+- wolfgang_schulz
+- mei_lin
+- john_lin
+- eddy_lin
+- tom_moreno
+- jane_moreno
+- tamara_taylor
+- carmen_ortiz
+- sam_moore
+- jennifer_moore
+- yuriko_yamamoto
+- adam_smith
+- ngozi_okafor
+- daniel_okafor
+- chidi_okafor
+- ingrid_halvorsen
+- per_halvorsen
+- sofie_halvorsen
+- linh_tran
+- omar_haddad
+- joy_villanueva
+- declan_byrne
+agents_dir:
+- ../smallville_n25/agents
+- agents
+events: ../smallville_n25/events.yaml
+constraints: constraints.yaml
+familiar_public_areas: 'from each agent''s official spatial_memory.json; newcomers: the places their spec lists'
