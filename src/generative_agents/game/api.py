@@ -122,7 +122,7 @@ def object_info(session: GameSession, address: str) -> dict[str, Any]:
 
 
 def create_game_app(session: GameSession, *, web_dir: Path | None = None) -> FastAPI:
-    app = FastAPI(title="Smallville Lab town", docs_url=None, redoc_url=None)
+    app = FastAPI(title="Hearthside town", docs_url=None, redoc_url=None)
     sim = session.sim
     world = sim.world
     reader = Database(sim.run_dir / "state.sqlite", read_only=True)

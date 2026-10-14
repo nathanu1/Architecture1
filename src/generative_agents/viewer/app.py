@@ -23,7 +23,7 @@ STATIC = Path(__file__).parent / "static"
 
 def create_app(run_dir: Path, experiment_dir: Path | None = None) -> FastAPI:
     data = RunData(run_dir)
-    app = FastAPI(title="Smallville Lab viewer", docs_url=None, redoc_url=None)
+    app = FastAPI(title="Hearthside viewer", docs_url=None, redoc_url=None)
     app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
     def guard(fn, *a: Any, **kw: Any) -> Any:

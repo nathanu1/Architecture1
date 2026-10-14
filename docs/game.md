@@ -1,11 +1,6 @@
-# The town game (an extension)
+# Hearthside town guide
 
-`ga play` turns the reproduction into a small, cozy town-building game. You are **the town
-builder**, a visitor to Smallville. You chat with residents, take on the wishes they come up with,
-wrap gifts, collect motifs, and build and decorate the town. The residents are the paper's agents,
-unchanged: they remember, retrieve, reflect, plan, react and talk exactly as in the reproduction,
-and they meet you only through the channels the paper gives an outside user (talking to them, the
-inner voice, changing an object's state) plus one more, the objects you place in the world.
+Hearthside adds a town-building interface to the Generative Agents simulation. Talk to residents, follow their requests, give gifts, collect motifs, and build places they can use. Residents retain the memory, reflection, and planning loop described in the research reproduction. Player interactions enter that loop through conversations and changes to the world.
 
 Everything in this document is an **extension** (class X in [`reproduction_spec.md`](reproduction_spec.md),
 section 2S). It is off unless a config sets `game.enabled: true`. The look is an original
@@ -25,7 +20,7 @@ The town opens at <http://127.0.0.1:8080>; the research inspector is at `/inspec
 `--speed slow|normal|fast|max`, `--paused`, `--open` (launch a browser), `--port`, `--host`.
 Closing with Ctrl+C saves at the last checkpoint.
 
-**Local models, zero cost.** `configs/town_ollama.yaml` is the three-resident vertical slice
+**Local models.** `configs/town_ollama.yaml` is the three-resident starting scenario
 (Isabella, Maria, Klaus) on [Ollama](https://ollama.com/):
 
 ```bash

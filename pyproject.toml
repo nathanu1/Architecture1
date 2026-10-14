@@ -5,7 +5,8 @@ build-backend = "hatchling.build"
 [project]
 name = "generative-agents-lab"
 version = "0.1.0"
-description = "Inspectable reproduction of 'Generative Agents: Interactive Simulacra of Human Behavior' (Park et al., UIST 2023) with a headless runner, audited evaluations and a local viewer."
+description = "Hearthside: a local town simulation with generative agents, memory inspection, replay, and a browser interface."
+authors = [{name = "Nathan Yang"}]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -25,6 +26,10 @@ dev = ["pytest>=8", "httpx>=0.27", "ruff>=0.6"]
 
 [project.scripts]
 ga = "generative_agents.cli:main"
+
+[project.urls]
+Repository = "https://github.com/nathanu1/artsoce"
+Documentation = "https://github.com/nathanu1/artsoce/tree/HEAD/docs"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/generative_agents"]

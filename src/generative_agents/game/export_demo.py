@@ -95,13 +95,13 @@ def export_demo(run_dir: Path, out_dir: Path, *, frame_every: int = 1, scratch: 
 
     from ..simulation.engine import load_run_config, save_config
 
-    run_dir = Path(run_dir)
-    target = Path(out_dir) / "demo"
+    run_dir = Path(run_dir).resolve()
+    target = Path(out_dir).resolve() / "demo"
     target.mkdir(parents=True, exist_ok=True)
     cfg = load_run_config(run_dir)
     if not cfg.game.enabled:
         raise ValueError("this run was not made with the town game (game.enabled is false)")
-    work = Path(scratch) if scratch else Path(tempfile.mkdtemp(prefix="ga-demo-"))
+    work = Path(scratch).resolve() if scratch else Path(tempfile.mkdtemp(prefix="ga-demo-"))
     replay_dir = work / "replay"
     replay_dir.mkdir(parents=True, exist_ok=True)
     save_config(cfg, replay_dir)

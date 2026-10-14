@@ -1,4 +1,4 @@
-// Smallville Lab viewer: plays back recorded frames and inspects a run. Read-only; no model calls.
+// Hearthside viewer: plays back recorded frames and inspects a run. Read-only; no model calls.
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);

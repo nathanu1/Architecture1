@@ -66,7 +66,7 @@ export function Welcome() {
     >
       <div className="flex items-start gap-2">
         <h2 id="welcome-title" className="flex-1 font-display text-lg font-bold leading-snug">
-          A recorded {partOfDay(hourOf(from), hourOf(to))} in Smallville
+          A recorded {partOfDay(hourOf(from), hourOf(to))} in Hearthside
         </h2>
         <IconButton label="Close" icon={X} onClick={close} className="size-9" />
       </div>
@@ -103,7 +103,7 @@ export function Welcome() {
         </a>
       </div>
       <p className="mt-3 text-xs text-[var(--muted)]">
-        To play it yourself, with a free local model:{" "}
+        Run your own town with a local model:{" "}
         <code className="rounded bg-[var(--panel-2)] px-1" translate="no">
           ga play --config configs/town_ollama.yaml
         </code>

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import time
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
@@ -168,7 +169,7 @@ def test_http_interface(tmp_path):
         s.stop()
 
 
-def test_a_recorded_town_exports_as_static_demo_data_without_calls(tmp_path):
+def test_a_recorded_town_exports_as_static_demo_data_without_calls(tmp_path, monkeypatch):
     from generative_agents.game.export_demo import FRAME_FIELDS, export_demo
 
     cfg = town_cfg(end="2023-02-13T10:05:00")
@@ -177,7 +178,10 @@ def test_a_recorded_town_exports_as_static_demo_data_without_calls(tmp_path):
     s.start()
     wait_for(lambda: s.poll()["status"] == "finished", timeout=120)
     s.stop()
-    res = export_demo(tmp_path / "town", tmp_path / "site", scratch=tmp_path / "work")
+    original = {name: (tmp_path / "town" / name).read_bytes() for name in ("state.sqlite", "provider.sqlite", "manifest.json")}
+    monkeypatch.chdir(tmp_path)
+    res = export_demo(Path("town"), Path("site"), scratch=Path("work"))
+    assert all((tmp_path / "town" / name).read_bytes() == content for name, content in original.items())
     demo = tmp_path / "site" / "demo"
     assert {p.name for p in demo.iterdir()} == {"info.json", "map.json", "timeline.json", "objects.json", "research"}
     tl = json.loads((demo / "timeline.json").read_text())

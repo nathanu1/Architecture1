@@ -90,10 +90,10 @@ function Loading({ error }: { error: string | null }) {
     <div className="flex h-full flex-col items-center justify-center gap-4 bg-[linear-gradient(180deg,var(--sky-top),var(--sky-bottom))] p-6 text-center">
       <div className="panel flex max-w-md flex-col items-center gap-3 px-8 py-7">
         <span className="flex size-16 items-center justify-center rounded-full bg-sun font-display text-3xl font-bold text-[#2a2838]" aria-hidden="true">
-          S
+          H
         </span>
         <h1 className="font-display text-2xl font-bold" translate="no">
-          Smallville Lab
+          Hearthside
         </h1>
         <div aria-live="polite" className="flex flex-col items-center gap-3">
           {error ? (

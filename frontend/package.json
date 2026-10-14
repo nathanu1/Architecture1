@@ -1,9 +1,10 @@
 {
-  "name": "smallville-lab-town",
+  "name": "hearthside-town",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Storybook-diorama interface for the Smallville Lab town game (served by `ga play`).",
+  "description": "Hearthside town interface: explore residents, build in the town, and inspect agent memories.",
+  "author": "Nathan Yang (nathanu1)",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
