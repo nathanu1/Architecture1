@@ -1,8 +1,7 @@
 # Hearthside
 
-**A town that remembers.**
-
-Created and maintained by [Nathan Yang · @nathanu1](https://github.com/nathanu1).
+**A simulation town with memory.**
+[Nathan Yang · @nathanu1](https://github.com/nathanu1).
 
 Hearthside is a town simulation where residents remember conversations, plan their days, and respond to the people and places around them. You can talk to them, build things they ask for, and inspect the memories behind their decisions.
 
@@ -140,7 +139,7 @@ The tests cover memory isolation, retrieval and reflection, plan validation, pri
 
 ## Credits
 
-**Nathan Yang (@nathanu1)** — project creator and maintainer. **Claude (Anthropic)** — AI development contributor, used for coding and documentation assistance.
+**Nathan Yang (@nathanu1)** Creator and Maintainer. & **Claude* — AI development contributor, used for coding and documentation assistance.
 
 The research foundation is *Generative Agents: Interactive Simulacra of Human Behavior* by Park et al. (UIST 2023). The [reproduction specification](docs/reproduction_spec.md) records how this implementation relates to the paper and [released code](https://github.com/joonspk-research/generative_agents), including its deviations and extensions.
 
