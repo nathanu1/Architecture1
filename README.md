@@ -1,7 +1,7 @@
 # Hearthside
 
 **A simulation town with memory.**
-[Nathan Yang · @nathanu1](https://github.com/nathanu1).
+[Nathan Lee Yang · @nathanu1](https://github.com/nathanu1).
 
 Hearthside is a town simulation where residents remember conversations, plan their days, and respond to the people and places around them. You can talk to them, build things they ask for, and inspect the memories behind their decisions.
 
