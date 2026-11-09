@@ -415,6 +415,7 @@ LABELS = {
     "reaction_rate": "Reaction rate (non-continue)",
     "conversations_per_agent": "Conversations per agent",
     "memory_recall_at_k": "Planted-fact recall@k",
+    "memory_recall_at_30": "Planted-fact recall@30 (paper cap)",
     "memory_mrr": "Planted-fact MRR",
     "memory_recall_old": "Recall of facts older than a day",
     "memory_recall_recent": "Recall of facts under an hour old",

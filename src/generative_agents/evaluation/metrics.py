@@ -198,6 +198,7 @@ def memory_probe_metric(ctx: MetricContext) -> dict[str, Any]:
     ps = planted["summary"]
     return {
         "memory_recall_at_k": ps.get("recall_at_k"),
+        "memory_recall_at_30": ps.get("recall_at_30"),
         "memory_mrr": ps.get("mean_reciprocal_rank"),
         "memory_recall_old": (ps.get("by_age") or {}).get(">24h"),
         "memory_recall_recent": (ps.get("by_age") or {}).get("<=1h"),

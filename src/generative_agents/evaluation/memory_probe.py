@@ -139,6 +139,9 @@ def summarize_planted(rows: list[dict[str, Any]]) -> dict[str, Any]:
     return {
         "n": len(rows),
         "recall_at_k": round(sum(r["hit"] for r in rows) / len(rows), 4),
+        # the paper's retrieval cap (30 items); computed from the full ranking, so it never
+        # depends on the probe's k and shows how far below the cutoff old facts sit
+        "recall_at_30": round(sum(1 for r in rows if r["rank"] and r["rank"] <= 30) / len(rows), 4),
         "mean_reciprocal_rank": round(sum(1 / r for r in ranks) / len(rows), 4),
         "by_age": {b: round(sum(v) / len(v), 4) for b, v in sorted(by_age.items())},
         "by_importance": {b: round(sum(v) / len(v), 4) for b, v in sorted(by_imp.items())},
