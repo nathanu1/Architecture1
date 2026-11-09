@@ -104,6 +104,7 @@ def build_runtime(
         backoff_s=0.0 if llm.kind == "mock" else 2.0,
         task_overrides=llm.task_overrides,
         zero_cost=llm.is_local(),
+        memoize_tasks=frozenset(llm.memoize_tasks),
     )
     kwargs: dict[str, Any] = {}
     if sleep is not None:

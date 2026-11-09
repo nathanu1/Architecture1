@@ -353,7 +353,8 @@ To run the town for other people, with all 25 residents on a model on your own m
 [`deploy.md`](deploy.md): it works out the call budget (about 730 calls per game hour for the
 full town, three quarters of them mechanical), gives the two-model config
 (`configs/town_n25_server.yaml`), the Docker and Caddy files, and the password and spectator
-settings.
+settings. For a town that stays live for weeks instead of a recording, `configs/town_live.yaml`
+(ten residents) and `town_live_25.yaml` are explained in its §2c.
 
 ## Part 8: if something goes wrong
 

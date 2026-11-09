@@ -136,6 +136,29 @@ class CallLedger:
             metadata=json.loads(row["metadata_json"] or "{}"),
         )
 
+    def lookup_memo(self, request_hash: str) -> CallRecord | None:
+        """The first *valid* reply ever recorded for this exact request, whatever its occurrence.
+
+        Used for memoized tasks (``providers.llm.memoize_tasks``): an identical prompt is answered
+        from the ledger instead of the model. Invalid, refused and failed rows never qualify.
+        """
+
+        scope = self.readonly_scope or self.scope
+        row = self.conn.execute("SELECT * FROM calls WHERE scope=? AND request_hash=? AND status='ok' ORDER BY id LIMIT 1", (scope, request_hash)).fetchone()
+        if row is None:
+            return None
+        return CallRecord(
+            id=row["id"],
+            status=row["status"],
+            raw_output=row["raw_output"],
+            error=row["error"],
+            error_retryable=bool(row["error_retryable"]),
+            input_tokens=row["input_tokens"],
+            output_tokens=row["output_tokens"],
+            served_model=row["served_model"],
+            metadata=json.loads(row["metadata_json"] or "{}"),
+        )
+
     def record(self, **fields: Any) -> int:
         if self.readonly_scope is not None:
             raise RuntimeError("ledger is read-only in replay mode")

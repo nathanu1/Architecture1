@@ -160,6 +160,38 @@ act in it. Update it by recording more and exporting again. A good free combinat
 public recorded town that is always online plus a tunnel to the live one when your machine is
 on.
 
+## 2c. Always live, not a recording
+
+A town that never stops needs three things: an end date that never arrives, a model budget that
+a free machine can sustain for weeks, and memory that does not slow down as it grows. Both
+`configs/town_live.yaml` (ten residents) and `configs/town_live_25.yaml` (all 25) set them:
+
+| Lever | Setting | Effect, measured on recorded runs |
+| --- | --- | --- |
+| Small model for mechanical tasks | `task_overrides` → Llama 3.2 3B for location, importance, grounding | 75% of calls go to the fast model |
+| Answer repeated prompts from the ledger | `memoize_tasks: [choose_location, importance, importance_batch, action_grounding]` | 42–56% of location and importance prompts and 62–74% of grounding prompts are exact repeats; about a third of all calls disappear. Trade-off: no sampling variety on those repeats (the run's fidelity table marks it X). |
+| Keep retrieval bounded | `retrieval.forgetting.enabled: true` | memories below the activation threshold are skipped before scoring, so a resident with weeks of memories retrieves as fast as one with days (nothing is deleted) |
+| Open-ended run | `scenario.end` months away; `snapshots: [initial]` | the engine keeps planning each new day from the residents' identities; the seeded party stays on 14 February |
+| Survive restarts | `checkpoint_every_steps: 30`; the container entrypoint resumes | at most five game minutes are lost; recorded calls are never paid twice |
+
+What that buys, per game hour of the full 25-resident town: about 730 calls become about
+490, of which roughly 370 go to the 3B model and 120 to the 8B. On four CPU cores (the free
+tier, or a spare laptop) that is about 1.5 real hours per game hour with the 3B pair, so a
+game day takes a day and a half; **ten residents run at about real time on the same CPU**, and
+either size runs faster than real time on one GPU. The town is live either way: residents keep
+perceiving, planning, talking and remembering; only the clock moves at the pace the hardware
+allows, which the HUD's clock shows. Model latency shows as the resident "thinking" indicator.
+
+Three practical rules for a town that runs for weeks:
+
+1. **Let it resume.** `ga play --resume runs/<id>` (the Docker entrypoint does it) continues the
+   same world after any restart; `--set scenario.end=...` on a resume extends the horizon.
+2. **Watch the disk.** A 25-resident day is about 150 MB of state and ledger; a month is a few
+   GB. `runs/<id>/exports` and old snapshots can be deleted; the ledger cannot (it is the
+   memo cache and the replay source).
+3. **Extend memoization only to mechanical tasks.** Memoizing dialogue or planning would make
+   residents repeat themselves; the configs leave those alone.
+
 ## 3. Alternatives, and when to pick them
 
 | Option | When | What changes |

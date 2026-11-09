@@ -1,0 +1,32 @@
+# A town that stays live for weeks: ten residents on your own hardware through Ollama.
+#
+# What makes it sustainable (docs/deploy.md, "Always live"):
+# * the mechanical three quarters of calls go to a small model (task_overrides, from town_n25_server);
+# * identical mechanical prompts are answered from the run's own ledger (memoize_tasks): in
+#   recorded runs 40-75% of those prompts repeat, so about a third of all calls disappear;
+# * forgetting keeps retrieval bounded as memory streams grow over weeks (nothing is deleted);
+# * the end date is far away, so the town does not stop; `ga play --resume runs/<id>` continues it
+#   after any restart, re-using every recorded call.
+# Ten residents at this setting run at about real time on four CPU cores with the 3B model, and
+# faster than real time on any GPU. town_live_25.yaml is the same with all 25 residents.
+#   ollama pull llama3.2:3b && ollama pull llama3.1:8b && ollama pull nomic-embed-text
+#   export HEARTHSIDE_PASSWORD=... HEARTHSIDE_SPECTATORS=1
+#   ga play --config configs/town_live.yaml --host 0.0.0.0
+extends: town_n25_server.yaml
+run:
+  name: town-live
+  label: "live town, ten residents"
+scenario:
+  population: [isabella_rodriguez, maria_lopez, klaus_mueller, sam_moore, wolfgang_schulz, tom_moreno, jane_moreno, tamara_taylor, carmen_ortiz, ayesha_khan]
+  start: "2023-02-13T07:00:00"
+  end: "2023-06-01T00:00:00"
+output:
+  checkpoint_every_steps: 30
+  snapshots: [initial]
+retrieval:
+  forgetting: {enabled: true, decay: 0.5, threshold: -1.0, importance_bonus: 0.1}
+providers:
+  llm:
+    memoize_tasks: [choose_location, importance, importance_batch, action_grounding]
+budget:
+  max_calls: 50000000

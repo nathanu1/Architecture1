@@ -1,0 +1,10 @@
+# The live town with all 25 residents (see town_live.yaml for the reasoning). On four CPU cores
+# with the 3B model this runs at roughly half real time or slower; on one GPU, faster than real
+# time. A game day then takes one to three real days, which is still a living town.
+#   ga play --config configs/town_live_25.yaml --host 0.0.0.0
+extends: town_live.yaml
+run:
+  name: town-live-25
+  label: "live town, 25 residents"
+scenario:
+  population: null

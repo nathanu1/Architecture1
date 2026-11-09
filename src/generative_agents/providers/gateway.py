@@ -71,6 +71,10 @@ class GatewaySettings:
     backoff_s: float = 2.0
     task_overrides: dict[str, dict[str, Any]] | None = None
     zero_cost: bool = False  # a model on your own machine: every call costs 0 USD
+    # Tasks whose identical prompts are answered from the ledger's first valid reply instead of a
+    # new call (research extension for long-running towns; off by default). It trades sampling
+    # variety on repeated mechanical prompts for about a third fewer calls.
+    memoize_tasks: frozenset[str] = frozenset()
 
 
 class LLMGateway:
@@ -196,6 +200,11 @@ class LLMGateway:
 
     def _call(self, request: LLMRequest) -> tuple[str, int, bool]:
         h = self.request_hash(request)
+        if request.task in self.settings.memoize_tasks and request.attempt_kind == "initial":
+            memo = self.ledger.lookup_memo(h)
+            if memo is not None:
+                self.budget.record_cache_hit()
+                return memo.raw_output or "", memo.id, True
         last_error: ProviderError | None = None
         for attempt in range(1 + self.settings.max_retries):
             occurrence = self.ledger.next_occurrence(h)

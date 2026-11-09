@@ -107,6 +107,7 @@ providers:
     think: null
     api_key_env: null
     response_format: json_schema
+    memoize_tasks: []
     local: null
   embeddings:
     kind: mock-hash

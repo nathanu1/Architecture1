@@ -201,6 +201,10 @@ class LLMProviderSection(_Base):
     # Llama APIs accept it) or "none" (the prompt alone asks for JSON). The gateway validates and
     # repairs the reply in every case, so a looser mode only changes how often repairs are needed.
     response_format: Literal["json_schema", "json_object", "none"] = "json_schema"
+    # Tasks whose identical prompts are answered from the run's ledger instead of a new call
+    # (for towns that run for weeks; docs/deploy.md). Repeats are 40-75% of the mechanical
+    # tasks in recorded runs. Off by default: it removes sampling variety on those prompts.
+    memoize_tasks: list[str] = Field(default_factory=list)
     local: bool | None = None  # no API charges; None infers it (ollama, or a localhost base_url)
 
     def is_local(self) -> bool:
@@ -347,6 +351,7 @@ class GAConfig(_Base):
             ("planning.decompose", self.planning.decompose, "P" if self.planning.decompose else "X"),
             ("social.appraisal", self.social.appraisal, "X" if self.social.appraisal != "none" else "P"),
             ("social.inform_prompts", self.social.inform_prompts, "X" if self.social.inform_prompts else "P"),
+            ("providers.llm.memoize_tasks", sorted(self.providers.llm.memoize_tasks), "X" if self.providers.llm.memoize_tasks else "P"),
             ("scenario.seed_rendering", self.scenario.seed_rendering, "P" if self.scenario.seed_rendering == "verbatim" else "C"),
             ("game.enabled", self.game.enabled, "X" if self.game.enabled else "P"),
             (
