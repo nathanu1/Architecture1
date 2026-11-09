@@ -33,7 +33,7 @@ The project focuses on two questions: how past experiences shape an agent's next
 Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/). The town's built frontend is included, so you can start without Node.js.
 
 ```bash
-git clone https://github.com/nathanu1/artsoce.git hearthside
+git clone https://github.com/nathanu1/Architecture1.git hearthside
 cd hearthside
 uv sync --extra dev --extra viewer
 source .venv/bin/activate

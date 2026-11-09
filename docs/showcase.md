@@ -14,7 +14,7 @@ Hearthside is a town simulation with residents who remember, plan, and interact.
 
 **Topics:** `generative-agents`, `agent-simulation`, `local-llm`, `ollama`, `threejs`, `react`, `python`, `human-ai-interaction`
 
-The current repository address is `nathanu1/artsoce`. The README and application use Hearthside as the project name. If the repository address changes, update the clone URL and the repository links in `pyproject.toml`.
+The current repository address is `nathanu1/Architecture1`. The README and application use Hearthside as the project name. If the repository address changes, update the clone URL and the repository links in `pyproject.toml`.
 
 ## Portfolio description
 
