@@ -26,6 +26,7 @@ The project focuses on two questions: how past experiences shape an agent's next
 - **Look inside a decision.** Inspect memories, retrieval scores, plans, reflections, and recorded model calls.
 - **Run an experiment.** Compare reflection settings, interview agents under different memory conditions, and measure information spread or event attendance.
 - **Return to a saved run.** Resume from a checkpoint or replay a recording without making new model calls.
+- **Study cognition and social dynamics.** Switch memory, planning and social-memory conditions, fork a recorded run into counterfactual futures, and measure recall, plan adherence, social networks, beliefs and Theory of Mind with the research platform.
 
 ## Quick start
 
@@ -68,6 +69,31 @@ ga serve --run-dir runs/first-town
 ```
 
 The viewer opens at [localhost:8000](http://127.0.0.1:8000). This workflow uses the offline mock provider. Experiment protocols and hosted-provider options are in the [reference](docs/reference.md) and [experiment guide](docs/experiment_protocol.md).
+
+## Research platform
+
+The research extensions make the reproduction a platform for controlled experiments. All of
+them are off by default or purely observational, so a default run still follows the paper.
+
+| Capability | What it adds |
+| --- | --- |
+| Social memory | Each agent keeps its own relationship records (familiarity, valence) updated by fixed, interpretable rules from conversations and encounters; every update is logged, so the social network can be rebuilt at any simulated time. Optional appraisal calls and an optional prompt line. |
+| Beliefs and Theory of Mind | A ledger of what each agent has grounds to believe about seeded events and about what others know, kept apart from world truth; an interview probe scores over- and under-attribution. |
+| Memory and planning ablations | Activation-based forgetting (auditable, nothing deleted) and an hourly-only planner, next to the existing reflection and retrieval settings. |
+| Measures from records | Plan adherence, scheduled share, idle share, reactions, adaptation latency after an intervention, planted-fact recall, network density, reciprocity, components. |
+| Counterfactual forks | `ga fork` continues a recorded run from a snapshot with changed settings or interventions; protocols can fork every run from the same past. |
+| Experiment protocols | Named metrics, per-condition interventions, a hypothesis recorded before running, pairwise comparisons, a determinism check and generic reports. |
+| Dashboard | Decisions (recorded evidence only), Network, Behavior and Beliefs tabs in the viewer. |
+
+```bash
+ga experiment --protocol configs/experiments/memory_consistency_mock.yaml --execute
+ga serve --run-dir runs/experiments/memory_consistency_mock/full-s101 --experiment runs/experiments/memory_consistency_mock
+```
+
+Guide: [`docs/research_platform.md`](docs/research_platform.md). Literature and prioritization:
+[`docs/research_review.md`](docs/research_review.md). Executed demonstration experiments (MOCK):
+[`docs/experiments/README.md`](docs/experiments/README.md). Assessment of the system before
+this work: [`docs/system_assessment.md`](docs/system_assessment.md).
 
 ## How it works
 
@@ -119,7 +145,7 @@ npm run typecheck
 npm run build
 ```
 
-For this update, **189 Python tests passed (one skipped)** and **34 frontend tests passed**. Python lint, TypeScript checks, and both frontend builds also passed.
+For this update, **217 Python tests passed (one skipped)** and the Python lint and format checks passed; the frontend (unchanged here) last passed 34 tests, its type check and both builds.
 
 The tests cover memory isolation, retrieval and reflection, plan validation, private dialogue, world constraints, replay, evaluation, local adapters, and building rules. See the [reference](docs/reference.md#tests) for prompt-example maintenance.
 
@@ -135,6 +161,9 @@ The tests cover memory isolation, retrieval and reflection, plan validation, pri
 | Town controls and local-run details | [Town guide](docs/game.md) |
 | Paper correspondence and deviations | [Reproduction specification](docs/reproduction_spec.md) |
 | Interviews and reflection experiments | [Experiment protocol](docs/experiment_protocol.md) |
+| Research extensions, metrics, forks, dashboards | [Research platform](docs/research_platform.md) |
+| Literature review, prioritization, proposals | [Research review](docs/research_review.md) |
+| Executed demonstration experiments | [Experiments](docs/experiments/README.md) |
 | Demo walkthrough and portfolio copy | [Showcase guide](docs/showcase.md) |
 
 ## Credits

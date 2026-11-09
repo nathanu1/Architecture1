@@ -117,15 +117,40 @@ def create_app(run_dir: Path, experiment_dir: Path | None = None) -> FastAPI:
     def interviews() -> dict[str, Any]:
         return data.interviews()
 
+    # ---- research platform (all read-only; see docs/research_platform.md)
+    @app.get("/api/agent/{aid}/decisions")
+    def decisions(aid: str, day: str | None = None, limit: int = 200, before: str | None = None) -> dict[str, Any]:
+        return guard(data.decisions, aid, day=day, limit=min(limit, 1000), before=before)
+
+    @app.get("/api/relationships")
+    def relationships(agent: str | None = None) -> list[dict[str, Any]]:
+        return data.relationships(agent)
+
+    @app.get("/api/network")
+    def network(at: str | None = None, points: int = 24) -> dict[str, Any]:
+        return data.network(at, points=min(points, 96))
+
+    @app.get("/api/behavior")
+    def behavior() -> dict[str, Any]:
+        return data.behavior()
+
+    @app.get("/api/beliefs")
+    def beliefs() -> dict[str, Any]:
+        return data.beliefs()
+
+    @app.get("/api/metrics")
+    def metrics() -> dict[str, Any]:
+        return data.metrics()
+
     @app.get("/api/experiment")
     def experiment() -> Any:
         if experiment_dir is None:
             return {}
         out: dict[str, Any] = {"dir": str(experiment_dir)}
-        for name in ("summary.json",):
+        for name in ("summary.json", "protocol.json"):
             p = experiment_dir / name
             if p.exists():
-                out["summary"] = json.loads(p.read_text())
+                out[name.split(".")[0]] = json.loads(p.read_text())
         p = experiment_dir / "runs.csv"
         if p.exists():
             import csv

@@ -35,7 +35,7 @@ from typing import Any
 import yaml
 
 from .. import __version__
-from ..cognition.dialogue import DialogueEngine, Side
+from ..cognition.dialogue import DialogueEngine, Side, transcript_text
 from ..cognition.location import LocationChooser, LocationResult
 from ..cognition.planning import Planner, PlanStore, is_sleep
 from ..cognition.reaction import ReactionEngine, focal_percept
@@ -206,6 +206,17 @@ class Simulation:
         self._talk_requests: list[TalkRequest] = []
         self._busy: set[str] = set()
         self._report: StepReport | None = None
+        # Social memory (research extension): relationship records updated from conversations and
+        # co-presence; optional appraisal calls and prompt lines (docs/research_platform.md).
+        self.social: Any = None
+        if cfg.social.track:
+            from ..social.relationships import RelationshipStore
+            from ..social.service import SocialMemory
+
+            self.social = SocialMemory(self.svc, RelationshipStore(self.db, cfg.social, step_getter=self.ledger_step))
+            self.reaction.social = self.social
+            self.flush_hooks.append(self.social.flush)
+            self.invalidate_hooks.append(self.social.invalidate)
         self.game: Any = None
         if cfg.game.enabled:
             from ..game.layer import GameLayer
@@ -612,6 +623,10 @@ class Simulation:
             )
             rep.new_memories += 1
             new.append(pc)
+        if self.social is not None:
+            for pc in res.percepts:
+                if pc.kind == "agent" and pc.agent_id in self.identities:
+                    self.social.on_presence(aid, pc.agent_id, self.identities[pc.agent_id].name, now)
 
         # -------- reflect
         if self.reflection.should_reflect(ident, now):
@@ -894,6 +909,8 @@ class Simulation:
             sb.cooldown_until[a] = end + cooldown
             if not conv.utterances:
                 continue
+            if self.social is not None:
+                self.social.after_conversation(conv, ia, ib, transcript_text(conv, {a: ia.name, b: ib.name}), now)
             meet = self.nav.meeting_tile(views[a].tile, views[b].tile) or views[a].tile
             minutes = int(conv.metadata.get("minutes", 1))
             for me, other in ((ia, ib), (ib, ia)):
@@ -987,9 +1004,32 @@ class Simulation:
             "code": {"package_version": __version__, "git_commit": git_commit(), "python": platform.python_version()},
             "replay_of": {"run_id": self.replay_scope, "dir": str(self.replay_from)} if self.replay_from else None,
             "game": self.game.manifest() if self.game is not None else None,
+            "social": self.social.manifest() if self.social is not None else None,
+            "forked_from": self.db.get_meta("forked_from"),
+            "randomness": self.randomness_note(),
         }
         (self.run_dir / "manifest.json").write_text(json.dumps(manifest, indent=2, default=str))
         return manifest
+
+    def randomness_note(self) -> dict[str, Any]:
+        """Where this run's randomness comes from, for the manifest (docs/research_platform.md)."""
+
+        llm = self.cfg.providers.llm
+        if llm.kind == "mock":
+            sampling = "deterministic: the mock derives every output from (run.seed, task, rendered prompt)"
+        elif llm.kind == "replay":
+            sampling = "none: every response comes from the recorded ledger"
+        elif llm.kind in ("ollama", "openai", "openai_compatible"):
+            sampling = f"model sampling with seed=run.seed passed to the server where supported; temperature {llm.temperature}; not bit-reproducible across servers or versions"
+        else:
+            sampling = f"model sampling (temperature {llm.temperature}); the API accepts no seed, so matched seeds match the initial world only"
+        return {
+            "seed": self.cfg.run.seed,
+            "engine": "deterministic given the recorded model responses (fixed agent order, snapshot-decide-commit steps)",
+            "model_sampling": sampling,
+            "embeddings": "deterministic hash fixture" if self.cfg.providers.embeddings.kind == "mock-hash" else "model embeddings; cached by text and model",
+            "replay": "ga replay re-executes the run from its ledger and checks the state hash",
+        }
 
     def close(self) -> None:
         self.db.close()

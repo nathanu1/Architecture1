@@ -146,3 +146,31 @@ dialog .close { float: right; background: none; border: 0; font-size: 22px; curs
 .utt b { font-weight: 600; }
 .foot { color: var(--muted); font-size: 12px; padding: 4px 20px 18px; }
 .empty { color: var(--muted); padding: 16px 0; }
+
+/* research platform views */
+.rec { display: grid; grid-template-columns: 92px 1fr; gap: 8px; }
+.rec .when { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.tag { display: inline-block; font-family: var(--mono); font-size: 10.5px; padding: 0 6px; border-radius: 3px; border: 1px solid var(--line); background: var(--soft); margin-right: 4px; }
+.tag.action { background: #E4ECF8; border-color: #BFD0EC; }
+.tag.reaction { background: #FBE9DD; border-color: #EAB999; }
+.tag.replan { background: #ECECEC; border-color: #BDBDBD; }
+.tag.conversation { background: #FDE7D2; border-color: #F0B981; }
+.tag.reflection { background: #EEE6F6; border-color: #CDB8E2; }
+.tag.intervention { background: #DDE8F6; border-color: #9FBCE4; }
+.tag.action_failure, .tag.plan_failure, .tag.constraint { background: #F8DEDC; border-color: #E2A3A0; }
+.tag.recorded { background: #DCEBDD; border-color: #9FC4A4; }
+pre.json { white-space: pre-wrap; word-break: break-word; font-family: var(--mono); font-size: 11.5px; background: var(--soft); border: 1px solid var(--line); border-radius: 4px; padding: 8px; max-height: 320px; overflow: auto; }
+.fambar { height: 8px; background: var(--soft); border-radius: 2px; overflow: hidden; width: 120px; display: inline-block; vertical-align: middle; }
+.fambar > div { height: 100%; background: var(--green); }
+.valence { font-family: var(--mono); font-size: 11px; }
+.slider-row { display: flex; align-items: center; gap: 10px; margin: 6px 0 10px; }
+.slider-row input { flex: 1; accent-color: var(--orange); }
+.matrix td.yes { background: #DCEBDD; }
+.matrix td.ground { font-family: var(--mono); font-size: 11px; }
+.matrix td.told { background: #E4ECF8; }
+.matrix td.heard { background: #FDE7D2; }
+.matrix td.both { background: #EEE6F6; }
+.kpis { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0; }
+.kpi { border: 1px solid var(--line); border-radius: 4px; padding: 6px 10px; background: #fff; min-width: 120px; }
+.kpi b { display: block; font-family: var(--mono); font-size: 16px; }
+.kpi span { font-size: 11.5px; color: var(--muted); }

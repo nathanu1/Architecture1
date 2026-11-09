@@ -168,6 +168,20 @@ class JudgeOut(_Out):
     rationale: str
 
 
+class AppraisalOut(_Out):
+    """One participant's appraisal of a conversation (social memory extension): -2..2."""
+
+    valence: int
+    reason: str = ""
+
+    @field_validator("valence")
+    @classmethod
+    def _range(cls, v: int) -> int:
+        if not -2 <= v <= 2:
+            raise ValueError("valence must be an integer from -2 to 2")
+        return v
+
+
 class PlayerReplyOut(_Out):
     """A resident's reply to the town builder (game layer)."""
 
@@ -226,6 +240,7 @@ OUTPUT_MODELS: dict[str, type[BaseModel]] = {
         AwarenessOut,
         StatementOut,
         JudgeOut,
+        AppraisalOut,
         PlayerReplyOut,
         ResidentRequestOut,
     )

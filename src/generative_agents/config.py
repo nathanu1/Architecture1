@@ -61,6 +61,23 @@ class RetrievalWeights(_Base):
     relevance: float = 1.0
 
 
+class ForgettingSection(_Base):
+    """Controlled forgetting (research extension, off by default).
+
+    A memory becomes *inaccessible* to retrieval when its base-level activation falls below
+    ``threshold``. Activation follows the ACT-R base-level form (Anderson & Schooler 1991):
+    ``ln(sum_j t_j ** -decay)`` over the memory's traces, here its creation and its last
+    retrieval (in hours, offset by one), plus ``importance_bonus`` per importance point above
+    one. Nothing is deleted: the memory stream stays append-only and every exclusion is
+    recorded in the retrieval trace with its activation value, so forgetting is auditable.
+    """
+
+    enabled: bool = False
+    decay: float = 0.5
+    threshold: float = -1.0
+    importance_bonus: float = 0.1
+
+
 class RetrievalSection(_Base):
     mode: Literal["paper", "released_code"] = "paper"
     weights: RetrievalWeights = Field(default_factory=RetrievalWeights)
@@ -70,6 +87,7 @@ class RetrievalSection(_Base):
     budget_tokens: int = 1200
     max_items: int = 30
     tokens_per_char: float = 0.25  # budget estimate: ~4 characters per token
+    forgetting: ForgettingSection = Field(default_factory=ForgettingSection)
 
 
 class ImportanceSection(_Base):
@@ -103,6 +121,9 @@ class PlanningSection(_Base):
     jit_window_minutes: int = 60
     max_repairs: int = 1
     store_hourly_in_memory: bool = True
+    # Research ablation: with ``decompose`` off, agents follow their hour blocks as single
+    # tasks and never break them into 5-15 minute actions (an "hourly only" planner).
+    decompose: bool = True
 
 
 class PerceptionSection(_Base):
@@ -126,6 +147,30 @@ class DialogueSection(_Base):
 
 class ConstraintsSection(_Base):
     policy: Literal["strict-v1", "none"] = "strict-v1"
+
+
+class SocialSection(_Base):
+    """Social memory: per-agent relationship records that evolve from observed interactions.
+
+    A research extension (docs/research_platform.md). Each directed pair keeps a familiarity
+    value, a valence, interaction counts and a history. Updates follow fixed, interpretable
+    rules: conversations and co-presence raise familiarity with saturating gains, familiarity
+    decays slowly without contact, and valence moves by an exponential average of appraisals.
+    With ``appraisal: llm`` each participant's model is asked once per conversation how the
+    conversation left them feeling about the other (a new call); ``none`` keeps valence at
+    zero. ``inform_prompts`` renders the agent's own relationship record into its reaction
+    and dialogue prompts; off by default so the paper's prompts stay unchanged.
+    """
+
+    track: bool = True
+    appraisal: Literal["none", "llm"] = "none"
+    inform_prompts: bool = False
+    familiarity_gain_conversation: float = 0.25
+    familiarity_gain_presence: float = 0.03
+    presence_cooldown_minutes: int = 60
+    valence_rate: float = 0.3
+    decay_per_day: float = 0.02
+    tie_threshold: float = 0.2
 
 
 LOCAL_KINDS = ("ollama", "openai_compatible")
@@ -237,6 +282,7 @@ class GAConfig(_Base):
     location: LocationSection = Field(default_factory=LocationSection)
     dialogue: DialogueSection = Field(default_factory=DialogueSection)
     constraints: ConstraintsSection = Field(default_factory=ConstraintsSection)
+    social: SocialSection = Field(default_factory=SocialSection)
     providers: ProvidersSection = Field(default_factory=ProvidersSection)
     budget: BudgetSection = Field(default_factory=BudgetSection)
     output: OutputSection = Field(default_factory=OutputSection)
@@ -287,6 +333,10 @@ class GAConfig(_Base):
             ("dialogue.cooldown_minutes", self.dialogue.cooldown_minutes, "C"),
             ("clock.seconds_per_step", self.scenario.seconds_per_step, "C" if self.scenario.seconds_per_step == 10 else "E"),
             ("constraints.policy", self.constraints.policy, "E"),
+            ("retrieval.forgetting", self.retrieval.forgetting.enabled, "X" if self.retrieval.forgetting.enabled else "P"),
+            ("planning.decompose", self.planning.decompose, "P" if self.planning.decompose else "X"),
+            ("social.appraisal", self.social.appraisal, "X" if self.social.appraisal != "none" else "P"),
+            ("social.inform_prompts", self.social.inform_prompts, "X" if self.social.inform_prompts else "P"),
             ("scenario.seed_rendering", self.scenario.seed_rendering, "P" if self.scenario.seed_rendering == "verbatim" else "C"),
             ("game.enabled", self.game.enabled, "X" if self.game.enabled else "P"),
             (

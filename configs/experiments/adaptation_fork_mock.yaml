@@ -1,0 +1,28 @@
+# Experiment C: adaptation to an environmental change, as a counterfactual fork. Every run
+# continues the same recorded morning from its 10:00 snapshot; `fire` conditions add a fire in
+# Hobbs Cafe at 10:05 (ambient event plus the cooking area's lasting state) that ends at 11:00.
+# Source run: ga run --config configs/offline_pilot_2day.yaml --run-id adaptation_source
+#   --set "output.snapshots=[initial, '2023-02-13T10:00:00', final]" --set scenario.end=2023-02-13T14:00:00
+#   ga experiment --protocol configs/experiments/adaptation_fork_mock.yaml --execute
+name: adaptation_fork_mock
+base_config: configs/offline_pilot_2day.yaml
+fork_from: {run_dir: runs/adaptation_source, snapshot: "2023-02-13T10-00-00"}
+question: "When a fire breaks out, how many agents who perceive it change their plans, how fast, and does word of it reach others? Does an hourly-only planner adapt differently from the full hierarchy?"
+hypothesis: "Agents in the cafe react within minutes; the share of agents who change plans is higher in `fire` than in `control` (where it is zero by construction); the hourly-only planner reacts as often but regenerates fewer tasks."
+conditions:
+  control: []
+  fire: []
+  fire_hourly: ["planning.decompose=false"]
+interventions:
+  fire:
+    - {kind: ambient, at: "2023-02-13T10:05:00", id: cafe_fire, tile: [78, 19], subject: fire, predicate: is, object: burning, description: "a fire is burning in Hobbs Cafe", until: "2023-02-13T11:00:00"}
+    - {kind: object_state, at: "2023-02-13T10:05:00", address: "the Ville:Hobbs Cafe:cafe:cooking area", state: burning}
+  fire_hourly:
+    - {kind: ambient, at: "2023-02-13T10:05:00", id: cafe_fire, tile: [78, 19], subject: fire, predicate: is, object: burning, description: "a fire is burning in Hobbs Cafe", until: "2023-02-13T11:00:00"}
+    - {kind: object_state, at: "2023-02-13T10:05:00", address: "the Ville:Hobbs Cafe:cafe:cooking area", state: burning}
+seeds: [7, 8, 9]
+metrics: [adaptation, behavior, beliefs]
+metric_params:
+  adaptation: {at: "2023-02-13T10:05:00", keywords: ["fire", "burning", "smoke"], window_minutes: 120}
+primary_outcomes: [adaptation_changed_share, adaptation_median_latency_min, adaptation_mentions, replans_per_agent]
+output_dir: runs/experiments

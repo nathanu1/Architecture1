@@ -451,6 +451,18 @@ class MockLLM:
             topic = "how their days are going"
         return {"summary": f"This is a conversation about {topic}."}
 
+    def _t_conversation_appraisal(self, v: dict[str, Any], rng: random.Random) -> dict[str, Any]:
+        """Keyword appraisal of a transcript from one side (social memory extension)."""
+
+        t = v.get("_transcript_text", "").lower()
+        if re.search(r"\b(argu|angry|rude|upset|annoy|fight|insult|stop talking)", t):
+            return {"valence": -2 if "insult" in t or "fight" in t else -1, "reason": "The exchange turned sour."}
+        if re.search(r"love to come|wonderful|see you there|thank you so much|great to hear", t):
+            return {"valence": 2 if "love to come" in t else 1, "reason": "A warm exchange with an invitation or thanks."}
+        if re.search(r"good to know|thanks for telling|interesting|glad", t):
+            return {"valence": 1, "reason": "A pleasant, informative chat."}
+        return {"valence": 0, "reason": "A routine exchange."}
+
     def _t_conversation_inferences(self, v: dict[str, Any], rng: random.Random) -> dict[str, Any]:
         t = v.get("_transcript_text", "")
         name = v.get("_name", "The agent")

@@ -1,0 +1,23 @@
+# Experiment A (docs/research_platform.md §Experiments): memory architecture and behavioral
+# consistency. Four memory conditions on the five-agent two-day pilot. MOCK: the numbers check
+# that the measures separate the conditions in the expected direction; they are not findings
+# about generative agents.
+#   ga experiment --protocol configs/experiments/memory_consistency_mock.yaml --execute
+name: memory_consistency_mock
+base_config: configs/offline_pilot_2day.yaml
+question: "How do reflection, retrieval weighting and controlled forgetting change what agents can recall, how closely they follow their plans, and whether seeded information still spreads?"
+hypothesis: "Forgetting lowers recall of day-old planted facts without touching recent ones; recency-only retrieval lowers recall of important old facts; removing reflection leaves retrieval accuracy unchanged. Plan adherence is expected to be unaffected by any memory condition with the mock model."
+conditions:
+  full: []
+  no_reflection: ["architecture.reflection=false"]
+  forgetting: ["retrieval.forgetting.enabled=true", "retrieval.forgetting.threshold=-0.6"]
+  recency_only: ["retrieval.weights.importance=0", "retrieval.weights.relevance=0"]
+seeds: [101, 102, 103]
+metrics: [evaluation, memory_probe, behavior, beliefs]
+metric_params:
+  memory_probe: {k: 10}
+primary_outcomes: [memory_recall_at_k, memory_recall_old, own_experience_recall, supported_party_recall, plan_adherence]
+evaluate_relationships: false
+min_minutes: 10
+determinism_check: true
+output_dir: runs/experiments

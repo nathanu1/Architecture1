@@ -47,7 +47,8 @@ A six-hour smoke run takes about five seconds: `ga run --config configs/offline_
 | `ga analyze-ratings --run-dir DIR --name N --ratings CSV` | TrueSkill, Kruskal–Wallis, Dunn, Holm (the authors' analysis) plus a labeled Friedman/Wilcoxon addition, on genuine rankings only. |
 | `ga judge --run-dir DIR --name N` | Exploratory LLM judge, written to its own file; never reported as believability. |
 | `ga evaluate --run-dir DIR` | §7 measures with memory-validated evidence and a Markdown report. |
-| `ga experiment --protocol FILE [--measured-run DIR] [--execute] [--yes]` | Reflection extension: plans and projects usage by default; runs only with `--execute`. |
+| `ga experiment --protocol FILE [--measured-run DIR] [--execute] [--yes]` | Independent runs for a protocol (conditions × seeds, named metrics, optional forks and interventions, determinism check); plans and projects usage by default; runs only with `--execute`. |
+| `ga fork --run-dir DIR --snapshot NAME --out DIR [--set k=v] [--interventions FILE] [--run]` | Counterfactual: a new run that continues from a snapshot of another run with changed settings or interventions (research platform). |
 | `ga serve --run-dir DIR [--experiment DIR]` | Local read-only viewer and inspector. |
 | `ga play --config FILE` / `--resume DIR` / `--replay DIR` `[--speed S] [--paused] [--open] [--port N]` | Hearthside town interface (extension): a live town in the browser at http://127.0.0.1:8080, research inspector at `/inspector`. Replays make no model calls. |
 | `ga export-demo --run-dir DIR --out DIR` | A recorded town as static files for the front end's demo build: a page that plays the recording (and its research inspector) in any browser, with no server and no model. |
@@ -67,6 +68,11 @@ A six-hour smoke run takes about five seconds: `ga run --config configs/offline_
 | `configs/experiment_reflection.yaml` / `_mock.yaml` | Reflection on vs off, five matched seeds per condition (live / offline). |
 | `configs/ollama_pilot.yaml` | Three agents, two days, `llama3.1:8b` and `nomic-embed-text` on a local Ollama. No API cost. |
 | `configs/experiment_reflection_ollama.yaml` | The reflection extension on a local model. |
+| `configs/experiments/memory_consistency_mock.yaml` | Experiment A: four memory conditions (full, no reflection, forgetting, recency-only) with retrieval probes, behavior and diffusion measures. MOCK. |
+| `configs/experiments/social_network_mock.yaml` | Experiment B: ten residents, one day; contact opportunity and social-memory conditions; network measures. MOCK. |
+| `configs/experiments/adaptation_fork_mock.yaml` | Experiment C: forks of one recorded morning with and without a fire in Hobbs Cafe; adaptation measures. MOCK. |
+| `configs/offline_social_day.yaml` | Ten residents for one day (base of experiment B). |
+| `configs/probes/memory_facts.yaml` | Planted facts for the retrieval probe. |
 | `configs/town_mock.yaml` / `town_ollama.yaml` / `town_n25_ollama.yaml` / `town_n35_ollama.yaml` | The town game: offline MOCK; three residents on Ollama (start here); all 25 residents on Ollama; 35 residents, with ten original newcomers in a new neighborhood (an extension). |
 | `configs/game/` | Town game content: six affinity themes, motifs and gifts, catalog, paints and templates, Town Pulse levels, the Town Square, resident looks, a demo action script. |
 | `configs/defaults.yaml` | Every setting with its default, for reference. |
@@ -171,7 +177,9 @@ python -m http.server -d frontend/dist-demo 8090     # open http://127.0.0.1:809
 [`docs/walkthrough.md`](walkthrough.md) follows one conversation through memory, retrieval,
 reflection and planning with real IDs and scores.
 [`docs/experiment_protocol.md`](experiment_protocol.md) is the evaluation and experiment
-protocol. [`prompts/examples/`](../prompts/examples/README.md) shows, for each task, the
+protocol. [`docs/research_platform.md`](research_platform.md) documents the research
+extensions (social memory, forgetting, beliefs and Theory of Mind, behavioral measures, forks,
+metric registry, dashboards). [`prompts/examples/`](../prompts/examples/README.md) shows, for each task, the
 exact text a model receives and the schema its answer must fill.
 
 ## Main differences from the paper and the released code
@@ -190,6 +198,16 @@ The full list, with sources, is in the spec (§3 and §6). In short:
 * agents react to object and ambient events (the paper's burning stove), which the released code
   does not;
 * nothing is fabricated when a model call fails: the action, plan or conversation fails visibly.
+
+## Research platform settings
+
+```yaml
+retrieval.forgetting: {enabled: false, decay: 0.5, threshold: -1.0, importance_bonus: 0.1}
+planning.decompose: true          # false = hourly-only planner
+social: {track: true, appraisal: none, inform_prompts: false, tie_threshold: 0.2, ...}
+```
+
+All off by default or observational; see [`research_platform.md`](research_platform.md) §2.
 
 ## Tests
 

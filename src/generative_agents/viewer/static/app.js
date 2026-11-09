@@ -352,14 +352,154 @@ async function renderInterviews() {
   $("#iv-q").onchange = (e) => { el.dataset.q = e.target.value; renderInterviews(); };
 }
 
+// ------------------------------------------------------------------ decisions tab (recorded evidence)
+const DC = { agent: null, day: null, type: "", data: null };
+function recSummary(r) {
+  const d = r.payload;
+  switch (r.type) {
+    case "action": return `${esc(d.activity)} → <span class="where">${esc(d.address || "")}</span>${d.rejections?.length ? ` · ${d.rejections.length} rejected` : ""}`;
+    case "reaction": return `saw “${esc(d.observation)}” → <b>${esc(d.decision)}</b>${d.new_activity ? `: ${esc(d.new_activity)} (${d.minutes} min)` : ""}<br><span class="where">${esc(d.reason || "")}</span>`;
+    case "replan": return `inserted “${esc(d.inserted)}” (${d.minutes} min, ${esc(d.source)}); displaced ${d.displaced?.length || 0} task(s)`;
+    case "conversation": return `${(d.participants || []).map((p) => esc(S.byId[p]?.name || p)).join(" & ")} · ${d.utterances} lines · ${esc(d.summary || d.status)}`;
+    case "reflection": return `${d.stored || 0} insight(s) from ${(d.questions || []).length} question(s)${d.failures?.length ? ` · ${d.failures.length} failure(s)` : ""}`;
+    case "day_plan": return `wake ${esc(d.wake_up_time)} · ${(d.items || []).length} items · ${(d.blocks || []).length} hour blocks`;
+    case "intervention": return `${esc(d.kind)} ${esc(d.description || d.address || d.text || "")}`;
+    case "action_failure": return `${esc(d.activity)} failed: ${esc(d.reason)}`;
+    case "plan_failure": return `${esc(d.level)} plan failed: ${esc(d.error)}`;
+    case "constraint": return `${esc(d.rule)}: ${esc(d.message)}`;
+    default: return esc(JSON.stringify(d).slice(0, 120));
+  }
+}
+async function renderDecisions() {
+  const sel = $("#dc-agent"); if (!sel.options.length) agentOptions(sel);
+  DC.agent = sel.value || S.selected;
+  const days = (await api("/api/timeline")).days;
+  const daySel = $("#dc-day");
+  if (!daySel.options.length) daySel.innerHTML = days.map((d) => `<option ${d === days[days.length - 1] ? "selected" : ""}>${d}</option>`).join("");
+  DC.day = daySel.value || days[days.length - 1];
+  DC.type = $("#dc-type").value;
+  DC.data = await api(`/api/agent/${DC.agent}/decisions?day=${DC.day}&limit=600`);
+  const recs = DC.data.records.filter((r) => !DC.type || r.type === DC.type);
+  $("#dc-list").innerHTML = recs.map((r) => `<button data-rec="${r.id}"><div class="rec"><span class="when">${r.sim_time.slice(11, 19)}<br>step ${r.step}</span><span><span class="tag ${r.type}">${r.type}</span>${r.trace_ids.length ? `<span class="tag">${r.trace_ids.length} trace${r.trace_ids.length > 1 ? "s" : ""}</span>` : ""}${r.call_ids.length ? `<span class="tag">${r.call_ids.length} call${r.call_ids.length > 1 ? "s" : ""}</span>` : ""}<div>${recSummary(r)}</div></span></div></button>`).join("") || '<div class="empty">no recorded decisions for this day</div>';
+  if (recs[0]) showDecision(recs[recs.length - 1].id);
+  else $("#dc-detail").innerHTML = "";
+}
+function showDecision(id) {
+  $$("#dc-list button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.rec) === String(id)));
+  const r = DC.data.records.find((x) => String(x.id) === String(id)); if (!r) return;
+  const traces = r.trace_ids.map((tid) => { const t = DC.data.traces[tid]; if (!t) return `<li class="where">${esc(tid)} (trace not kept)</li>`; return `<li><button class="linkbtn" data-goto-trace="${esc(tid)}">${esc(tid)}</button> · ${esc(t.purpose || "")} · query “${esc(t.query)}” · ${t.delivered} delivered, ${t.excluded} excluded<ul>${t.top.map((m) => `<li><span class="kind ${m.kind}">${m.kind}</span> ${esc(m.description)} <span class="where">${m.score.toFixed(2)}</span></li>`).join("")}</ul></li>`; }).join("");
+  const calls = r.call_ids.map((cid) => { const c = DC.data.calls[String(cid)]; return c ? `<li><span class="mono">#${cid}</span> ${esc(c.task)} · ${esc(c.status)}${c.attempt_kind === "repair" ? " · repair" : ""} · ${esc(c.model)}${c.latency_ms ? ` · ${Math.round(c.latency_ms)} ms` : ""}</li>` : `<li class="where">#${cid}</li>`; }).join("");
+  $("#dc-detail").innerHTML = `<div class="callout"><span class="tag recorded">recorded</span> <b>${esc(r.type)}</b> at ${esc(r.sim_time)} (step ${r.step}) · ${esc(S.byId[DC.agent]?.name || DC.agent)}<br>${recSummary(r)}</div>
+    <p class="note">${esc(DC.data.note)}</p>
+    <h3>Retrieved memories cited by this record</h3>${traces ? `<ul>${traces}</ul>` : '<p class="empty">this record cites no retrieval trace</p>'}
+    <h3>Model calls cited by this record</h3>${calls ? `<ul>${calls}</ul>` : '<p class="empty">this record cites no model call</p>'}
+    <h3>Model calls this agent made at the same simulated time</h3>${(r.calls_at_time || []).length ? `<ul>${r.calls_at_time.map((c) => `<li><span class="mono">#${c.id}</span> ${esc(c.task)} · ${esc(c.status)}${c.attempt_kind === "repair" ? " · repair" : ""}</li>`).join("")}</ul>` : '<p class="empty">none recorded at this time</p>'}
+    <h3>Stored payload</h3><pre class="json">${esc(JSON.stringify(r.payload, null, 1))}</pre>`;
+}
+
+// ------------------------------------------------------------------ network tab (social memory)
+const NW = { idx: null };
+function lineChart(series, keys, { width = 520, height = 180 } = {}) {
+  if (!series.length) return "";
+  const padL = 40, padB = 28, padT = 12, w = width - padL - 10, h = height - padT - padB;
+  const colors = ["#2353AC", "#B4461C", "#6B3E9B", "#1E6E62"];
+  const max = Math.max(1, ...keys.flatMap((k) => series.map((s) => s[k] ?? 0)));
+  const x = (i) => padL + (w * i) / Math.max(1, series.length - 1), y = (v) => padT + h - (h * v) / max;
+  const paths = keys.map((k, ki) => `<path d="${series.map((s, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(s[k] ?? 0).toFixed(1)}`).join(" ")}" fill="none" stroke="${colors[ki % colors.length]}" stroke-width="1.8"/>`).join("");
+  const legend = keys.map((k, ki) => `<rect x="${padL + ki * 130}" y="${height - 12}" width="10" height="10" fill="${colors[ki % colors.length]}"/><text x="${padL + ki * 130 + 14}" y="${height - 3}" font-size="11">${esc(k)}</text>`).join("");
+  const ticks = [0, max / 2, max].map((v) => `<text x="${padL - 6}" y="${y(v) + 4}" text-anchor="end" font-size="10" fill="#56645D">${Number(v.toFixed(2))}</text><line x1="${padL}" x2="${padL + w}" y1="${y(v)}" y2="${y(v)}" stroke="#C9D4CC" stroke-dasharray="2 3"/>`).join("");
+  const xl = [series[0], series[series.length - 1]].map((s, i) => `<text x="${i ? padL + w : padL}" y="${padT + h + 14}" text-anchor="${i ? "end" : "start"}" font-size="10" fill="#56645D">${esc(s.sim_time.slice(5, 16).replace("T", " "))}</text>`).join("");
+  return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" font-family="IBM Plex Mono, monospace">${ticks}${paths}${xl}${legend}</svg>`;
+}
+async function renderNetwork() {
+  const el = $("#network");
+  const base = await api("/api/network");
+  const series = base.series || [];
+  if (NW.idx == null || NW.idx >= series.length) NW.idx = series.length - 1;
+  const at = series[NW.idx]?.sim_time;
+  const nw = NW.idx === series.length - 1 ? base : await api(`/api/network?at=${encodeURIComponent(at)}`);
+  const m = nw.measures, agents = S.agents.map((a) => a.id);
+  const edges = m.edges.map(([a, b]) => [a, b]);
+  const sel = S.selected;
+  const mine = (nw.states || []).filter((s) => s.agent_id === sel).sort((a, b) => b.familiarity - a.familiarity);
+  const kpi = (v, label) => `<div class="kpi"><b>${v == null ? "—" : v}</b><span>${label}</span></div>`;
+  el.innerHTML = `<div class="panel-head"><div><h2>Social network</h2><span class="hint">ties from each agent's own relationship records (familiarity ≥ ${nw.threshold}); an edge needs both directions · appraisal: ${esc(nw.config.appraisal)} · informs prompts: ${nw.config.inform_prompts ? "yes" : "no"}</span></div></div>
+    ${S.run.mode !== "live" ? `<p class="callout">${S.run.mode.toUpperCase()} run: the structure comes from fixture behavior; the measures show the pipeline, not findings.</p>` : ""}
+    <div class="slider-row"><span class="mono">${esc(at ? at.slice(0, 16).replace("T", " ") : "")}</span><input id="nw-slider" type="range" min="0" max="${Math.max(0, series.length - 1)}" value="${NW.idx}" aria-label="Network time"><span class="where">${series.length} points</span></div>
+    <div class="kpis">${kpi(m.density, "density (mutual ties)")}${kpi(m.edge_count, "edges")}${kpi(m.components, "components")}${kpi(m.largest_component, "largest component")}${kpi(m.isolates, "isolates")}${kpi(m.reciprocity, "reciprocity")}${kpi(m.clustering, "clustering")}${kpi(m.mean_familiarity, "mean familiarity")}${kpi(m.mean_valence, "mean valence")}</div>
+    <div class="grid2"><div>${network(agents, edges, { size: 400 })}</div>
+    <div><h3>Over time</h3>${lineChart(series, ["density", "reciprocity"])}${lineChart(series, ["edge_count", "components"])}
+    <h3 style="margin-top:10px">${esc(S.byId[sel]?.name || "")}'s own records <span class="hint">(what this agent could be told about in its prompts; never the other side)</span></h3>
+    <table><thead><tr><th>other</th><th>familiarity</th><th class="num">conv.</th><th class="num">seen</th><th>valence</th><th>last</th></tr></thead><tbody>${mine.map((s) => `<tr><td>${esc(s.other_name || S.byId[s.other_id]?.name || s.other_id)}</td><td><span class="fambar"><div style="width:${Math.round(s.familiarity * 100)}%"></div></span> <span class="valence">${s.familiarity.toFixed(2)}</span></td><td class="num">${s.conversations}</td><td class="num">${s.presence}</td><td class="valence">${s.appraisals ? s.valence.toFixed(2) : "—"}</td><td class="where">${esc((s.last_interaction_at || "").slice(5, 16).replace("T", " "))}</td></tr>`).join("") || '<tr><td colspan="6" class="empty">no records yet</td></tr>'}</tbody></table></div></div>
+    <p class="note">Rules: conversation gain ${nw.config.familiarity_gain_conversation}, presence gain ${nw.config.familiarity_gain_presence} at most every ${nw.config.presence_cooldown_minutes} min, decay ${nw.config.decay_per_day}/day, valence EMA rate ${nw.config.valence_rate}. Every update is in <code>relationship_events</code>; the slider replays that log.</p>`;
+  $("#nw-slider").oninput = (e) => { NW.idx = Number(e.target.value); renderNetwork(); };
+}
+
+// ------------------------------------------------------------------ behavior tab
+async function renderBehavior() {
+  const el = $("#behavior");
+  const b = await api("/api/behavior");
+  const names = b.names || {};
+  const pct = (v) => (v == null ? "—" : `${Math.round(v * 100)}%`);
+  const rows = Object.entries(b.agents).map(([aid, a]) => `<tr><td>${esc(names[aid] || aid)}</td><td class="num">${a.actions}</td><td class="num">${pct(a.scheduled_share)}</td><td class="num">${a.blocks_followed}/${a.hour_blocks} (${pct(a.plan_adherence)})</td><td class="num">${a.replans}</td><td class="num">${a.superseded_tasks}</td><td class="num">${a.non_continue_reactions}/${a.reaction_decisions}</td><td class="num">${pct(a.idle_share)}</td><td class="num">${a.conversations}</td><td class="num">${a.action_failures + a.constraint_refusals + a.plan_failures}</td></tr>`).join("");
+  const hours = b.by_hour || [];
+  const keys = ["action", "replan", "non_continue_reactions", "conversation", "reflection"];
+  const colors = { action: "#2353AC", replan: "#16211B", non_continue_reactions: "#B4461C", conversation: "#E0773F", reflection: "#6B3E9B" };
+  const max = Math.max(1, ...hours.map((h) => keys.reduce((s, k) => s + (h[k] || 0), 0)));
+  const W = Math.max(400, hours.length * 18 + 60), H = 200, bw = Math.max(6, (W - 60) / Math.max(1, hours.length) - 4);
+  const bars = hours.map((h, i) => { let y = H - 30; return keys.map((k) => { const v = h[k] || 0; const hh = (v / max) * (H - 50); y -= hh; return v ? `<rect x="${50 + i * (bw + 4)}" y="${y}" width="${bw}" height="${hh}" fill="${colors[k]}"><title>${esc(h.hour)} ${k}: ${v}</title></rect>` : ""; }).join("") + (i % 4 === 0 ? `<text x="${50 + i * (bw + 4)}" y="${H - 14}" font-size="9" fill="#56645D">${esc(h.hour.slice(5, 13).replace("T", " "))}</text>` : ""); }).join("");
+  const legend = keys.map((k, i) => `<rect x="${50 + i * 120}" y="${H - 8}" width="9" height="9" fill="${colors[k]}"/><text x="${62 + i * 120}" y="${H}" font-size="10">${k.replace(/_/g, " ")}</text>`).join("");
+  const p = b.pooled;
+  const kpi = (v, label) => `<div class="kpi"><b>${v == null ? "—" : v}</b><span>${label}</span></div>`;
+  el.innerHTML = `<div class="panel-head"><div><h2>Behavior</h2><span class="hint">from the run's own plans, events and frames · ${esc(b.span.start || "")} → ${esc(b.span.end || "")}</span></div></div>
+    <div class="kpis">${kpi(pct(p.scheduled_share), "scheduled share of actions")}${kpi(pct(p.plan_adherence), "hour blocks followed")}${kpi(pct(p.idle_share), "idle share")}${kpi(p.replans_per_agent, "replans per agent")}${kpi(pct(p.reaction_rate), "reactions that changed course")}${kpi(p.conversations_per_agent, "conversations per agent")}${kpi(p.action_failures + p.constraint_refusals + p.plan_failures, "failures and refusals")}</div>
+    <table><thead><tr><th>agent</th><th class="num">actions</th><th class="num">scheduled</th><th class="num">blocks followed</th><th class="num">replans</th><th class="num">superseded</th><th class="num">reacted / asked</th><th class="num">idle</th><th class="num">conv.</th><th class="num">failures</th></tr></thead><tbody>${rows}</tbody></table>
+    <h3 style="margin-top:12px">Per simulated hour</h3><div style="overflow:auto"><svg width="${W}" height="${H + 4}" viewBox="0 0 ${W} ${H + 4}" role="img" font-family="IBM Plex Mono, monospace">${bars}${legend}</svg></div>
+    <p class="note">Scheduled share: actions whose task came from the agent's own schedule rather than a reaction, wait, conversation or replan. Plan adherence: hour blocks in which at least one scheduled action started. Idle share: frames with no action.</p>`;
+}
+
+// ------------------------------------------------------------------ beliefs tab
+async function renderBeliefs() {
+  const el = $("#beliefs");
+  const b = await api("/api/beliefs");
+  const names = b.names || {}, agents = Object.keys(names);
+  const topics = Object.keys(b.beliefs || {});
+  if (!topics.length) { el.innerHTML = `<h2>Beliefs</h2><p class="empty">This scenario defines no evaluator topics (events.yaml), so there is nothing to track.</p>`; return; }
+  const sections = topics.map((t) => {
+    const per = b.beliefs[t], s = b.summary.topics[t];
+    const first = agents.map((a) => `<tr><td>${esc(names[a])}</td><td class="${per[a].holds ? "yes" : ""}">${per[a].holds ? "knows" : "—"}</td><td class="where">${esc((per[a].first_exposure_at || "").slice(5, 16).replace("T", " "))}</td><td>${per[a].sources.map((x) => esc(names[x] || x)).join(", ") || (per[a].holds ? "seed" : "")}</td><td>${per[a].conflicting_details.join(", ") || "—"}</td></tr>`).join("");
+    const so = {};
+    for (const r of b.second_order[t] || []) so[`${r.agent_id}|${r.about}`] = r;
+    const matrix = `<table class="matrix"><thead><tr><th>A \\ believes B knows</th>${agents.map((a) => `<th>${esc(names[a].split(" ")[0])}</th>`).join("")}</tr></thead><tbody>${agents.map((a) => `<tr><td>${esc(names[a].split(" ")[0])}</td>${agents.map((bb) => { if (a === bb) return '<td class="where">·</td>'; const r = so[`${a}|${bb}`]; const cls = r?.basis ? r.basis : ""; return `<td class="ground ${cls}" title="${esc(r?.status || "")}">${r?.basis ? r.basis : r?.other_holds ? "?" : ""}</td>`; }).join("")}</tr>`).join("")}</tbody></table>`;
+    const probes = (b.tom_probes || []).filter((r) => r.event === t);
+    const probeRows = probes.map((r) => `<tr><td>${esc(names[r.agent_id] || r.agent_id)}</td><td>${esc(names[r.about] || r.about)}</td><td>${r.claims_other_knows == null ? "?" : r.claims_other_knows ? "yes" : "no"}</td><td>${esc(r.grounds || "—")}</td><td>${r.other_holds ? "yes" : "no"}</td><td><span class="tag">${esc(r.label)}</span></td><td class="where">${esc(r.answer.slice(0, 140))}</td></tr>`).join("");
+    return `<h3 style="margin-top:14px">${esc(t)}</h3>
+      <div class="kpis"><div class="kpi"><b>${s.holders.length}/${agents.length}</b><span>agents with a received memory</span></div><div class="kpi"><b>${s.knowledge_coverage == null ? "—" : Math.round(s.knowledge_coverage * 100) + "%"}</b><span>pairs where A has grounds about B, of pairs where B knows</span></div><div class="kpi"><b>${s.grounded_unsupported}</b><span>grounds about someone who has no received memory</span></div><div class="kpi"><b>${s.with_conflicting_details.length}</b><span>agents holding differing detail values</span></div></div>
+      <div class="grid2"><div><h4 style="margin:4px 0">First-order: who has a received memory</h4><table><thead><tr><th>agent</th><th>status</th><th>first exposure</th><th>sources</th><th>conflicting details</th></tr></thead><tbody>${first}</tbody></table></div>
+      <div><h4 style="margin:4px 0">Second-order grounds (told / heard; “?” = B knows but A has no grounds)</h4>${matrix}</div></div>
+      ${probes.length ? `<h4>Theory-of-Mind probe (interviews on the final snapshot)</h4><table><thead><tr><th>asked</th><th>about</th><th>claims B knows</th><th>grounds</th><th>B knows</th><th>label</th><th>answer</th></tr></thead><tbody>${probeRows}</tbody></table>` : '<p class="note">No Theory-of-Mind probe recorded for this run; run an experiment with the <code>tom</code> metric to add one.</p>'}`;
+  }).join("");
+  el.innerHTML = `<div class="panel-head"><div><h2>Beliefs and Theory of Mind</h2><span class="hint">${esc(b.note)}</span></div></div>${S.run.mode !== "live" ? `<p class="callout">${S.run.mode.toUpperCase()} run: the information flow is real, the words are fixture output.</p>` : ""}${sections}`;
+}
+
 // ------------------------------------------------------------------ experiment tab
 async function renderExperiment() {
   const ex = await api("/api/experiment");
   const el = $("#experiment");
   if (!ex.runs) { el.innerHTML = `<h2>Experiment</h2><p class="empty">Start the viewer with <code>--experiment runs/experiments/NAME</code> to compare independent runs.</p>`; return; }
-  const cols = ["run_id", "condition", "seed", "status", "supported_party_recall", "supported_candidacy_recall", "invited_attendance_rate", "unsupported_claims", "calls", "runtime_s"];
-  const comps = Object.entries(ex.summary?.comparisons || {}).map(([k, v]) => `<li><b>${esc(k)}</b>: ${esc(v.difference)} = ${v.mean_difference} (bootstrap 95% CI ${esc(JSON.stringify(v.bootstrap_95ci))}, permutation p = ${v.permutation_p}, n = ${esc(JSON.stringify(v.n))}) — ${esc(v.note)}</li>`).join("");
-  el.innerHTML = `<h2>Experiment: ${esc(ex.summary?.protocol || ex.dir)}</h2><p class="note">Unit of analysis: the run. Five runs per condition are exploratory.</p><table><thead><tr>${cols.map((c) => `<th>${c}</th>`).join("")}</tr></thead><tbody>${ex.runs.map((r) => `<tr>${cols.map((c) => `<td>${esc(r[c])}</td>`).join("")}</tr>`).join("")}</tbody></table><ul>${comps}</ul>`;
+  const summ = ex.summary || {};
+  const prim = summ.primary || ["supported_party_recall", "supported_candidacy_recall", "invited_attendance_rate"];
+  const cols = ["run_id", "condition", "seed", "status", ...prim, "calls", "runtime_s"];
+  const conds = Object.keys(summ.conditions || {});
+  const outcomes = summ.outcomes || prim;
+  const cell = (st) => (!st || !st.n ? "n/a" : `${st.mean}${st.sd != null ? ` ± ${st.sd}` : ""} <span class="where">(n=${st.n})</span>`);
+  const byCond = `<table><thead><tr><th>outcome</th>${conds.map((c) => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${outcomes.map((k) => `<tr><td>${prim.includes(k) ? `<b>${esc(k)}</b>` : esc(k)}</td>${conds.map((c) => `<td class="num">${cell(summ.conditions[c].outcomes[k])}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+  const comps = Object.entries(summ.comparisons || {}).map(([k, v]) => `<li><b>${esc(k)}</b>: ${esc(v.difference)} = ${v.mean_difference} (bootstrap 95% CI ${esc(JSON.stringify(v.bootstrap_95ci))}, permutation p = ${v.permutation_p}, n = ${esc(JSON.stringify(v.n))}) — ${esc(v.note)}</li>`).join("");
+  const det = summ.determinism ? `<p class="callout">Determinism check: the first configuration run twice gave <b>${summ.determinism.identical ? "identical" : "different"}</b> state tables.</p>` : "";
+  const proto = ex.protocol || {};
+  el.innerHTML = `<h2>Experiment: ${esc(summ.protocol || ex.dir)}</h2>${proto.question ? `<p>${esc(proto.question)}</p>` : ""}${proto.hypothesis ? `<p><b>Hypothesis:</b> ${esc(proto.hypothesis)}</p>` : ""}<p class="note">Unit of analysis: the run. A handful of runs per condition is exploratory. Metrics: ${esc((proto.metrics || []).join(", "))}.</p>${det}
+    <table><thead><tr>${cols.map((c) => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${ex.runs.map((r) => `<tr>${cols.map((c) => `<td>${esc(r[c])}</td>`).join("")}</tr>`).join("")}</tbody></table>
+    <h3 style="margin-top:12px">By condition</h3>${byCond}<h3 style="margin-top:12px">Comparisons (exploratory)</h3><ul>${comps || "<li>none</li>"}</ul>`;
 }
 
 // ------------------------------------------------------------------ wiring
@@ -377,17 +517,22 @@ function showTab(tab) {
   if (tab === "social") renderSocial();
   if (tab === "interviews") renderInterviews();
   if (tab === "experiment") renderExperiment();
+  if (tab === "decisions") renderDecisions();
+  if (tab === "network") renderNetwork();
+  if (tab === "behavior") renderBehavior();
+  if (tab === "beliefs") renderBeliefs();
 }
 function select(aid) { S.selected = aid; roster(); drawMap(); renderInspector(); }
 
 document.addEventListener("click", (e) => {
-  const t = e.target.closest("[data-pick],[data-conv],[data-trace],[data-refl],[data-goto-trace],[data-tab],[data-lane],.toggle");
+  const t = e.target.closest("[data-pick],[data-conv],[data-trace],[data-refl],[data-rec],[data-goto-trace],[data-tab],[data-lane],.toggle");
   if (!t) return;
   if (t.dataset.pick) select(t.dataset.pick);
+  else if (t.dataset.rec) showDecision(t.dataset.rec);
   else if (t.dataset.conv) openConversation(t.dataset.conv);
   else if (t.dataset.trace) showTrace(t.dataset.trace);
   else if (t.dataset.refl) showTree(t.dataset.refl);
-  else if (t.dataset.gotoTrace !== undefined && t.dataset.gotoTrace) { showTab("retrieval"); $("#rt-agent").value = S.selected; loadTraces(t.dataset.gotoTrace); }
+  else if (t.dataset.gotoTrace !== undefined && t.dataset.gotoTrace) { const who = t.dataset.gotoTrace.split(".t")[0] || S.selected; showTab("retrieval"); $("#rt-agent").value = who; loadTraces(t.dataset.gotoTrace); }
   else if (t.dataset.tab) showTab(t.dataset.tab);
   else if (t.dataset.lane) {
     const rect = t.getBoundingClientRect(); const frac = (e.clientX - rect.left) / rect.width;
@@ -412,6 +557,9 @@ $("#speed").onchange = (e) => (S.speed = Number(e.target.value));
 $("#scrub").oninput = (e) => seek(Number(e.target.value));
 $("#rt-agent").onchange = () => loadTraces();
 $("#rf-agent").onchange = () => loadReflections();
+$("#dc-agent").onchange = () => renderDecisions();
+$("#dc-day").onchange = () => renderDecisions();
+$("#dc-type").onchange = () => renderDecisions();
 document.addEventListener("keydown", (e) => {
   if (e.target.matches("input, select, textarea")) return;
   if (e.code === "Space") { e.preventDefault(); setPlaying(!S.playing); }

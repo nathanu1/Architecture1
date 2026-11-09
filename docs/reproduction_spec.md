@@ -260,6 +260,27 @@ Everything here is class X, off unless `game.enabled: true`; design and rules in
 | S-10 | A recorded town as a static page: replay with no calls, export frames, state changes, events and inspector data; a demo build plays them in the browser. | user request | X | `game/export_demo.py`, `ga export-demo`; `frontend/src/demo/`, `npm run build:demo` | `test_game_session.py::test_a_recorded_town_exports_as_static_demo_data_without_calls`, `frontend/tests/player.test.ts` | View-only by construction: the demo API refuses every action. Inspector data is split into a shared file and one per resident, so each file stays small enough to publish. |
 | S-11 | A bigger town: a scenario variant adds houses on open land, each copied from an existing building, and original newcomers, leaving the base town's residents, events and rules unchanged. | user request | X | `scenario/neighborhood.py`, `ga build-neighborhood`, `scenarios/smallville_n35/` (10 newcomers, 35 residents) | `test_neighborhood.py` (the committed files are what the spec builds; the 25 are unchanged; every newcomer starts in bed and can walk to town; plots must be open and reachable; texts about the seeded events are refused; a mock run) | The original map fences the town in, so the spec opens a two-tile gate. Newcomers start with no knowledge of the party, the candidacy or the election. Runs of this variant are never compared with the paper's 25-agent numbers. |
 
+### 2T. Research platform (extension)
+
+Everything here is class X and off by default, or purely observational; design and usage in
+[`research_platform.md`](research_platform.md), motivation in [`research_review.md`](research_review.md).
+
+| Req | Behavior | Source | Class | Implementation | Tests | Deviation or note |
+| --- | --- | --- | --- | --- | --- | --- |
+| T-1 | Controlled forgetting: a memory whose ACT-R base-level activation (creation and last-access traces) is below a threshold is inaccessible to retrieval; exclusions are recorded in the trace with the activation; the stream is never altered. | Anderson & Schooler 1991 | X | `memory/retrieval.py` `Forgetting`; `retrieval.forgetting.*` | `test_research_memory.py` | Off by default (class P). Two traces, not the full access history. |
+| T-2 | Hourly-only planner: hour blocks followed as single tasks, interruptions resume the block without a replan call. | ablation | X | `planning.decompose=false` | `test_research_memory.py::test_hourly_only_planner_*` | Day and hour plans unchanged. |
+| T-3 | Social memory: one directed record per interacting pair (familiarity, valence, counts, times), updated by fixed rules from conversations and co-presence; every update logged with before/after values. | Humanoid Agents (EMNLP 2023 demo), our rules | X (observational by default) | `social/relationships.py`, engine hooks in `simulation/engine.py` | `test_social.py` | `social.track` is on by default because it makes no call and changes no prompt; replay of older runs is unaffected. |
+| T-4 | Optional appraisal: each participant rates how a conversation left it feeling about the other (−2..2) from the shared transcript; failed calls leave valence unchanged and are logged. | extension | X | `prompts/conversation_appraisal.v1.md`, `social/service.py` | `test_social.py::test_appraisal_calls_*` | One new call per participant per conversation when `social.appraisal: llm`. |
+| T-5 | Optional prompt line: the observer's own relationship record (never the other side's) is appended to the reaction, talk and dialogue context. | extension | X | `social.inform_prompts`; `cognition/reaction.py` | `test_social.py::test_prompt_informing_*` | Changes request hashes only when on. |
+| T-6 | Network measures from records at any simulated time: density of mutual ties, degree, reciprocity, clustering, components; reconstruction from the event log. | §7.1.1 density convention | X | `social/network.py` | `test_social.py::test_network_measures_*` | No new dependencies. |
+| T-7 | Belief ledger: per agent and topic, exposures with provenance and detail values, variants across sources, and second-order grounds (A told B, A heard B), kept apart from truth (B's own supported exposure). | FANToM (EMNLP 2023) adapted | X | `cognition/beliefs.py` | `test_beliefs_tom.py` | Evaluator-side only; never rendered into a prompt. |
+| T-8 | Theory-of-Mind probe: "Does B know about <topic>?" asked of A on a snapshot clone, labeled by the awareness classifier and scored against grounds and truth (six labels). | FANToM adapted | X | `evaluation/tom.py`; `tom` metric | `test_beliefs_tom.py::test_tom_probe_*` | Automated labels, as in D-18. |
+| T-9 | Behavioral measures from records: scheduled share, plan adherence, replans, reactions, idle share, conversations, failures; adaptation after an intervention (perceivers, changes, latency, mentions). | extension | X | `evaluation/behavior.py` | `test_behavior_metrics.py` | No model calls. |
+| T-10 | Retrieval probes on a snapshot clone: planted facts (recall@k, MRR, by age and importance) and own-experience recall. | extension | X | `evaluation/memory_probe.py`, `configs/probes/memory_facts.yaml` | `test_behavior_metrics.py::test_planted_facts_*` | Lexical with the hash fixture; semantic with model embeddings. |
+| T-11 | Counterfactual forks: a new run continues from a committed snapshot with a fresh ledger, changed settings and/or interventions; the manifest records the origin; a fork that changes nothing reproduces the source continuation with the mock. | extension | X | `simulation/fork.py`, `ga fork` | `test_fork.py` | The scenario cannot change (K-5 guard). |
+| T-12 | Experiment protocols: named metrics from a registry, per-condition interventions, `fork_from`, a recorded hypothesis, pairwise comparisons, a determinism check (same configuration twice, state hashes compared), generic reports. | R-1 … R-3 generalized | X | `evaluation/metrics.py`, `evaluation/experiment.py` | `test_research_experiment.py`, `test_experiment.py` | Existing reflection protocols run unchanged. |
+| T-13 | Dashboard: Decisions (recorded evidence only), Network (time slider over the event log), Behavior, Beliefs tabs; generic experiment comparison; manifest `randomness` section. | prompt §12 | X | `viewer/data.py`, `viewer/app.py`, `viewer/static/` | `test_cli_viewer.py::test_research_views_*` | No post-hoc explanations are generated (Turpin et al. 2023). |
+
 ## 3. Paper vs released code: verified differences
 
 | Item | Paper | Released code (verified) | Our default | Compat option |
@@ -323,6 +344,9 @@ Everything here is class X, off unless `game.enabled: true`; design and rules in
 | `seed_rendering` | `verbatim` | P, E | p. 5 |
 | `candidacy_seed_policy` | `paper_originator_only` | P | p. 15 |
 | `game.enabled` | false | X | town game extension (2S) |
+| `retrieval.forgetting.enabled` | false | X when on | research platform (2T, T-1) |
+| `planning.decompose` | true | X when off | research platform (2T, T-2) |
+| `social.track` / `appraisal` / `inform_prompts` | true / none / false | X when appraisal or inform is on | research platform (2T, T-3 … T-5) |
 
 ## 6. Deviations and adaptations
 
@@ -392,7 +416,7 @@ All seven milestones are implemented, plus the local-model adapters (O-7) and th
 
 | Check | Result |
 | --- | --- |
-| Test suite (`pytest`) | 190 tests pass offline (retrieval, gateway, reflection, summaries, planning, world, behavior scenarios, engine resume/replay/budget, scenario audit, interviews, metrics, statistics, exports, experiment runner, prompt examples, CLI and viewer API, local-model adapters, town game and its live session, the neighborhood builder). |
+| Test suite (`pytest`) | 218 tests pass offline (one skipped): the 190 of the reproduction (retrieval, gateway, reflection, summaries, planning, world, behavior scenarios, engine resume/replay/budget, scenario audit, interviews, metrics, statistics, exports, experiment runner, prompt examples, CLI and viewer API, local-model adapters, town game and its live session, the neighborhood builder) plus 28 for the research platform (forgetting, hourly-only planner, social memory and network measures, belief ledger and ToM probe, behavior and retrieval probes, forks, generalized protocols, dashboard APIs). |
 | Scenario import | Re-importing the official checkout at `fe05a71` reproduces the committed scenario files byte for byte; the n25 audit is clean under the paper policy (party: Isabella only; candidacy: Sam only). |
 | Offline five-agent, two-day run (`configs/offline_pilot_2day.yaml`) | Completes in about a minute; evaluation, interviews (500 answers), blinded export and the viewer were exercised on it. MOCK. |
 | Offline 25-agent, two-day run | Completed in 6.6 minutes: 32,970 mock calls, about 17.9M estimated input tokens (real prompts, chars/4), 19,291 memories, 228 conversations, 3,615 reflection memories, about 0.5 GB on disk with snapshots. Evaluation took 44 s. MOCK: these numbers describe the pipeline's load, not agent behavior. |
@@ -403,6 +427,7 @@ All seven milestones are implemented, plus the local-model adapters (O-7) and th
 | Local models (Ollama, OpenAI-compatible) | Adapters, a three-agent simulation over HTTP and its call-free replay pass against a fake server. A real Ollama 0.40.2 with Llama 3.2 3B (CPU only) ran the three-resident town from 07:00 to 18:00: 493 calls, about 55 minutes of model time, 427 of 460 first attempts valid (30 hour decompositions fell back to single tasks), no resident-to-resident conversation in 26 encounters; after the H-7 and G-3 prompt changes, all 25 residents ran from 07:00 to 09:15 (2,525 calls, 4.8 hours of model time, 14 conversations, 18 granted wishes), and the 35-resident extension (S-11) from 07:00 to 09:10 (4,537 calls, 11.2 hours of model time, 33 conversations, 14 granted wishes). All three runs replay to an identical state with no calls (`docs/game.md`). The OpenAI-compatible adapter was checked against llama.cpp's `llama-server`. Not a research result. |
 | Town game | A scripted session (`configs/game/demo_actions.jsonl`) and live sessions in the browser were played with the MOCK model: chat, requests, gifts, search, building, replay and resume. MOCK. |
 | Front end | 34 unit tests; type check; a scripted browser walkthrough (desktop and phone sizes) of the town, notebook, chat, build mode and inspector. |
+| Research platform experiments (`configs/experiments/*.yaml`) | Executed with the MOCK model on 2026-11-09: memory consistency (12 runs + determinism re-run, identical state), social network emergence (12 runs of ten residents), adaptation forks (9 forks of one recorded morning). Results and their reading in `docs/experiments/README.md`. MOCK: pipeline checks, not findings. |
 | Live API | **Not run.** No credentials were available. |
 
 Known limitations: the mock model is a crude fixture (its dialogue and reflections are mechanical);

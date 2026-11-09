@@ -10,6 +10,7 @@ Source runs (each task's example comes from the first run that has one):
 * run `examples-main` (offline two-day pilot (MOCK)); default architecture settings
 * run `examples-compat` (offline smoke (MOCK)); settings that differ from the defaults: `architecture.post_conversation_inferences=True`, `scenario.seed_rendering=inner_thought_llm`
 * run `examples-game` (town game (MOCK)); settings that differ from the defaults: `game.enabled=True`
+* run `examples-appraisal` (offline smoke with social appraisal (MOCK)); settings that differ from the defaults: `social.appraisal=llm`
 
 > **MOCK OUTPUTS.** The inputs are what a model is sent in that state; the
 > outputs show the expected format only and are not evidence of how a model behaves.
@@ -19,6 +20,7 @@ Source runs (each task's example comes from the first run that has one):
 | [action_grounding](action_grounding.md) | `action_grounding@v1` | `ActionGroundingOut` | `examples-main` | 709 | 709 | 0 | 0 |
 | [awareness](awareness.md) | `awareness@v1` | `AwarenessOut` | `examples-main` | 60 | 60 | 0 | 0 |
 | [choose_location](choose_location.md) | `choose_location@v1` | `LocationChoiceOut` | `examples-main` | 1687 | 1687 | 0 | 0 |
+| [conversation_appraisal](conversation_appraisal.md) | `conversation_appraisal@v1` | `AppraisalOut` | `examples-appraisal` | 2 | 2 | 0 | 0 |
 | [conversation_inferences](conversation_inferences.md) | `conversation_inferences@v1` | `ConversationInferencesOut` | `examples-compat` | 2 | 2 | 0 | 0 |
 | [conversation_summary](conversation_summary.md) | `conversation_summary@v1` | `SummaryOut` | `examples-main` | 31 | 31 | 0 | 0 |
 | [day_plan](day_plan.md) | `day_plan@v1` | `DayPlanOut` | `examples-main` | 15 | 15 | 0 | 0 |

@@ -32,6 +32,11 @@ retrieval:
   budget_tokens: 1200
   max_items: 30
   tokens_per_char: 0.25
+  forgetting:
+    enabled: false
+    decay: 0.5
+    threshold: -1.0
+    importance_bonus: 0.1
 importance:
   idle_shortcut: true
   batch_statements: true
@@ -57,6 +62,7 @@ planning:
   jit_window_minutes: 60
   max_repairs: 1
   store_hourly_in_memory: true
+  decompose: true
 perception:
   vision_r: null
   att_bandwidth: null
@@ -72,6 +78,16 @@ dialogue:
   no_chat_after_hour: 23
 constraints:
   policy: strict-v1
+social:
+  track: true
+  appraisal: none
+  inform_prompts: false
+  familiarity_gain_conversation: 0.25
+  familiarity_gain_presence: 0.03
+  presence_cooldown_minutes: 60
+  valence_rate: 0.3
+  decay_per_day: 0.02
+  tie_threshold: 0.2
 providers:
   llm:
     kind: mock
@@ -85,6 +101,12 @@ providers:
     refusal_fallback: 'off'
     replay_from: null
     task_overrides: {}
+    base_url: null
+    num_ctx: 8192
+    keep_alive: 30m
+    think: null
+    api_key_env: null
+    local: null
   embeddings:
     kind: mock-hash
     model: mock-hash-256
@@ -92,6 +114,8 @@ providers:
     revision: null
     local_dir: null
     cache_dir: .ga_cache
+    base_url: null
+    api_key_env: null
 budget:
   max_calls: 5000
   max_input_tokens: 5000000
@@ -108,3 +132,14 @@ output:
 interview:
   retrieval_items: 30
   max_output_tokens: 400
+game:
+  enabled: false
+  content_dir: configs/game
+  builder_name: the town builder
+  auto_requests: true
+  request_hour: 9
+  chat_memories: 8
+  chat_history_lines: 6
+  sparkle_minutes: 180
+  search_cooldown_minutes: 60
+  starting_motifs: 2

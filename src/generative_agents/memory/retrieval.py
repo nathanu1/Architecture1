@@ -12,6 +12,11 @@ Paper mode (spec C-1 … C-8):
 Selection is the longest prefix of the ranking that fits the token budget and item cap. All
 scores are computed before any access time changes, and only delivered memories are touched.
 
+Forgetting (research extension, off by default): when ``settings.forgetting.enabled`` is set,
+a memory whose ACT-R base-level activation (computed from its creation and last access) is
+below the threshold is *inaccessible*: it is excluded before scoring and listed in the trace's
+``excluded`` entries with its activation value. The memory stream itself is never altered.
+
 Compat mode (spec C-9) reproduces ``new_retrieve`` in the released ``retrieve.py``:
 candidates exclude memories whose text contains "idle"; recency is ``decay ** i`` for
 positions i = 1..n of the candidates sorted by last access ascending (so the oldest access
@@ -42,6 +47,34 @@ class Weights:
     relevance: float = 1.0
 
 
+@dataclass(frozen=True)
+class Forgetting:
+    """Activation-based accessibility (research extension; see ``config.ForgettingSection``)."""
+
+    enabled: bool = False
+    decay: float = 0.5
+    threshold: float = -1.0
+    importance_bonus: float = 0.1
+
+    def activation(self, memory: Memory, now: datetime) -> float:
+        """ACT-R base-level activation over the memory's two recorded traces.
+
+        ``ln(t_created ** -d + t_accessed ** -d)`` with times in hours offset by one (so a
+        memory made this instant has activation ln 2 ≈ 0.69), plus a bonus per importance
+        point above one. A memory accessed at creation counts its single trace twice, which
+        keeps the scale identical for every memory.
+        """
+
+        t_c = max(0.0, (now - memory.created_at).total_seconds() / 3600.0) + 1.0
+        t_a = max(0.0, (now - memory.last_accessed_at).total_seconds() / 3600.0) + 1.0
+        base = math.log(t_c**-self.decay + t_a**-self.decay)
+        return base + self.importance_bonus * (memory.importance - 1)
+
+    def accessible(self, memory: Memory, now: datetime) -> tuple[bool, float]:
+        a = self.activation(memory, now)
+        return a >= self.threshold, a
+
+
 @dataclass
 class RetrievalSettings:
     mode: str = "paper"  # paper | released_code
@@ -52,9 +85,11 @@ class RetrievalSettings:
     budget_tokens: int | None = 1200
     max_items: int | None = 30
     tokens_per_char: float = 0.25
+    forgetting: Forgetting = field(default_factory=Forgetting)
 
     @classmethod
     def from_config(cls, cfg: Any) -> RetrievalSettings:
+        f = getattr(cfg, "forgetting", None)
         return cls(
             mode=cfg.mode,
             weights=Weights(cfg.weights.recency, cfg.weights.importance, cfg.weights.relevance),
@@ -64,6 +99,7 @@ class RetrievalSettings:
             budget_tokens=cfg.budget_tokens,
             max_items=cfg.max_items,
             tokens_per_char=cfg.tokens_per_char,
+            forgetting=Forgetting(f.enabled, f.decay, f.threshold, f.importance_bonus) if f is not None else Forgetting(),
         )
 
 
@@ -234,6 +270,7 @@ class Retriever:
         mems = self.store.for_agent(agent_id, kinds=kinds)
         eligible: list[Memory] = []
         excluded: list[dict[str, Any]] = []
+        forgetting = self.settings.forgetting
         for m in mems:
             if m.created_at > now:
                 excluded.append({"id": m.id, "reason": "created after query time"})
@@ -241,6 +278,10 @@ class Retriever:
                 excluded.append({"id": m.id, "reason": "released code drops 'idle' memories (retrieve.py:226)"})
             elif extra_filter is not None and not extra_filter(m):
                 excluded.append({"id": m.id, "reason": "filtered by caller"})
+            elif forgetting.enabled and not (acc := forgetting.accessible(m, now))[0]:
+                excluded.append(
+                    {"id": m.id, "reason": "forgotten: activation below threshold", "activation": round(acc[1], 4), "threshold": forgetting.threshold}
+                )
             else:
                 eligible.append(m)
         return eligible, excluded

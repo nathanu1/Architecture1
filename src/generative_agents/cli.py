@@ -242,6 +242,26 @@ def _summary(sim, status: str) -> None:
     print(f"next: ga evaluate --run-dir {sim.run_dir}   |   ga serve --run-dir {sim.run_dir}")
 
 
+def cmd_fork(args: argparse.Namespace) -> int:
+    from .simulation.engine import Simulation, load_run_config
+    from .simulation.fork import fork_run
+
+    out = Path(args.out)
+    origin = fork_run(Path(args.run_dir), args.snapshot, out, overrides=args.set, interventions=args.interventions, label=args.label)
+    print(f"forked {origin['run_id']} at snapshot {origin['snapshot']} (step {origin['step']}, {origin['sim_time']}) → {out}")
+    if not args.run:
+        print(f"next: ga resume --run-dir {out}   (the fork continues from the snapshot with its own ledger)")
+        return 0
+    cfg = load_run_config(out)
+    if not _live_guard(cfg, args.yes):
+        return 2
+    sim = Simulation(cfg, out)
+    status = sim.run(max_steps=args.max_steps, progress=_progress_printer())
+    _summary(sim, status)
+    sim.close()
+    return 0 if status in ("completed", "interrupted") else 1
+
+
 def cmd_resume(args: argparse.Namespace) -> int:
     from .simulation.engine import Simulation, load_run_config
 
@@ -649,6 +669,18 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--actions", help="scripted player actions (actions.jsonl) for a game run")
     sp.add_argument("--yes", action="store_true", help="confirm a live run within its configured limits")
     sp.set_defaults(func=cmd_run)
+
+    sp = sub.add_parser("fork", help="counterfactual: a new run that continues from a snapshot of another run, with changed settings or interventions")
+    sp.add_argument("--run-dir", required=True)
+    sp.add_argument("--snapshot", default="final", help="snapshot name (snapshots/<name>.sqlite) or a path to a .sqlite file")
+    sp.add_argument("--out", required=True)
+    sp.add_argument("--set", action="append", help="config override key=value (the scenario itself cannot change)")
+    sp.add_argument("--interventions", help="YAML of interventions scheduled after the fork point")
+    sp.add_argument("--label")
+    sp.add_argument("--run", action="store_true", help="run the fork to the scenario end right away")
+    sp.add_argument("--max-steps", type=int)
+    sp.add_argument("--yes", action="store_true")
+    sp.set_defaults(func=cmd_fork)
 
     sp = sub.add_parser("resume", help="continue a stopped run from its last checkpoint")
     sp.add_argument("--run-dir", required=True)
