@@ -50,7 +50,7 @@ A six-hour smoke run takes about five seconds: `ga run --config configs/offline_
 | `ga experiment --protocol FILE [--measured-run DIR] [--execute] [--yes]` | Independent runs for a protocol (conditions × seeds, named metrics, optional forks and interventions, determinism check); plans and projects usage by default; runs only with `--execute`. |
 | `ga fork --run-dir DIR --snapshot NAME --out DIR [--set k=v] [--interventions FILE] [--run]` | Counterfactual: a new run that continues from a snapshot of another run with changed settings or interventions (research platform). |
 | `ga serve --run-dir DIR [--experiment DIR]` | Local read-only viewer and inspector. |
-| `ga play --config FILE` / `--resume DIR` / `--replay DIR` `[--speed S] [--paused] [--open] [--port N]` | Hearthside town interface (extension): a live town in the browser at http://127.0.0.1:8080, research inspector at `/inspector`. Replays make no model calls. |
+| `ga play --config FILE` / `--resume DIR` / `--replay DIR` / `--watch DIR` `[--speed S] [--paused] [--open] [--port N]` | Hearthside town interface (extension): a live town in the browser at http://127.0.0.1:8080, research inspector at `/inspector`. Replays make no model calls; `--watch` opens any recorded run (headless or experiment) read-only in observe mode. |
 | `ga export-demo --run-dir DIR --out DIR` | A recorded town as static files for the front end's demo build: a page that plays the recording (and its research inspector) in any browser, with no server and no model. |
 | `ga export --run-dir DIR` | JSONL events, transcripts, retrieval traces and model calls; CSV memories, plans and usage; Markdown run report. |
 | `ga prompt-examples --run-dir DIR [DIR ...] [--out DIR]` | One page per prompt template: source, information scope, output schema and the smallest recorded call exactly as sent and received (plus a repaired exchange, when there was one). |
@@ -74,6 +74,7 @@ A six-hour smoke run takes about five seconds: `ga run --config configs/offline_
 | `configs/offline_social_day.yaml` | Ten residents for one day (base of experiment B). |
 | `configs/probes/memory_facts.yaml` | Planted facts for the retrieval probe. |
 | `configs/town_mock.yaml` / `town_ollama.yaml` / `town_n25_ollama.yaml` / `town_n35_ollama.yaml` | The town game: offline MOCK; three residents on Ollama (start here); all 25 residents on Ollama; 35 residents, with ten original newcomers in a new neighborhood (an extension). |
+| `configs/town_n5_mock.yaml` / `town_n10_mock.yaml` / `town_n25_mock.yaml` / `town_n35_mock.yaml` | The research populations as towns on the offline MOCK model: the five pilot residents, the ten of the social experiment, all 25, and the 35-resident extension. |
 | `configs/game/` | Town game content: six affinity themes, motifs and gifts, catalog, paints and templates, Town Pulse levels, the Town Square, resident looks, a demo action script. |
 | `configs/defaults.yaml` | Every setting with its default, for reference. |
 | `configs/pricing.yaml` | USD per million tokens from the [published pricing page](https://platform.claude.com/docs/en/about-claude/pricing), fetched 2026-10-05. Without it, cost is reported as "unpriced". |

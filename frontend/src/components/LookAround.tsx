@@ -22,7 +22,7 @@ export function LookAround() {
   const info = useTown((s) => s.info)!;
   const game = useTown((s) => s.poll?.game);
   const setLook = useTown((s) => s.setLook);
-  const replay = useTown((s) => !!s.poll?.replay);
+  const replay = useTown((s) => !!(s.poll?.replay || s.poll?.observe));
   const reduce = useReducedMotion();
   const first = useRef<HTMLButtonElement>(null);
   const opener = useRef<Element | null>(null);

@@ -107,6 +107,7 @@ export interface Resident {
 export interface Info {
   run_id: string;
   mode: "mock" | "live" | "replay";
+  observe?: boolean;
   label: string;
   llm: { kind: string; model: string; local: boolean; describe: Record<string, unknown> };
   embeddings: { kind: string; model: string };
@@ -241,6 +242,8 @@ export interface Poll {
   paused: boolean;
   speed: string;
   replay: boolean;
+  /** Observe mode: a research run shown in the town; nothing can be changed. */
+  observe?: boolean;
   error: string | null;
   thinking: Record<string, { task: string; since: number }>;
   clock: { step: number; time: string; end: string } | null;

@@ -207,3 +207,41 @@ def test_a_recorded_town_exports_as_static_demo_data_without_calls(tmp_path, mon
     assert listed and all(f"call/{cid}" in research[index["owner"][f"call/{cid}"]] for cid in listed)
     assert all(key in research[name] for key, name in index["owner"].items())
     assert json.loads((tmp_path / "work" / "replay" / "manifest.json").read_text())["budget"]["usage"]["calls"] == 0  # replayed, not called
+
+
+def test_observe_mode_shows_a_research_run_in_the_town_without_changing_it(tmp_path):
+    """`ga play --watch`: a run recorded without the game replays in the town exactly (spec 2T)."""
+
+    from generative_agents.simulation.engine import Simulation, load_run_config
+
+    research = sim_config(TRIO, start="2023-02-13T09:00:00", end="2023-02-13T09:30:00", extra=("output.checkpoint_every_steps=30",))
+    src = tmp_path / "research"
+    src.mkdir()
+    save_config(research, src)
+    sim = Simulation(research, src, provider=MockLLM(seed=5), embedding_provider=MockHashEmbedding(128))
+    assert sim.run() == "completed"
+    tables = ("memories", "plans", "conversations", "agent_state", "spatial_memory", "world_objects", "relationships")
+    source_hash = sim.db.content_hash(tables)
+    sim.close()
+    cfg = load_run_config(src, ["game.enabled=true", "game.mode=observe", "game.auto_requests=false"])
+    out = tmp_path / "watch"
+    out.mkdir()
+    save_config(cfg, out)
+    s = GameSession(cfg, out, replay_from=src, speed="max")
+    assert s.observe and s.game.zones == {}  # no Town Square: the world is the paper's
+    s.start()
+    try:
+        wait_for(lambda: s.poll()["status"] == "finished", timeout=120)
+        with pytest.raises(PermissionError, match="replay|observe"):
+            s.submit("chat", {"agent": "klaus_mueller", "text": "hello"})
+        p = s.poll()
+        assert p["observe"] and p["replay"] and s.sim.rt.budget.usage.calls == 0
+        assert s.sim.db.content_hash(tables) == source_hash  # the recorded responses replayed exactly
+        client = TestClient(create_game_app(s))
+        assert client.get("/api/game/info").json()["observe"] is True
+        assert client.post("/api/game/action", json={"kind": "chat", "payload": {"agent": "klaus_mueller", "text": "hi"}}).status_code == 409
+        assert client.get("/research/api/network").json()["measures"]["n"] == 3
+    finally:
+        s.stop()
+    manifest = json.loads((out / "manifest.json").read_text())
+    assert manifest["status"] == "completed" and manifest["game"]["mode"] == "observe" and manifest["replay_of"]["run_id"] == "research"

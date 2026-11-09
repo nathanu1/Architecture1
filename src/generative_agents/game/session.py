@@ -71,6 +71,7 @@ class GameSession:
         self.cfg = cfg
         self.run_dir = Path(run_dir)
         self.replay = replay_from is not None
+        self.observe = cfg.game.mode == "observe"
         self.sim = Simulation(cfg, self.run_dir, replay_from=replay_from, provider=provider, embedding_provider=embedding_provider)
         self.game = self.sim.game
         self.sim.rt.gateway.provider = _ThinkingProbe(self.sim.rt.gateway.provider, self)
@@ -211,6 +212,8 @@ class GameSession:
 
         if self.replay:
             raise PermissionError("this is a replay: it only shows what was recorded")
+        if self.observe:
+            raise PermissionError("this town is in observe mode: it shows a research run without changing it")
         if self.error:
             raise PermissionError("the town stopped: " + self.error.splitlines()[0])
         with self.lock:
@@ -360,6 +363,7 @@ class GameSession:
                 "paused": self.paused,
                 "speed": self.speed,
                 "replay": self.replay,
+                "observe": self.observe,
                 "error": self.error,
                 "thinking": {k: dict(v) for k, v in self._thinking.items()},
                 "clock": pub.get("clock"),

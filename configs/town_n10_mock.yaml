@@ -1,0 +1,23 @@
+# The town game with the ten residents of experiment B (configs/offline_social_day.yaml), on the offline MOCK model: instant and free, so the research
+# populations can be played and watched at full size. Residents' words are placeholders.
+#   ga play --config configs/town_n10_mock.yaml --open
+# Any experiment run of the same population opens read-only with: ga play --watch runs/experiments/<name>/<run>
+run:
+  name: town-n10-mock
+  label: "town game, 10 residents (MOCK)"
+scenario:
+  path: scenarios/smallville_n25/scenario.yaml
+  population: [isabella_rodriguez, maria_lopez, klaus_mueller, sam_moore, wolfgang_schulz, tom_moreno, jane_moreno, tamara_taylor, carmen_ortiz, ayesha_khan]
+  start: "2023-02-13T07:00:00"
+  end: "2023-02-15T00:01:00"
+output:
+  checkpoint_every_steps: 30
+game:
+  enabled: true
+providers:
+  llm: {kind: mock, model: mock-llm-v1}
+  embeddings: {kind: mock-hash, model: mock-hash-256, dims: 256}
+budget:
+  max_calls: 2000000
+  max_input_tokens: null
+  max_output_tokens: null

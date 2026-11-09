@@ -57,7 +57,8 @@ class GameLayer:
         self.aff = Affinity(self.content)
         self.store = GameStore(sim.db)
         self.actions = ActionLog(actions_path, readonly=readonly_actions)
-        self.zones = apply_zones(sim.world, self.content.zones)
+        self.observe = self.cfg.mode == "observe"
+        self.zones = {} if self.observe else apply_zones(sim.world, self.content.zones)
         self.editor = WorldEditor(sim.world, sim.nav, sim.perceiver, self.content)
         self.builder = self.cfg.builder_name
         self.builder_cap = self.builder[:1].upper() + self.builder[1:]
@@ -78,7 +79,7 @@ class GameLayer:
     def before_step(self, now: datetime) -> None:
         self.ensure_started(now)
         self.apply_due(now)
-        if self.cfg.auto_requests:
+        if self.cfg.auto_requests and not self.observe:
             self._auto_request(now)
 
     def ensure_started(self, now: datetime) -> None:
@@ -107,6 +108,7 @@ class GameLayer:
     def manifest(self) -> dict[str, Any]:
         return {
             "enabled": True,
+            "mode": self.cfg.mode,
             "content_dir": self.cfg.content_dir,
             "content_sha256": self.content_sha256,
             "actions": len(self.actions),

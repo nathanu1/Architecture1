@@ -10,11 +10,30 @@ from any existing game.
 ## Running it
 
 ```bash
-ga play --config configs/town_mock.yaml                 # offline, deterministic mock model (MOCK)
+ga play --config configs/town_mock.yaml                 # offline, deterministic mock model (MOCK), 3 residents
+ga play --config configs/town_n25_mock.yaml             # the paper's 25 residents, MOCK (also _n5, _n10, _n35)
 ga play --config configs/town_ollama.yaml               # local open-weight model through Ollama
 ga play --resume runs/<id>                              # continue a saved town
 ga play --replay runs/<id>                              # watch it again, no model calls
+ga play --watch runs/experiments/<name>/<run>           # open ANY recorded run read-only (observe mode)
 ```
+
+**The town as the research interface.** The research populations are available as towns on the
+mock model, so they can be played and inspected at full size with no model or key:
+`town_n5_mock.yaml` (the five pilot residents of experiments A and C), `town_n10_mock.yaml` (the
+ten of experiment B), `town_n25_mock.yaml` (all of Smallville) and `town_n35_mock.yaml` (the
+neighborhood extension). On the mock, 25 residents run at about 8 game minutes per real second
+at the `max` speed (two game hours in 14 s on four cores); with a local model, the town moves as
+fast as the model answers, and 25 residents make roughly eight times the calls of three.
+
+**Observe mode** (`game.mode: observe`, what `--watch` sets) turns the town into a viewer over a
+run that was recorded without the game: no Town Square zone is added to the map, residents ask
+for nothing, and player actions are refused, so the simulation is exactly the paper's and the
+recorded responses replay unchanged (`tests/test_game_session.py::test_observe_mode_*`). Every
+run of an experiment protocol can therefore be watched in the town, with the research inspector
+(Decisions, Network, Behavior, Beliefs) alongside. `--resume runs/<id> --set game.enabled=true
+--set game.mode=observe` continues a headless run live in the town instead (model calls happen;
+still no player actions).
 
 The town opens at <http://127.0.0.1:8080>; the research inspector is at `/inspector`. Options:
 `--speed slow|normal|fast|max`, `--paused`, `--open` (launch a browser), `--port`, `--host`.

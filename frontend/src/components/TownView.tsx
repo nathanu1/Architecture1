@@ -293,7 +293,7 @@ export function TownView() {
         st.select({ kind: "resident", id: hit.id });
         break;
       case "sparkle":
-        if (st.poll?.replay) {
+        if (st.poll?.replay || st.poll?.observe) {
           st.toast({ tone: "info", title: "A sparkle from a conversation", body: "Two residents left it behind. In a live town you can collect it as a motif." });
           break;
         }

@@ -62,7 +62,7 @@ export function ResidentCard({ id }: { id: string }) {
   const now = poll?.clock?.time;
   const busy = Object.values(pending).some((p) => p.agent === id);
   const thinking = !!poll?.thinking[id];
-  const replay = !!poll?.replay;
+  const replay = !!(poll?.replay || poll?.observe);
   const chatting = chatWith === id;
   const unavailable = a?.sleeping ? `${r.first_name} is asleep` : a?.partner ? `${r.first_name} is talking with ${a.partner}` : null;
   const Act = activityIcon(a?.activity ?? "");

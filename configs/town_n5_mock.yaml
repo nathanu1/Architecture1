@@ -1,0 +1,22 @@
+# The town game with the five pilot residents (Isabella, Maria, Klaus, Sam, Wolfgang): the population of experiments A and C, on the offline MOCK model: instant and free, so the research
+# populations can be played and watched at full size. Residents' words are placeholders.
+#   ga play --config configs/town_n5_mock.yaml --open
+# Any experiment run of the same population opens read-only with: ga play --watch runs/experiments/<name>/<run>
+run:
+  name: town-n5-mock
+  label: "town game, 5 residents (MOCK)"
+scenario:
+  path: scenarios/pilot5/scenario.yaml
+  start: "2023-02-13T07:00:00"
+  end: "2023-02-15T00:01:00"
+output:
+  checkpoint_every_steps: 30
+game:
+  enabled: true
+providers:
+  llm: {kind: mock, model: mock-llm-v1}
+  embeddings: {kind: mock-hash, model: mock-hash-256, dims: 256}
+budget:
+  max_calls: 2000000
+  max_input_tokens: null
+  max_output_tokens: null

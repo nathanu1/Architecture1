@@ -525,14 +525,18 @@ def cmd_play(args: argparse.Namespace) -> int:
     from .game.session import GameSession
     from .simulation.engine import load_run_config, new_run_dir, save_config
 
-    if args.replay:
-        src = Path(args.replay)
-        cfg = load_run_config(src)
-        out = Path(args.run_dir) if args.run_dir else src.parent / f"{src.name}-replay-{datetime.now():%Y%m%d-%H%M%S}"
+    if args.replay or args.watch:
+        src = Path(args.replay or args.watch)
+        # --watch opens any recorded run (an experiment run, a headless run) in the town as a
+        # read-only replay: the game layer is enabled in observe mode, which changes nothing
+        # about the simulation, so the recorded responses replay exactly (docs/game.md).
+        overrides = [*(args.set or []), "game.enabled=true", "game.mode=observe", "game.auto_requests=false"] if args.watch else None
+        cfg = load_run_config(src, overrides)
+        out = Path(args.run_dir) if args.run_dir else src.parent / f"{src.name}-{'watch' if args.watch else 'replay'}-{datetime.now():%Y%m%d-%H%M%S}"
         out.mkdir(parents=True, exist_ok=True)
         save_config(cfg, out)
         session = GameSession(cfg, out, replay_from=src, speed=args.speed, paused=args.paused)
-        where = f"replaying {src} (no model calls) into {out}"
+        where = f"{'watching' if args.watch else 'replaying'} {src} (no model calls) into {out}"
     elif args.resume:
         run_dir = Path(args.resume)
         cfg = load_run_config(run_dir, args.set)
@@ -756,6 +760,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--run-dir")
     sp.add_argument("--resume", metavar="RUN_DIR", help="continue a saved town")
     sp.add_argument("--replay", metavar="RUN_DIR", help="watch a saved town again, without any model call")
+    sp.add_argument("--watch", metavar="RUN_DIR", help="open ANY recorded run (headless or experiment) in the town as a read-only replay")
     sp.add_argument("--host", default="127.0.0.1")
     sp.add_argument("--port", type=int, default=8080)
     sp.add_argument("--speed", default="normal", choices=["slow", "normal", "fast", "max"])

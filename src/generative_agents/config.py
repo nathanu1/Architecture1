@@ -256,6 +256,11 @@ class GameSection(_Base):
     """
 
     enabled: bool = False
+    # ``play``: the full game (the Town Square zone, residents' wishes, player actions).
+    # ``observe``: the town interface as a research viewer over any run: no zone changes the
+    # world, residents ask for nothing, player actions are refused. The simulation is then
+    # exactly the paper's, so a run recorded without the game replays in the town unchanged.
+    mode: Literal["play", "observe"] = "play"
     content_dir: str = "configs/game"
     builder_name: str = "the town builder"
     auto_requests: bool = True  # each resident may ask for one thing per day once awake

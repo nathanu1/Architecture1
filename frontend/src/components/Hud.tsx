@@ -146,7 +146,7 @@ export function Hud() {
       <div className="pointer-events-auto panel absolute right-3 top-3 flex items-center gap-1.5 p-1.5 sm:right-4 sm:top-4" role="group" aria-label="Town tools">
         <IconButton label="Notebook (N)" icon={Notebook} onClick={() => openNotebook()} />
         <IconButton label="Look Around (L)" icon={Binoculars} active={look} aria-expanded={look} onClick={() => setLook(!look)} />
-        {poll?.replay ? null : <IconButton label="Build and Decorate (B)" icon={Hammer} pressed={mode === "build"} onClick={() => setMode(mode === "build" ? "play" : "build")} />}
+        {poll?.replay || poll?.observe ? null : <IconButton label="Build and Decorate (B)" icon={Hammer} pressed={mode === "build"} onClick={() => setMode(mode === "build" ? "play" : "build")} />}
         <a
           href={viewHref("inspector")}
           {...(DEMO ? {} : { target: "_blank", rel: "noreferrer" })}
@@ -184,7 +184,8 @@ export function Hud() {
       {/* status */}
       <div className="pointer-events-none absolute inset-x-3 top-[140px] flex flex-col items-center gap-2 md:inset-x-auto md:left-1/2 md:top-[84px] md:-translate-x-1/2">
         {info.mode === "mock" ? <span className="rounded-full bg-[var(--panel)]/90 px-3 py-1 text-xs font-bold text-[var(--muted)] shadow">MOCK model: residents’ words are placeholders</span> : null}
-        {poll?.replay && !DEMO ? <span className="rounded-full bg-[var(--panel)]/90 px-3 py-1 text-xs font-bold text-[var(--muted)] shadow">Replay: no model calls, view only</span> : null}
+        {poll?.replay && !DEMO ? <span className="rounded-full bg-[var(--panel)]/90 px-3 py-1 text-xs font-bold text-[var(--muted)] shadow">{poll?.observe ? "Observing a research run: no model calls, view only" : "Replay: no model calls, view only"}</span> : null}
+        {poll?.observe && !poll?.replay ? <span className="rounded-full bg-[var(--panel)]/90 px-3 py-1 text-xs font-bold text-[var(--muted)] shadow">Observing: the town changes nothing in this run</span> : null}
         {DEMO ? <DemoBar /> : null}
         {thinking.length && info.mode === "live" ? (
           <span className="max-w-[min(92vw,520px)] truncate rounded-full bg-[var(--panel)]/90 px-3 py-1 text-xs font-bold text-[var(--muted)] shadow">

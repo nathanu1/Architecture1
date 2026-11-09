@@ -83,7 +83,8 @@ them are off by default or purely observational, so a default run still follows 
 | Measures from records | Plan adherence, scheduled share, idle share, reactions, adaptation latency after an intervention, planted-fact recall, network density, reciprocity, components. |
 | Counterfactual forks | `ga fork` continues a recorded run from a snapshot with changed settings or interventions; protocols can fork every run from the same past. |
 | Experiment protocols | Named metrics, per-condition interventions, a hypothesis recorded before running, pairwise comparisons, a determinism check and generic reports. |
-| Dashboard | Decisions (recorded evidence only), Network, Behavior and Beliefs tabs in the viewer. |
+| Dashboard | Decisions (recorded evidence only), Network, Behavior and Beliefs tabs in the research viewer and in the town's inspector. |
+| The town as research interface | `ga play --watch <run>` opens any recorded run read-only in the town; the research populations are playable mock towns (5, 10, 25 and 35 residents). |
 
 ```bash
 ga experiment --protocol configs/experiments/memory_consistency_mock.yaml --execute
@@ -145,7 +146,7 @@ npm run typecheck
 npm run build
 ```
 
-For this update, **217 Python tests passed (one skipped)** and the Python lint and format checks passed; the frontend passed 39 tests, its type check and its build.
+For this update, **218 Python tests passed (one skipped)** and the Python lint and format checks passed; the frontend passed 39 tests, its type check and its build.
 
 The tests cover memory isolation, retrieval and reflection, plan validation, private dialogue, world constraints, replay, evaluation, local adapters, and building rules. See the [reference](docs/reference.md#tests) for prompt-example maintenance.
 

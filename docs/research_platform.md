@@ -227,6 +227,14 @@ The town game's inspector (`ga play`, then `/inspector`) carries the same four v
 town's own style (`frontend/src/components/ResearchViews.tsx`), reading the same API mounted
 under `/research`; recorded towns (`ga export-demo`) include them at their final state.
 
+The town is meant to be the main interface for the research. `ga play --watch <run dir>`
+opens any recorded run, including every run of an experiment protocol, as a read-only replay
+in observe mode (`game.mode: observe`): no zone is added to the map, residents ask for
+nothing and player actions are refused, so the recorded responses replay exactly and the
+inspector shows the run as it was. The research populations exist as mock towns
+(`configs/town_n5_mock.yaml`, `_n10_`, `_n25_`, `_n35_`), so a scenario can be played,
+recorded and then analyzed with the same protocols.
+
 ## 7. Command summary
 
 ```bash

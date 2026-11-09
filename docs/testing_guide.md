@@ -173,7 +173,10 @@ ga play --config configs/town_mock.yaml --open
 ```
 
 Opens http://127.0.0.1:8080: a live three-resident town you can pause, walk around in, chat
-with residents and build things in. The research inspector is at
+with residents and build things in. The research populations are towns too:
+`configs/town_n5_mock.yaml`, `town_n10_mock.yaml`, `town_n25_mock.yaml` and
+`town_n35_mock.yaml` (the 25-resident town runs about two game hours per 14 seconds at `max`
+speed on the mock). The research inspector is at
 http://127.0.0.1:8080/inspector and has the same Decisions, Network, Behavior and Beliefs
 views as the research viewer, drawn in the town's style; open it after a few game hours so the
 residents have met. `Ctrl+C` stops it; `ga play --resume runs/<id>` continues a
@@ -212,7 +215,13 @@ Or open it in the viewer together with one of the forks:
 ga serve --run-dir runs/experiments/adaptation_fork_mock/fire-s7 --experiment runs/experiments/adaptation_fork_mock
 ```
 
-In the **Experiment** tab you see the hypothesis, every run, the by-condition table and the
+Or watch any single run of the experiment in the town itself, read-only:
+
+```bash
+ga play --watch runs/experiments/adaptation_fork_mock/fire-s7 --open
+```
+
+In the research viewer's **Experiment** tab you see the hypothesis, every run, the by-condition table and the
 comparisons; in **Decisions** for Isabella at 10:05 you see her reaction to the fire and the
 replan it caused; in **Beliefs** the fire does not appear (it is not a seeded topic), which is
 expected.

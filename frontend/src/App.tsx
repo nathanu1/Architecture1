@@ -63,7 +63,7 @@ function useShortcuts() {
       if (placing && k.startsWith("arrow")) return; // arrows move the placement cursor instead of the view
       if (k === "n") st.notebook.open ? st.closeNotebook() : st.openNotebook();
       else if (k === "l" && st.mode === "play") st.setLook(!st.look);
-      else if (k === "b" && !st.poll?.replay) st.setMode(st.mode === "build" ? "play" : "build");
+      else if (k === "b" && !(st.poll?.replay || st.poll?.observe)) st.setMode(st.mode === "build" ? "play" : "build");
       else if (k === "q") scene()?.rotate(-1);
       else if (k === "e") scene()?.rotate(1);
       else if (k === "+" || k === "=") scene()?.zoomBy(1.2);

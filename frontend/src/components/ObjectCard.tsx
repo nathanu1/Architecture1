@@ -44,7 +44,7 @@ export function ObjectCard({ address, itemId }: { address?: string; itemId?: str
   const cooldown = poll?.game?.cooldowns[addr];
   const now = poll?.clock?.time;
   const cooling = cooldown && now ? isBefore(now, cooldown) : false;
-  const replay = !!poll?.replay;
+  const replay = !!(poll?.replay || poll?.observe);
   const themes = info.content.themes;
 
   useEffect(() => {

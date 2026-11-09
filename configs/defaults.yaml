@@ -134,6 +134,7 @@ interview:
   max_output_tokens: 400
 game:
   enabled: false
+  mode: play
   content_dir: configs/game
   builder_name: the town builder
   auto_requests: true
