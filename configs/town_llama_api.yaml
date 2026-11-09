@@ -1,0 +1,57 @@
+# The town on Llama served by a hosted OpenAI-compatible API, so a real model runs the residents
+# without a GPU of your own. Set the server, model and key for your provider (examples below), then:
+#   export LLAMA_API_KEY=...        # never commit it; .env.example lists the names ga reads
+#   uv sync --extra viewer --extra local-embeddings
+#   ga doctor --config configs/town_llama_api.yaml
+#   ga play --config configs/town_llama_api.yaml --open
+#
+# Provider examples (check each provider's current model list and pricing):
+#   Together AI   base_url: https://api.together.xyz/v1    model: meta-llama/Llama-3.3-70B-Instruct-Turbo
+#   Groq          base_url: https://api.groq.com/openai/v1 model: llama-3.3-70b-versatile
+#   OpenRouter    base_url: https://openrouter.ai/api/v1   model: meta-llama/llama-3.3-70b-instruct
+#   Fireworks     base_url: https://api.fireworks.ai/inference/v1  model: accounts/fireworks/models/llama-v3p3-70b-instruct
+# response_format: json_object is accepted by all of them; json_schema (strict) is tighter where a
+# provider supports it. Every reply is validated and repaired once by the gateway either way.
+#
+# Hosted APIs are paid per token and are not bit-reproducible: the manifest records the seed,
+# the served model and every call, and `ga replay` re-executes a run from its ledger.
+run:
+  name: town-llama-api
+  label: "town game, Llama through a hosted API"
+scenario:
+  path: scenarios/pilot5/scenario.yaml      # the five pilot residents; smallville_n25 for all 25
+  start: "2023-02-13T07:00:00"
+  end: "2023-02-15T00:01:00"
+output:
+  checkpoint_every_steps: 30
+game:
+  enabled: true
+social:
+  appraisal: llm                            # one extra call per participant per conversation
+providers:
+  llm:
+    kind: openai_compatible
+    base_url: https://api.together.xyz/v1
+    model: meta-llama/Llama-3.3-70B-Instruct-Turbo
+    api_key_env: LLAMA_API_KEY
+    response_format: json_object
+    temperature: 0.7
+    max_output_tokens: 768
+    timeout_s: 120
+    max_retries: 4                          # hosted APIs rate-limit (429): retried with backoff
+    local: false                            # charged per token: the budget below applies
+  embeddings:
+    kind: sentence-transformers             # free, local, CPU is enough (uv sync --extra local-embeddings)
+    model: sentence-transformers/all-MiniLM-L6-v2
+    dims: 384
+    # or the provider's embeddings endpoint, for example on Together:
+    # kind: openai_compatible
+    # base_url: https://api.together.xyz/v1
+    # model: BAAI/bge-base-en-v1.5
+    # dims: 768
+    # api_key_env: LLAMA_API_KEY
+budget:
+  max_calls: 20000
+  max_input_tokens: 15000000
+  max_output_tokens: 1500000
+  max_cost_usd: null                        # set a ceiling once budget.pricing_file lists your model's prices

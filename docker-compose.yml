@@ -1,0 +1,43 @@
+# Two ways to run the town as a service. See docs/deploy.md.
+#
+#   docker compose up -d                       # town on the mock model (or a hosted API: set TOWN_CONFIG)
+#   docker compose --profile ollama up -d      # town + Ollama in the next container (CPU, or GPU: see below)
+#
+# Put secrets in a .env file next to this file (HEARTHSIDE_PASSWORD, LLAMA_API_KEY); it is git-ignored.
+services:
+  town:
+    build:
+      context: .
+      args:
+        EXTRAS: ${EXTRAS:-viewer}
+    image: hearthside:latest
+    ports:
+      - "${HEARTHSIDE_PORT:-8080}:8080"
+    environment:
+      TOWN_CONFIG: ${TOWN_CONFIG:-configs/town_mock.yaml}
+      TOWN_SPEED: ${TOWN_SPEED:-normal}
+      TOWN_ARGS: ${TOWN_ARGS:-}
+      HEARTHSIDE_PASSWORD: ${HEARTHSIDE_PASSWORD:-}
+      HEARTHSIDE_SPECTATORS: ${HEARTHSIDE_SPECTATORS:-}
+      LLAMA_API_KEY: ${LLAMA_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    volumes:
+      - town-data:/data
+    restart: unless-stopped
+
+  ollama:
+    profiles: ["ollama"]
+    image: ollama/ollama:latest
+    volumes:
+      - ollama-models:/root/.ollama
+    # NVIDIA GPU: install the NVIDIA Container Toolkit and uncomment the next four lines.
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices: [{driver: nvidia, count: all, capabilities: [gpu]}]
+    restart: unless-stopped
+
+volumes:
+  town-data:
+  ollama-models:

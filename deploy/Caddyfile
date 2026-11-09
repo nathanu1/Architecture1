@@ -1,0 +1,8 @@
+# HTTPS in front of the town with one line. Install Caddy (https://caddyserver.com), point a DNS
+# name at the machine, then `caddy run --config deploy/Caddyfile`. Caddy fetches and renews the
+# certificate itself. The password gate lives in the town (HEARTHSIDE_PASSWORD); with
+# HEARTHSIDE_SPECTATORS=1 visitors can watch and only you can act.
+town.example.com {
+    reverse_proxy 127.0.0.1:8080
+    encode zstd gzip
+}

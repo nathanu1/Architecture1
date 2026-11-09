@@ -1,0 +1,14 @@
+# The town against the Ollama container of docker-compose.yml (service name "ollama").
+#   docker compose --profile ollama up -d
+#   docker compose exec ollama ollama pull llama3.2:3b && docker compose exec ollama ollama pull nomic-embed-text
+#   TOWN_CONFIG=configs/town_ollama_docker.yaml docker compose up -d --force-recreate town
+extends: town_ollama.yaml
+run:
+  name: town-ollama-docker
+  label: "town game (Ollama in Docker)"
+providers:
+  llm:
+    model: llama3.2:3b
+    base_url: http://ollama:11434
+  embeddings:
+    base_url: http://ollama:11434

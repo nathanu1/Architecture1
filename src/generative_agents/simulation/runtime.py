@@ -39,7 +39,9 @@ def build_llm_provider(cfg: GAConfig) -> Any:
     if llm.kind == "openai_compatible":
         from ..providers.openai_compatible import OpenAICompatibleProvider
 
-        return OpenAICompatibleProvider(llm.model, base_url=llm.base_url, api_key_env=llm.api_key_env, seed=cfg.run.seed, timeout_s=llm.timeout_s)
+        return OpenAICompatibleProvider(
+            llm.model, base_url=llm.base_url, api_key_env=llm.api_key_env, seed=cfg.run.seed, timeout_s=llm.timeout_s, response_format=llm.response_format
+        )
     if llm.kind == "replay":
         return _NoCallProvider()
     raise ValueError(f"unknown llm provider {llm.kind!r}")

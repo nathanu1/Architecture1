@@ -47,14 +47,25 @@ class OpenAICompatibleProvider:
         seed: int | None = None,
         timeout_s: float = 600.0,
         client: JSONClient | None = None,
+        response_format: str = "json_schema",
     ):
         self.model = model
         self.base_url = (base_url or DEFAULT_URL).rstrip("/")
         self.seed = seed
+        if response_format not in ("json_schema", "json_object", "none"):
+            raise ValueError(f"response_format must be json_schema, json_object or none, not {response_format!r}")
+        self.response_format = response_format
         self.client = client or _client(self.base_url, api_key_env, timeout_s)
 
     def describe(self) -> dict[str, Any]:
-        return {"provider": self.name, "model": self.model, "base_url": self.base_url, "seed": self.seed, "local": is_local_url(self.base_url)}
+        return {
+            "provider": self.name,
+            "model": self.model,
+            "base_url": self.base_url,
+            "seed": self.seed,
+            "local": is_local_url(self.base_url),
+            "response_format": self.response_format,
+        }
 
     def complete(self, request: LLMRequest) -> LLMResponse:
         schema = request.decoding_schema or inline_refs(request.output_schema)
@@ -66,10 +77,13 @@ class OpenAICompatibleProvider:
             ],
             "max_tokens": request.max_output_tokens,
             "stream": False,
+        }
+        if self.response_format == "json_schema":
             # Local servers decode within a grammar built from this schema, so the tighter
             # decoding schema (offered choices, counts, ranges) applies when there is one.
-            "response_format": {"type": "json_schema", "json_schema": {"name": request.task, "schema": schema, "strict": True}},
-        }
+            body["response_format"] = {"type": "json_schema", "json_schema": {"name": request.task, "schema": schema, "strict": True}}
+        elif self.response_format == "json_object":
+            body["response_format"] = {"type": "json_object"}
         if request.temperature is not None:
             body["temperature"] = request.temperature
         if self.seed is not None:

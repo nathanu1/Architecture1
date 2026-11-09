@@ -106,6 +106,7 @@ providers:
     keep_alive: 30m
     think: null
     api_key_env: null
+    response_format: json_schema
     local: null
   embeddings:
     kind: mock-hash

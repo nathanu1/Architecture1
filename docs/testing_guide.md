@@ -347,6 +347,14 @@ runs, so read the first slice carefully before scaling.
 
 ---
 
+## Part 7b: a town on a website
+
+To run the town for other people, with all 25 residents on a model on your own machine, see
+[`deploy.md`](deploy.md): it works out the call budget (about 730 calls per game hour for the
+full town, three quarters of them mechanical), gives the two-model config
+(`configs/town_n25_server.yaml`), the Docker and Caddy files, and the password and spectator
+settings.
+
 ## Part 8: if something goes wrong
 
 | Symptom | What to do |

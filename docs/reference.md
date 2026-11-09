@@ -74,6 +74,7 @@ A six-hour smoke run takes about five seconds: `ga run --config configs/offline_
 | `configs/offline_social_day.yaml` | Ten residents for one day (base of experiment B). |
 | `configs/probes/memory_facts.yaml` | Planted facts for the retrieval probe. |
 | `configs/town_mock.yaml` / `town_ollama.yaml` / `town_n25_ollama.yaml` / `town_n35_ollama.yaml` | The town game: offline MOCK; three residents on Ollama (start here); all 25 residents on Ollama; 35 residents, with ten original newcomers in a new neighborhood (an extension). |
+| `configs/town_n25_server.yaml` | All 25 residents on two local models (a 3B for the mechanical three quarters of calls, an 8B for judgment), for a town that runs continuously; `town_llama_api.yaml` is the same town on Llama through a hosted OpenAI-compatible API; `town_ollama_docker.yaml` targets the compose file's Ollama. See [deploy.md](deploy.md). |
 | `configs/town_n5_mock.yaml` / `town_n10_mock.yaml` / `town_n25_mock.yaml` / `town_n35_mock.yaml` | The research populations as towns on the offline MOCK model: the five pilot residents, the ten of the social experiment, all 25, and the 35-resident extension. |
 | `configs/game/` | Town game content: six affinity themes, motifs and gifts, catalog, paints and templates, Town Pulse levels, the Town Square, resident looks, a demo action script. |
 | `configs/defaults.yaml` | Every setting with its default, for reference. |
@@ -199,6 +200,15 @@ The full list, with sources, is in the spec (§3 and §6). In short:
 * agents react to object and ambient events (the paper's burning stove), which the released code
   does not;
 * nothing is fabricated when a model call fails: the action, plan or conversation fails visibly.
+
+## Serving to a network
+
+`ga play` and `ga serve` take `--host 0.0.0.0`. Set `HEARTHSIDE_PASSWORD` to gate them with HTTP
+Basic auth, and `HEARTHSIDE_SPECTATORS=1` to let anyone watch while the password is needed to
+act. `Dockerfile`, `docker-compose.yml` (with an optional Ollama container) and `deploy/Caddyfile`
+cover the rest; the reasoning, sizes and speeds are in [deploy.md](deploy.md). The
+OpenAI-compatible adapter's `providers.llm.response_format` (`json_schema`, `json_object`,
+`none`) matches what a hosted API accepts.
 
 ## Research platform settings
 

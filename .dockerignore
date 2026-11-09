@@ -1,0 +1,14 @@
+.git
+.venv
+runs
+.ga_cache
+frontend/node_modules
+frontend/dist
+frontend/dist-demo
+**/__pycache__
+*.pyc
+.env
+.env.*
+!.env.example
+docs/assets
+docs/*.pdf

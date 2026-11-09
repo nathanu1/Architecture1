@@ -1,0 +1,28 @@
+# All 25 residents on your own hardware, as a town that runs continuously (docs/deploy.md).
+#
+# Two local models through Ollama: the mechanical tasks that make three quarters of all calls
+# (choosing a location, rating importance, grounding an action) go to a small, fast model; the
+# tasks that need judgment (plans, reflections, conversations, reactions) go to the larger one.
+# Measured on recorded runs: about 29 calls per resident per game hour, so the full town makes
+# roughly 730 calls per game hour. On one consumer GPU (for example an RTX 4090 or a cloud L4)
+# that is about real-time speed; on four CPU cores it is several times slower than real time.
+#
+#   ollama pull llama3.2:3b && ollama pull llama3.1:8b && ollama pull nomic-embed-text
+#   ga doctor --config configs/town_n25_server.yaml
+#   ga play --config configs/town_n25_server.yaml --host 0.0.0.0        # set HEARTHSIDE_PASSWORD first
+# In Docker (docker-compose.yml, profile ollama) add:
+#   TOWN_ARGS="--set providers.llm.base_url=http://ollama:11434 --set providers.embeddings.base_url=http://ollama:11434"
+extends: town_n25_ollama.yaml
+run:
+  name: town-n25-server
+  label: "town game, 25 residents on two local models"
+providers:
+  llm:
+    model: llama3.1:8b                       # plans, reflections, dialogue, reactions, interviews
+    task_overrides:
+      choose_location: {model: "llama3.2:3b", max_output_tokens: 64}
+      importance: {model: "llama3.2:3b", max_output_tokens: 32}
+      importance_batch: {model: "llama3.2:3b", max_output_tokens: 256}
+      action_grounding: {model: "llama3.2:3b", max_output_tokens: 128}
+    num_ctx: 8192
+    keep_alive: "24h"                        # keep both models loaded between calls

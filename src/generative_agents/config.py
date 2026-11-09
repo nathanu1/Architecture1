@@ -196,6 +196,11 @@ class LLMProviderSection(_Base):
     keep_alive: str | None = "30m"  # how long ollama keeps the model loaded between calls
     think: bool | None = None  # ollama "think" flag for reasoning models; None leaves it unset
     api_key_env: str | None = None  # openai_compatible: env var holding a key, if the server wants one
+    # openai_compatible: how the JSON output is requested. "json_schema" (strict schema; llama.cpp,
+    # vLLM, Ollama's /v1, LM Studio), "json_object" (JSON mode without a schema; most hosted
+    # Llama APIs accept it) or "none" (the prompt alone asks for JSON). The gateway validates and
+    # repairs the reply in every case, so a looser mode only changes how often repairs are needed.
+    response_format: Literal["json_schema", "json_object", "none"] = "json_schema"
     local: bool | None = None  # no API charges; None infers it (ollama, or a localhost base_url)
 
     def is_local(self) -> bool:

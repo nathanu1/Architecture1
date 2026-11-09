@@ -159,6 +159,7 @@ The tests cover memory isolation, retrieval and reflection, plan validation, pri
 | Model prompts and recorded examples | [`prompts/`](prompts/) |
 | Smallville scenarios and the added neighborhood | [`scenarios/`](scenarios/) |
 | Step-by-step install, run and test walkthrough | [Testing guide](docs/testing_guide.md) |
+| Running the town as a website with a local model | [Deployment](docs/deploy.md) |
 | Commands and configuration | [Reference](docs/reference.md) |
 | Town controls and local-run details | [Town guide](docs/game.md) |
 | Paper correspondence and deviations | [Reproduction specification](docs/reproduction_spec.md) |

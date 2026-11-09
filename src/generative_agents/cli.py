@@ -558,6 +558,7 @@ def cmd_play(args: argparse.Namespace) -> int:
         print("note: the town interface is not built yet (cd frontend && npm install && npm run build); the API still runs")
     session.start()
     app = create_game_app(session)
+    _guard_network(app, args.host)
     url = f"http://{args.host}:{args.port}"
     print(
         f"{where}\nmodel: {cfg.providers.llm.kind}:{cfg.providers.llm.model} ({'MOCK' if cfg.run_mode == 'mock' else 'local, no API cost' if cfg.providers.llm.is_local() else cfg.run_mode})"
@@ -573,6 +574,23 @@ def cmd_play(args: argparse.Namespace) -> int:
         session.stop()
         print(f"saved. Continue with: ga play --resume {session.run_dir}   |   watch again: ga play --replay {session.run_dir}")
     return 0
+
+
+def _guard_network(app: Any, host: str) -> None:
+    """Require HEARTHSIDE_PASSWORD when set; warn when a server is exposed beyond localhost without one."""
+
+    from .webauth import ENV_VAR, SPECTATORS_VAR, password_from_env, require_password, spectators_from_env
+
+    password = password_from_env()
+    if password:
+        spectators = spectators_from_env()
+        require_password(app, password, spectators=spectators)
+        print(
+            f"password protection on ({ENV_VAR} is set): "
+            + (f"anyone may watch, the password is needed to act ({SPECTATORS_VAR}=1)" if spectators else "the browser will ask for it (any user name)")
+        )
+    elif host not in ("127.0.0.1", "localhost", "::1"):
+        print(f"WARNING: serving on {host} with no password; set {ENV_VAR} or put the server behind a proxy that authenticates (docs/deploy.md)")
 
 
 def cmd_export_demo(args: argparse.Namespace) -> int:
@@ -594,6 +612,7 @@ def cmd_serve(args: argparse.Namespace) -> int:
     from .viewer.app import create_app
 
     app = create_app(Path(args.run_dir), experiment_dir=Path(args.experiment) if args.experiment else None)
+    _guard_network(app, args.host)
     print(f"Smallville Lab viewer on http://{args.host}:{args.port}  (read-only; replays recorded frames, never calls a model)")
     uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
     return 0
