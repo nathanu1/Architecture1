@@ -1,0 +1,20 @@
+# Experiment B: social network emergence from local interactions. Ten residents, one day.
+# Conditions change only how often conversations may start (dialogue cooldown) and whether the
+# agents' own relationship records are appraised and shown in their prompts. MOCK: the fixture
+# model does not read the relationship line, so `informed` is expected to equal `baseline` apart
+# from valence; the contact conditions are expected to move density and components.
+#   ga experiment --protocol configs/experiments/social_network_mock.yaml --execute
+name: social_network_mock
+base_config: configs/offline_social_day.yaml
+question: "Do social structures (ties, components, reciprocity) emerge from local encounters, and how do interaction opportunities change them?"
+hypothesis: "Network density and the size of the largest component rise with contact opportunity (shorter cooldown) and fall with less; the probe-based density (mutual claims validated against memory) tracks the record-based density; informing prompts changes nothing with the mock model."
+conditions:
+  baseline: []
+  informed: ["social.appraisal=llm", "social.inform_prompts=true"]
+  low_contact: ["dialogue.cooldown_minutes=720"]
+  high_contact: ["dialogue.cooldown_minutes=30"]
+seeds: [11, 12, 13]
+metrics: [network, behavior, evaluation]
+primary_outcomes: [network_density, network_largest_component, conversations_per_agent, probe_density_supported]
+evaluate_relationships: true
+output_dir: runs/experiments

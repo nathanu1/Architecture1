@@ -1,0 +1,47 @@
+# Planted facts for the retrieval probe (evaluation/memory_probe.py). Each fact is inserted into
+# a CLONE of a snapshot for every probed agent at the given age (hours before the reference
+# time) and importance, then queried with its paraphrase. {name} is the agent's full name.
+# Facts are deliberately about things that do not occur in Smallville, so they cannot collide
+# with real memories. Queries share some words with the statement (the hash-embedding fixture
+# is lexical) but are not copies.
+facts:
+  - id: bicycle_recent
+    statement: "{name} noticed a red bicycle leaning against the lamppost outside the pharmacy"
+    query: "the red bicycle by the pharmacy lamppost"
+    age_hours: 0.5
+    importance: 3
+  - id: bicycle_old
+    statement: "{name} saw a blue bicycle chained to the fence behind the supply store"
+    query: "the blue bicycle chained behind the supply store"
+    age_hours: 30
+    importance: 3
+  - id: letter_recent
+    statement: "{name} received a letter from an old friend in Portland about a reunion in May"
+    query: "the letter from Portland about the May reunion"
+    age_hours: 2
+    importance: 7
+  - id: letter_old
+    statement: "{name} read a postcard from a cousin in Lisbon who is moving to a new flat"
+    query: "the postcard from the cousin in Lisbon"
+    age_hours: 40
+    importance: 7
+  - id: trivia_recent
+    statement: "{name} learned that the town library closes early on the first Friday of each month"
+    query: "when the library closes early each month"
+    age_hours: 5
+    importance: 2
+  - id: trivia_old
+    statement: "{name} heard that the park fountain will be repainted green next spring"
+    query: "the fountain repainted green in spring"
+    age_hours: 36
+    importance: 2
+  - id: promise_recent
+    statement: "{name} promised to return a borrowed umbrella to the bakery owner on Thursday"
+    query: "the borrowed umbrella to return on Thursday"
+    age_hours: 1
+    importance: 8
+  - id: promise_old
+    statement: "{name} agreed to water a neighbor's tomato plants while they travel to Denver"
+    query: "watering the neighbor's tomato plants during the Denver trip"
+    age_hours: 48
+    importance: 8

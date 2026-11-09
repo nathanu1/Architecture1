@@ -2,7 +2,8 @@
 
 * ``events.jsonl``, ``transcripts.jsonl``, ``retrieval_traces.jsonl``, ``model_calls.jsonl``
   (prompts and raw outputs as recorded; no credentials are ever stored);
-* ``memories.csv``, ``plans.csv``, ``calls_by_task.csv``, ``checkpoints.csv``;
+* ``memories.csv``, ``plans.csv``, ``calls_by_task.csv``, ``checkpoints.csv``, ``relationships.csv``
+  and ``relationship_events.jsonl`` (social memory, research extension);
 * ``manifest.json`` (copy) and ``run_report.md``.
 
 Mock, replayed and live runs are labeled in every report.
@@ -65,6 +66,28 @@ def export_run(run_dir: Path) -> dict[str, str]:
         {"step": r["step"], "sim_time": r["sim_time"], **json.loads(r["json"])} for r in db.query("SELECT step, sim_time, json FROM checkpoints ORDER BY step")
     ]
     _csv(out / "checkpoints.csv", cps, ["step", "sim_time", "note"])
+    try:  # social memory (research extension); absent in runs recorded before it existed
+        rels = [json.loads(r["json"]) for r in db.query("SELECT json FROM relationships ORDER BY agent_id, other_id")]
+        rel_events = [
+            {
+                "id": r["id"],
+                "step": r["step"],
+                "sim_time": r["sim_time"],
+                "agent_id": r["agent_id"],
+                "other_id": r["other_id"],
+                "kind": r["kind"],
+                **json.loads(r["json"]),
+            }
+            for r in db.query("SELECT id, step, sim_time, agent_id, other_id, kind, json FROM relationship_events ORDER BY id")
+        ]
+    except Exception:
+        rels, rel_events = [], []
+    _csv(
+        out / "relationships.csv",
+        rels,
+        ["agent_id", "other_id", "familiarity", "valence", "conversations", "presence", "appraisals", "first_met_at", "last_interaction_at"],
+    )
+    _jsonl(out / "relationship_events.jsonl", rel_events)
     run_id = db.get_meta("run_id") or run_dir.name
     calls: list[dict[str, Any]] = []
     by_task: list[dict[str, Any]] = []
@@ -154,7 +177,7 @@ def _report(run_dir: Path, m: dict[str, Any], db: Database, events: list[dict[st
         lines += [f"> {u['speaker_id']}: {u['text']}" for u in c.get("utterances", [])[:6]]
         lines.append("")
     lines += [
-        "Files: `events.jsonl`, `transcripts.jsonl`, `retrieval_traces.jsonl`, `model_calls.jsonl`, `memories.csv`, `plans.csv`, `calls_by_task.csv`, `checkpoints.csv`, `manifest.json`.",
+        "Files: `events.jsonl`, `transcripts.jsonl`, `retrieval_traces.jsonl`, `model_calls.jsonl`, `memories.csv`, `plans.csv`, `calls_by_task.csv`, `checkpoints.csv`, `relationships.csv`, `relationship_events.jsonl`, `manifest.json`.",
         "",
     ]
     lines += ["These are simulated characters; plausibility here does not establish validity for real people.", ""]

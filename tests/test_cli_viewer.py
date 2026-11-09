@@ -94,3 +94,30 @@ def test_viewer_api_is_read_only(run_dir):
     assert c.get("/api/agent/nobody").status_code == 404
     assert c.get("/").status_code == 200
     assert (run_dir / "state.sqlite").read_bytes() == before
+
+
+def test_research_views_are_served_read_only(run_dir):
+    from fastapi.testclient import TestClient
+
+    from generative_agents.viewer.app import create_app
+
+    before = (run_dir / "state.sqlite").read_bytes()
+    c = TestClient(create_app(run_dir))
+    dec = c.get("/api/agent/isabella_rodriguez/decisions?limit=50").json()
+    assert dec["records"] and all(r["evidence"] == "recorded" for r in dec["records"]) and "generated after the fact" in dec["note"]
+    kinds = {r["type"] for r in dec["records"]}
+    assert "action" in kinds or "day_plan" in kinds
+    cited = [r for r in dec["records"] if r["trace_ids"]]
+    if cited:
+        tid = cited[0]["trace_ids"][0]
+        assert tid in dec["traces"] and "query" in dec["traces"][tid]
+    nw = c.get("/api/network").json()
+    assert "density" in nw["measures"] and nw["series"] and nw["threshold"] == 0.2
+    assert c.get("/api/network?at=2023-02-13T09:05:00").json()["measures"]["n"] == 2
+    be = c.get("/api/behavior").json()
+    assert set(be["agents"]) == {"isabella_rodriguez", "klaus_mueller"} and "scheduled_share" in be["pooled"]
+    bl = c.get("/api/beliefs").json()
+    assert "valentines_party" in bl["beliefs"] and bl["beliefs"]["valentines_party"]["isabella_rodriguez"]["holds"] is True
+    assert isinstance(c.get("/api/relationships").json(), list) and c.get("/api/metrics").json() == {}
+    assert c.get("/api/agent/nobody/decisions").status_code in (200, 404)
+    assert (run_dir / "state.sqlite").read_bytes() == before

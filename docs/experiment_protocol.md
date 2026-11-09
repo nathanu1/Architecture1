@@ -133,3 +133,18 @@ The offline version (`configs/experiment_reflection_mock.yaml`) runs the same pi
 mock model; its numbers say nothing about reflection. Do not change the reflection threshold or
 the outcome definitions after seeing results; a retrieval-weight or context-budget sweep is a
 separate, later study.
+
+
+## 4. Research-platform experiments (extension)
+
+The runner in §3 accepts generalized protocols (`configs/experiments/*.yaml`): any config
+overrides as conditions, metrics picked by name (`evaluation`, `network`, `behavior`,
+`memory_probe`, `beliefs`, `tom`, `adaptation`, `usage`), per-condition interventions, forks
+from a shared snapshot (`fork_from`), a hypothesis recorded before running, and a
+determinism check. Fields, metrics and the report format are documented in
+[`research_platform.md`](research_platform.md) §4; the three demonstration experiments
+(memory and consistency, social network emergence, adaptation to a fire) and their executed
+MOCK results are in [`experiments/README.md`](experiments/README.md).
+
+Stopping rules carry over: plan and estimate first, run a slice with a real model before
+scaling, keep `determinism_check: true`, and report every run including failed ones.

@@ -1,0 +1,19 @@
+# Ten Smallville residents for one simulated day with the offline MOCK model: the base for the
+# social-network experiment (configs/experiments/social_network_mock.yaml). The population mixes
+# the pilot five with households and cafe regulars so that encounters are possible without
+# scripting them. Outcomes are structural only (MOCK).
+run:
+  name: social-day
+  label: "ten residents, one day (MOCK)"
+scenario:
+  path: scenarios/smallville_n25/scenario.yaml
+  population: [isabella_rodriguez, maria_lopez, klaus_mueller, sam_moore, wolfgang_schulz, tom_moreno, jane_moreno, tamara_taylor, carmen_ortiz, ayesha_khan]
+  start: "2023-02-13T06:00:00"
+  end: "2023-02-13T22:00:00"
+budget:
+  max_calls: 60000
+output:
+  checkpoint_every_steps: 360
+providers:
+  llm: {kind: mock, model: mock-llm-v1}
+  embeddings: {kind: mock-hash, model: mock-hash-256, dims: 256}

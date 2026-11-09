@@ -70,7 +70,7 @@ class DialogueEngine:
         traces: list[str] = []
         try:
             for me, other in ((a, b), (b, a)):
-                text, mems, ids, tr = self.reaction.context(me.identity, other.identity.name, me.sees, now, about_agent=True)
+                text, mems, ids, tr = self.reaction.context(me.identity, other.identity.name, me.sees, now, about_agent=True, observed_id=other.identity.id)
                 me.relationship, me.relationship_memories = text, mems
                 call_ids += ids
                 traces += tr

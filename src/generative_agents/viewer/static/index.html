@@ -17,6 +17,10 @@
     <button data-tab="town" aria-current="page">Town</button>
     <button data-tab="retrieval">Retrieval</button>
     <button data-tab="reflections">Reflections</button>
+    <button data-tab="decisions">Decisions</button>
+    <button data-tab="network">Network</button>
+    <button data-tab="behavior">Behavior</button>
+    <button data-tab="beliefs">Beliefs</button>
     <button data-tab="social">Social</button>
     <button data-tab="interviews">Interviews</button>
     <button data-tab="experiment">Experiment</button>
@@ -89,6 +93,16 @@
   </section>
 </main>
 
+<main id="tab-decisions" class="tab single" hidden>
+  <section class="panel">
+    <div class="panel-head"><div><h2>Decision records</h2><span class="hint">recorded evidence only: engine events joined with the retrieval traces and model calls they cite; nothing is explained after the fact</span></div>
+      <div><select id="dc-agent" aria-label="Agent"></select> <select id="dc-day" aria-label="Day"></select> <select id="dc-type" aria-label="Event type"><option value="">all types</option><option>action</option><option>reaction</option><option>replan</option><option>conversation</option><option>reflection</option><option>day_plan</option><option>action_failure</option><option>plan_failure</option><option>constraint</option><option>intervention</option></select></div></div>
+    <div class="split"><div id="dc-list" class="list"></div><div id="dc-detail"></div></div>
+  </section>
+</main>
+<main id="tab-network" class="tab single" hidden><section class="panel" id="network"></section></main>
+<main id="tab-behavior" class="tab single" hidden><section class="panel" id="behavior"></section></main>
+<main id="tab-beliefs" class="tab single" hidden><section class="panel" id="beliefs"></section></main>
 <main id="tab-social" class="tab single" hidden><section class="panel" id="social"></section></main>
 <main id="tab-interviews" class="tab single" hidden><section class="panel" id="interviews"></section></main>
 <main id="tab-experiment" class="tab single" hidden><section class="panel" id="experiment"></section></main>

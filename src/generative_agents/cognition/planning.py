@@ -17,6 +17,10 @@ or schedule cannot be produced, the agent has no plan (it idles and the failure 
 retried after a cooldown) rather than receiving an invented one. When only a decomposition
 fails, the agent follows its own hour-level activity for that window and the fallback is
 recorded on the task.
+
+Research ablation: with ``planning.decompose`` off, every hour block is followed as a single
+task and replanning after an interruption resumes the block's own activity without a model
+call. This gives an "hourly only" planner to compare against the full hierarchy.
 """
 
 from __future__ import annotations
@@ -425,7 +429,7 @@ class Planner:
 
     # ------------------------------------------------------------------ task level (JIT)
     def window_of(self, block: PlanItem, t: datetime) -> tuple[datetime, datetime]:
-        if is_sleep(block.description):
+        if is_sleep(block.description) or not self.cfg.decompose:
             return block.start, block.end
         span = max(self.cfg.task_max_minutes, self.cfg.jit_window_minutes) * 60
         k = int((t - block.start).total_seconds() // span)
@@ -463,6 +467,19 @@ class Planner:
         lo, hi = self.cfg.task_min_minutes, self.cfg.task_max_minutes
         if is_sleep(block.description) or minutes <= hi:
             return self.plans.new(identity.id, PlanLevel.TASK, start, minutes, block.description, now, parent_id=block.id, day=block.day, source="block")
+        if not self.cfg.decompose:  # hourly-only ablation: the block is followed as one task
+            return self.plans.new(
+                identity.id,
+                PlanLevel.TASK,
+                start,
+                minutes,
+                block.description,
+                now,
+                parent_id=block.id,
+                day=block.day,
+                source="block",
+                metadata={"decompose": False},
+            )
 
         def validate(out: Any) -> list[str]:
             errs = []
@@ -615,7 +632,7 @@ class Planner:
         if rest <= 0:
             return
         lo, hi = self.cfg.task_min_minutes, self.cfg.task_max_minutes
-        if rest <= hi:
+        if rest <= hi or not self.cfg.decompose:
             later = [a for s, d, a in original if s + timedelta(minutes=d) > inserted.end]
             desc = later[0] if later else block.description
             self.plans.new(identity.id, PlanLevel.TASK, inserted.end, rest, desc, now, parent_id=block.id, day=block.day, source="replan")

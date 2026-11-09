@@ -486,6 +486,212 @@ class RunData:
                 out[key] = list(csv.DictReader(p.open()))
         return out
 
+    # ------------------------------------------------------------------ research platform views
+    def _names(self) -> dict[str, str]:
+        return {r["id"]: r["name"] for r in self.q("SELECT id, name FROM agents ORDER BY order_index")}
+
+    def _topics(self) -> dict[str, Any]:
+        from ..evaluation.evidence import load_topics
+        from ..scenario.loader import load_scenario
+
+        sc = load_scenario(repo_path(self.cfg.scenario.path), population=self.cfg.scenario.population)
+        return load_topics(sc.events)
+
+    def decisions(self, aid: str, *, day: str | None = None, limit: int = 200, before: str | None = None) -> dict[str, Any]:
+        """Recorded decision evidence for one agent: what it perceived, retrieved, was asked and did.
+
+        Every record is a stored engine event joined with the retrieval traces and model calls it
+        cites. Nothing here is generated after the fact; the viewer labels it "recorded".
+        """
+
+        types = (
+            "action",
+            "reaction",
+            "replan",
+            "conversation",
+            "reflection",
+            "plan_failure",
+            "action_failure",
+            "constraint",
+            "intervention",
+            "day_plan",
+            "talk_skipped",
+        )
+        sql = f"SELECT id, step, sim_time, type, json FROM events WHERE agent_id=? AND type IN ({','.join('?' for _ in types)})"
+        params: list[Any] = [aid, *types]
+        if day:
+            sql += " AND substr(sim_time,1,10)=?"
+            params.append(day)
+        if before:
+            sql += " AND sim_time <= ?"
+            params.append(before)
+        sql += " ORDER BY id DESC LIMIT ?"
+        params.append(limit)
+        rows = self.q(sql, tuple(params))
+        trace_ids: set[str] = set()
+        call_ids: set[int] = set()
+        records = []
+        for r in rows:
+            d = json.loads(r["json"])
+            tids = list(d.get("trace_ids") or [])
+            cids = list(d.get("call_ids") or [])
+            for q in d.get("questions") or []:  # reflection batches
+                if q.get("trace_id"):
+                    tids.append(q["trace_id"])
+            for ch in d.get("choices") or []:  # location choices
+                cids += list(ch.get("call_ids") or [])
+            trace_ids.update(tids)
+            call_ids.update(int(c) for c in cids)
+            records.append(
+                {
+                    "id": r["id"],
+                    "step": r["step"],
+                    "sim_time": r["sim_time"],
+                    "type": r["type"],
+                    "payload": d,
+                    "trace_ids": tids,
+                    "call_ids": sorted(set(int(c) for c in cids)),
+                    "evidence": "recorded",
+                }
+            )
+        traces = {}
+        for tid in sorted(trace_ids):
+            t = self.one("SELECT json FROM retrieval_traces WHERE id=?", (tid,))
+            if t:
+                tj = json.loads(t["json"])
+                top = [c for c in tj["candidates"] if c.get("delivered")][:4]
+                traces[tid] = {
+                    "query": tj["query"],
+                    "purpose": tj.get("purpose"),
+                    "delivered": len(tj.get("delivered", [])),
+                    "excluded": len(tj.get("excluded", [])),
+                    "top": [{"id": c["id"], "kind": c["kind"], "description": c["description"], "score": c["score"]} for c in top],
+                }
+        calls = {}
+        conn = self._ledger()
+        if conn is not None:
+            ids = sorted(call_ids)
+            for i in range(0, len(ids), 400):
+                chunk = ids[i : i + 400]
+                for row in conn.execute(
+                    f"SELECT id, task, status, attempt_kind, model, latency_ms FROM calls WHERE id IN ({','.join('?' for _ in chunk)})", chunk
+                ):
+                    calls[row["id"]] = dict(row)
+            # calls the same agent made at the same simulated time (the engine logs step-level
+            # events without every call id, e.g. location choices and action grounding)
+            times = sorted({r["sim_time"] for r in records})
+            at_time: dict[str, list[dict[str, Any]]] = {}
+            for i in range(0, len(times), 400):
+                chunk = times[i : i + 400]
+                for row in conn.execute(
+                    f"SELECT id, sim_time, task, status, attempt_kind FROM calls WHERE agent_id=? AND sim_time IN ({','.join('?' for _ in chunk)}) ORDER BY id",
+                    (aid, *chunk),
+                ):
+                    at_time.setdefault(row["sim_time"], []).append(
+                        {"id": row["id"], "task": row["task"], "status": row["status"], "attempt_kind": row["attempt_kind"]}
+                    )
+            for rec in records:
+                rec["calls_at_time"] = at_time.get(rec["sim_time"], [])
+            conn.close()
+        records.reverse()
+        return {
+            "agent_id": aid,
+            "day": day,
+            "records": records,
+            "traces": traces,
+            "calls": {str(k): v for k, v in calls.items()},
+            "note": "Recorded evidence only: engine events with the retrieval traces and model calls they cite. No explanation is generated after the fact.",
+        }
+
+    def relationships(self, aid: str | None = None) -> list[dict[str, Any]]:
+        names = self._names()
+        try:
+            rows = self.q("SELECT agent_id, other_id, json FROM relationships" + (" WHERE agent_id=?" if aid else ""), (aid,) if aid else ())
+        except Exception:
+            return []
+        out = []
+        for r in rows:
+            d = json.loads(r["json"])
+            d["agent_name"], d["other_name"] = names.get(r["agent_id"], r["agent_id"]), names.get(r["other_id"], r["other_id"])
+            out.append(d)
+        return out
+
+    def network(self, at: str | None = None, points: int = 24) -> dict[str, Any]:
+        from ..social import network as net
+
+        agents = list(self._names())
+        thr = self.cfg.social.tie_threshold
+        with self.lock:
+            states = net.reconstruct(self.db, parse_iso(at)) if at else net.current_states(self.db)
+            m = net.measures(agents, states, thr)
+            start = self.cfg.scenario.start
+            end = parse_iso(self.db.get_meta("sim_time")) or self.cfg.scenario.end
+            n = max(1, min(points, int((end - start).total_seconds() // 3600)))
+            times = [start + (end - start) * i / n for i in range(n + 1)]
+            series = net.time_series(self.db, agents, times, thr)
+            events = net.event_rows(self.db, limit=5000)
+        return {
+            "at": at or (end.isoformat() if end else None),
+            "measures": m,
+            "states": states,
+            "series": series,
+            "events": len(events),
+            "names": self._names(),
+            "threshold": thr,
+            "config": self.cfg.social.model_dump(),
+        }
+
+    def behavior(self) -> dict[str, Any]:
+        from ..evaluation.behavior import behavior, behavior_by_hour
+
+        agents = list(self._names())
+        with self.lock:
+            b = behavior(self.db, agents, start=self.cfg.scenario.start, end=parse_iso(self.db.get_meta("sim_time")))
+            hours = behavior_by_hour(self.db, agents)
+        return {**b, "by_hour": hours, "names": self._names()}
+
+    def beliefs(self) -> dict[str, Any]:
+        from ..cognition.beliefs import BeliefLedger
+
+        agents = list(self._names())
+        with self.lock:
+            ledger = BeliefLedger(self.db, self._topics(), agents, before=parse_iso(self.db.get_meta("sim_time")))
+            d = ledger.to_dict()
+        brief = {
+            k: {
+                a: {
+                    "holds": b["holds"],
+                    "first_exposure_at": b["first_exposure_at"],
+                    "sources": b["sources"],
+                    "conflicting_details": b["conflicting_details"],
+                    "grounds": {o: g["basis"] for o, g in b["grounds"].items()},
+                }
+                for a, b in per.items()
+            }
+            for k, per in d["beliefs"].items()
+        }
+        tom_path = self.run_dir / "exports" / "tom" / "probes.jsonl"
+        probes = [json.loads(line) for line in tom_path.read_text().splitlines() if line.strip()] if tom_path.exists() else []
+        return {
+            "summary": d["summary"],
+            "beliefs": brief,
+            "second_order": d["second_order"],
+            "tom_probes": probes,
+            "names": self._names(),
+            "note": "Beliefs are read from each agent's own memories; truth is the evaluator's view. Neither is ever shown to an agent.",
+        }
+
+    def metrics(self) -> dict[str, Any]:
+        base = self.run_dir / "exports" / "metrics"
+        out: dict[str, Any] = {}
+        if base.exists():
+            for p in sorted(base.glob("*.json")):
+                try:
+                    out[p.stem] = json.loads(p.read_text())
+                except ValueError:
+                    continue
+        return out
+
     def interviews(self) -> dict[str, Any]:
         base = self.run_dir / "exports" / "interviews"
         sets = {}

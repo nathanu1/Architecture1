@@ -114,6 +114,25 @@ CREATE TABLE IF NOT EXISTS checkpoints (
   sim_time TEXT NOT NULL,
   json TEXT NOT NULL
 );
+
+-- Social memory (research extension): one directed record per pair that has interacted, and
+-- an append-only log of every update so the network can be reconstructed at any time.
+CREATE TABLE IF NOT EXISTS relationships (
+  agent_id TEXT NOT NULL,
+  other_id TEXT NOT NULL,
+  json TEXT NOT NULL,
+  PRIMARY KEY(agent_id, other_id)
+);
+CREATE TABLE IF NOT EXISTS relationship_events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  step INTEGER NOT NULL,
+  sim_time TEXT NOT NULL,
+  agent_id TEXT NOT NULL,
+  other_id TEXT NOT NULL,
+  kind TEXT NOT NULL,
+  json TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_rel_events_time ON relationship_events(sim_time, id);
 """
 
 

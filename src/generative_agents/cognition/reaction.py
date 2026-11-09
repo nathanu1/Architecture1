@@ -91,13 +91,25 @@ class ReactionEngine:
     def __init__(self, svc: Services, summary: SummaryService):
         self.svc = svc
         self.summary = summary
+        # Social memory (research extension): set by the engine when ``social.inform_prompts`` is on.
+        self.social: Any = None
+
+    def _social_line(self, identity: AgentIdentity, observed_id: str | None, observed: str, now: datetime) -> str:
+        if self.social is None or not self.social.informs_prompts or not observed_id:
+            return ""
+        return self.social.context_line(identity, observed_id, observed, now)
 
     def context(
-        self, identity: AgentIdentity, observed: str, observed_status: str, now: datetime, *, about_agent: bool
+        self, identity: AgentIdentity, observed: str, observed_status: str, now: datetime, *, about_agent: bool, observed_id: str | None = None
     ) -> tuple[str, list[Memory], list[int], list[str]]:
-        """Paper §4.3.1 two-query context, summarized from the observer's own memories."""
+        """Paper §4.3.1 two-query context, summarized from the observer's own memories.
+
+        With social memory informing prompts, the observer's own relationship record of the
+        observed agent is appended as one sentence (never the other agent's record).
+        """
 
         svc = self.svc
+        social = self._social_line(identity, observed_id, observed, now) if about_agent else ""
         queries = [f"{identity.name}'s relationship with {observed}", observed_status] if about_agent else [observed_status]
         results: list[RetrievalResult] = [svc.retriever.retrieve(identity.id, q, now, purpose="reaction:context") for q in queries]
         mems: list[Memory] = []
@@ -109,7 +121,8 @@ class ReactionEngine:
                     mems.append(m)
         trace_ids = [r.trace_id for r in results if r.trace_id]
         if not mems:
-            return f"{identity.name} has no memories about {observed}.", mems, [], trace_ids
+            text = f"{identity.name} has no memories about {observed}."
+            return (text + "\n" + social if social else text), mems, [], trace_ids
         out = svc.gateway.run(
             "interaction_context",
             {
@@ -126,7 +139,8 @@ class ReactionEngine:
             sim_time=now,
             purpose="reaction:context",
         )
-        return out.output.summary.strip(), mems, out.call_ids, trace_ids
+        summary = out.output.summary.strip()
+        return (summary + "\n" + social if social else summary), mems, out.call_ids, trace_ids
 
     def decide(
         self,
@@ -145,7 +159,7 @@ class ReactionEngine:
         about_agent = percept.kind == "agent"
         observed = observed_name or percept.subject.rsplit(":", 1)[-1]
         try:
-            ctx, mems, ctx_calls, traces = self.context(identity, observed, percept.description, now, about_agent=about_agent)
+            ctx, mems, ctx_calls, traces = self.context(identity, observed, percept.description, now, about_agent=about_agent, observed_id=percept.agent_id)
         except TaskFailed as exc:
             return ReactionDecision("continue", f"context failed: {exc}", percept, call_ids=exc.call_ids)
         first = observed.split()[0] if observed else ""
