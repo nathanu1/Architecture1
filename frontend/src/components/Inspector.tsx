@@ -1,61 +1,21 @@
 import { ArrowLeft, Flask, Warning, X } from "@phosphor-icons/react";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { api } from "../api";
 import { formatDayTime, formatDecimal, formatNumber, formatTime } from "../lib/time";
 import { DEMO } from "../demo/flag";
-import { replaceQuery, viewHref } from "../lib/route";
+import { viewHref } from "../lib/route";
 import { TabList, tabPanelProps } from "./Tabs";
 import { Button, IconButton } from "./ui";
 
-type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+import { Card, Problem, SERVER_HINT, td, th, useQueryParam, useResearch, type Json } from "./inspectorShared";
+import { Behavior, Beliefs, Decisions, Network } from "./ResearchViews";
 
-const TABS = ["memories", "retrieval", "plans", "reflections", "diffusion", "provenance"] as const;
+const TABS = ["memories", "retrieval", "plans", "reflections", "decisions", "network", "behavior", "beliefs", "diffusion", "provenance"] as const;
 type Tab = (typeof TABS)[number];
 const TAB_ITEMS = TABS.map((id) => ({ id, label: id.charAt(0).toUpperCase() + id.slice(1) }));
-const NBSP = " ";
+const NBSP = " ";
 const errorText = "text-[#b3261e] dark:text-[#ffb4ab]";
-const SERVER_HINT = "Check that “ga play” (or “ga serve”) is still running, then select Refresh.";
-
-interface Loaded<T> {
-  data: T | null;
-  error: string | null;
-  loading: boolean;
-}
-
-/** One research API read. Data from a previous path is never shown under a new one. */
-function useResearch<T>(path: string | null, deps: unknown[] = []): Loaded<T> {
-  const [state, setState] = useState<Loaded<T> & { path: string | null }>({ path, data: null, error: null, loading: !!path });
-  useEffect(() => {
-    if (!path) return;
-    let alive = true;
-    setState((s) => (s.path === path ? { ...s, loading: true } : { path, data: null, error: null, loading: true }));
-    api
-      .research<T>(path)
-      .then((data) => alive && setState({ path, data, error: null, loading: false }))
-      .catch((e) => alive && setState({ path, data: null, error: (e as Error).message, loading: false }));
-    return () => {
-      alive = false;
-    };
-  }, [path, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps
-  if (state.path !== path) return { data: null, error: null, loading: !!path };
-  return state;
-}
-
-/** Read and write one query parameter, so every view can be linked and reloaded. */
-function useQueryParam(key: string, fallback = ""): [string, (v: string) => void] {
-  const [value, setValue] = useState(() => new URLSearchParams(window.location.search).get(key) ?? fallback);
-  useEffect(() => {
-    const q = new URLSearchParams(window.location.search);
-    if (value && value !== fallback) q.set(key, value);
-    else q.delete(key);
-    replaceQuery(q);
-  }, [key, value, fallback]);
-  return [value, setValue];
-}
-
-function Problem({ children }: { children: ReactNode }) {
-  return <p className={`text-sm ${errorText}`}>{children}</p>;
-}
+/** Views that read the whole run rather than one resident. */
+const RUN_WIDE: readonly Tab[] = ["diffusion", "provenance", "behavior", "beliefs"];
 
 export function Inspector() {
   const run = useResearch<Json>("run");
@@ -158,7 +118,7 @@ export function Inspector() {
           <div className="scroll-thin min-h-0 flex-1 overflow-y-auto p-4" {...tabPanelProps("inspector", tab)}>
             {run.error ? null : !run.data ? (
               <p className="text-[var(--muted)]">Loading residents…</p>
-            ) : !agents.length && tab !== "diffusion" && tab !== "provenance" ? (
+            ) : !agents.length && !RUN_WIDE.includes(tab) ? (
               <p className="text-[var(--muted)]">This run has no residents yet.</p>
             ) : tab === "memories" ? (
               <Memories agent={agent} refresh={refresh} />
@@ -168,6 +128,14 @@ export function Inspector() {
               <Plans agent={agent} refresh={refresh} />
             ) : tab === "reflections" ? (
               <Reflections agent={agent} refresh={refresh} />
+            ) : tab === "decisions" ? (
+              <Decisions agent={agent} agents={agents} refresh={refresh} />
+            ) : tab === "network" ? (
+              <Network agent={agent} agents={agents} refresh={refresh} />
+            ) : tab === "behavior" ? (
+              <Behavior agents={agents} refresh={refresh} />
+            ) : tab === "beliefs" ? (
+              <Beliefs agents={agents} refresh={refresh} />
             ) : tab === "diffusion" ? (
               <Diffusion agents={agents} refresh={refresh} />
             ) : (
@@ -179,21 +147,6 @@ export function Inspector() {
     </div>
   );
 }
-
-function Card({ title, children, aside }: { title: string; children: ReactNode; aside?: ReactNode }) {
-  return (
-    <section className="mb-4 rounded-2xl bg-[var(--panel)] p-4 shadow-sm">
-      <div className="mb-2 flex flex-wrap items-center gap-2">
-        <h2 className="font-display text-lg font-bold">{title}</h2>
-        <div className="ml-auto">{aside}</div>
-      </div>
-      {children}
-    </section>
-  );
-}
-
-const th = "px-2 py-1.5 text-left text-xs font-bold uppercase tracking-wide text-[var(--muted)]";
-const td = "px-2 py-1.5 align-top";
 
 function Memories({ agent, refresh }: { agent: string; refresh: number }) {
   const [kind, setKind] = useQueryParam("kind");

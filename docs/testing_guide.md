@@ -174,7 +174,9 @@ ga play --config configs/town_mock.yaml --open
 
 Opens http://127.0.0.1:8080: a live three-resident town you can pause, walk around in, chat
 with residents and build things in. The research inspector is at
-http://127.0.0.1:8080/inspector. `Ctrl+C` stops it; `ga play --resume runs/<id>` continues a
+http://127.0.0.1:8080/inspector and has the same Decisions, Network, Behavior and Beliefs
+views as the research viewer, drawn in the town's style; open it after a few game hours so the
+residents have met. `Ctrl+C` stops it; `ga play --resume runs/<id>` continues a
 saved town, `ga play --replay runs/<id>` replays one without model calls.
 
 ---

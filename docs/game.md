@@ -276,5 +276,14 @@ until the welcome card is dismissed.
 retrievals with the recency, importance and relevance of each candidate; plans at every level;
 reflections with their evidence trees; information diffusion of the two seeded topics with every
 transmission; and the provenance of every model call (prompt, raw output, validation, repairs,
-tokens, model and digest). Mock runs and mock hash embeddings are flagged on the page: they are
-test fixtures, not research results.
+tokens, model and digest). The research platform's views are there too, in the town's own
+style: **Decisions** (every recorded engine event with the retrieval traces and model calls it
+cites, labeled "recorded" because nothing is explained after the fact), **Network** (the mutual
+ties between residents, a slider that replays the relationship event log, and the selected
+resident's own records), **Behavior** (plan adherence, scheduled share, idle share, replans,
+reactions and conversations per resident and per hour) and **Beliefs** (who has a received
+memory of each seeded event, from whom, and who has grounds to think who knows; see
+[`research_platform.md`](research_platform.md) §3). Mock runs and mock hash embeddings are
+flagged on the page: they are test fixtures, not research results. Recorded towns exported
+with `ga export-demo` include these views at their final state (the network slider needs the
+live server).

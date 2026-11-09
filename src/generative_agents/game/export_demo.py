@@ -64,6 +64,11 @@ def _research(run_dir: Path, agents: list[str], *, memories: int = 400, traces: 
     shared["run"] = info
     shared["manifest"] = data.manifest()
     shared["diffusion"] = data.diffusion()
+    # research platform views (docs/research_platform.md §6); the network's slider needs the
+    # live server, so the recording holds the final state and its time series only
+    shared["network"] = data.network(None)
+    shared["behavior"] = data.behavior()
+    shared["beliefs"] = data.beliefs()
     listed: set[int] = set()
     shared[f"calls?limit={calls}"] = rows = data.calls(task=None, agent=None, limit=calls, before=None)
     listed.update(int(r["id"]) for r in rows)
@@ -78,6 +83,7 @@ def _research(run_dir: Path, agents: list[str], *, memories: int = 400, traces: 
         for t in trace_rows:
             mine[f"trace/{t['id']}"] = data.trace(t["id"])
             owner[f"trace/{t['id']}"] = name
+        mine[f"agent/{aid}/decisions?limit=400"] = data.decisions(aid, limit=400)
         mine[f"agent/{aid}/reflections"] = refl = data.reflections(aid)
         for r in refl:
             mine[f"evidence/{r['id']}"] = data.evidence(r["id"])

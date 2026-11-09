@@ -223,6 +223,10 @@ every comparison.
 * **Experiment** now lists the protocol's hypothesis, every outcome by condition, the
   comparisons and the determinism result.
 
+The town game's inspector (`ga play`, then `/inspector`) carries the same four views in the
+town's own style (`frontend/src/components/ResearchViews.tsx`), reading the same API mounted
+under `/research`; recorded towns (`ga export-demo`) include them at their final state.
+
 ## 7. Command summary
 
 ```bash

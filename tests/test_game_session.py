@@ -199,7 +199,9 @@ def test_a_recorded_town_exports_as_static_demo_data_without_calls(tmp_path, mon
     index = json.loads((demo / "research" / "index.json").read_text())
     assert sorted(index["files"]) == sorted(["shared"] + [f"agent-{aid}" for aid in tl["agents"]])
     research = {name: json.loads((demo / "research" / f"{name}.json").read_text()) for name in index["files"]}
-    assert {"run", "manifest", "diffusion", "calls?limit=150"} <= set(research["shared"])
+    assert {"run", "manifest", "diffusion", "calls?limit=150", "network", "behavior", "beliefs"} <= set(research["shared"])
+    assert research["shared"]["network"]["measures"]["n"] == len(index["files"]) - 1 and "pooled" in research["shared"]["behavior"]
+    assert any(k.endswith("/decisions?limit=400") for f in index["files"] if f != "shared" for k in research[f])
     assert all(f"agent/{aid}/memories" in research[f"agent-{aid}"] for aid in tl["agents"])
     listed = {c["id"] for c in research["shared"]["calls?limit=150"]}
     assert listed and all(f"call/{cid}" in research[index["owner"][f"call/{cid}"]] for cid in listed)
