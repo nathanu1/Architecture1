@@ -1,0 +1,45 @@
+# The town that runs inside a browser tab (docs/tab.md): the engine in Pyodide, the residents'
+# model in the page through WebGPU, everything on the visitor's own device.
+#
+# Three residents and every setting that keeps the number of model questions low, because one
+# in-browser model answers one question at a time:
+# * a place is chosen in one question instead of three, and kept for the hour block (location);
+# * situations already settled are answered from the town's own record (memoize, habits);
+# * routine sightings are not deliberated again within the hour (salience gate);
+# * forgetting keeps recall bounded as the weeks go by.
+# The page chooses the mind: `scripted` (no download, placeholder words) or a model id.
+# Memory search is lexical here (mock-hash embeddings): no second model to download.
+run:
+  name: town-tab
+  label: "a town in this tab"
+scenario:
+  path: scenarios/pilot3/scenario.yaml
+  start: "2023-02-13T07:00:00"
+  end: "2023-06-01T00:00:00"
+output:
+  checkpoint_every_steps: 1
+  snapshots: []
+game:
+  enabled: true
+location:
+  strategy: single_call
+  reuse_within_block: true
+retrieval:
+  forgetting: {enabled: true, decay: 0.5, threshold: -1.0, importance_bonus: 0.1}
+reaction:
+  salience_gate: true
+  routine_cooldown_minutes: 60
+providers:
+  llm:
+    kind: mock
+    model: mock-llm-v1
+    temperature: 0.7
+    max_output_tokens: 384
+    max_retries: 1
+    memoize_tasks: [choose_location, importance, importance_batch, action_grounding]
+    habit_tasks: [choose_location, importance, importance_batch, action_grounding]
+  embeddings: {kind: mock-hash, model: mock-hash-256, dims: 256}
+budget:
+  max_calls: 50000000
+  max_input_tokens: null
+  max_output_tokens: null

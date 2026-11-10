@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 import { DemoBar } from "../demo/DemoBar";
 import { DEMO } from "../demo/flag";
-import { viewHref } from "../lib/route";
+import { STATIC_PAGE, viewHref } from "../lib/route";
 import { failureBody } from "../lib/text";
 import { formatDate, formatDay, formatNumber, formatTime, hourOf } from "../lib/time";
 import { useTown } from "../store";
@@ -150,8 +150,8 @@ export function Hud() {
         {poll?.replay || poll?.observe ? null : <IconButton label="Build and Decorate (B)" icon={Hammer} pressed={mode === "build"} onClick={() => setMode(mode === "build" ? "play" : "build")} />}
         <a
           href={viewHref("inspector")}
-          {...(DEMO ? {} : { target: "_blank", rel: "noreferrer" })}
-          aria-label={DEMO ? "Research Inspector" : "Research Inspector (opens a new tab)"}
+          {...(STATIC_PAGE ? {} : { target: "_blank", rel: "noreferrer" })}
+          aria-label={STATIC_PAGE ? "Research Inspector" : "Research Inspector (opens a new tab)"}
           title="Research Inspector"
           className={`inline-flex size-11 items-center justify-center rounded-full bg-[var(--panel-2)] text-[var(--text)] transition-colors hover:bg-[var(--panel-hover)] ${poll?.replay ? "" : "max-sm:hidden"}`}
         >

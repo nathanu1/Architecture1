@@ -1,8 +1,7 @@
 import { ArrowLeft, Flask, Warning, X } from "@phosphor-icons/react";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { formatDayTime, formatDecimal, formatNumber, formatTime } from "../lib/time";
-import { DEMO } from "../demo/flag";
-import { viewHref } from "../lib/route";
+import { STATIC_PAGE, viewHref } from "../lib/route";
 import { TabList, tabPanelProps } from "./Tabs";
 import { Button, IconButton } from "./ui";
 
@@ -28,7 +27,7 @@ export function Inspector() {
     if (!agent && agents.length) setAgent(agents[0].id);
   }, [agent, agents, setAgent]);
   const link = (id: string) => {
-    if (DEMO) return viewHref("inspector");
+    if (STATIC_PAGE) return viewHref("inspector");
     const q = new URLSearchParams(window.location.search);
     q.set("agent", id);
     return `/inspector?${q.toString()}`;

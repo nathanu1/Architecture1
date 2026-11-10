@@ -12,6 +12,7 @@ import { TownView } from "./components/TownView";
 import { decodeMap } from "./lib/map";
 import { DEMO } from "./demo/flag";
 import { Welcome } from "./demo/Welcome";
+import { TAB } from "./tab/flag";
 import { replaceQuery, useView } from "./lib/route";
 import { hourOf } from "./lib/time";
 import { useTown, type NotebookTab } from "./store";
@@ -36,7 +37,12 @@ function usePolling(enabled: boolean) {
         timer = window.setTimeout(tick, p.paused || p.error ? 600 : 220);
       } catch {
         failures++;
-        if (failures === 3) useTown.getState().toast({ tone: "warn", title: "Lost the town server", body: "Check that \u201Cga play\u201D is still running. Retrying…" });
+        if (failures === 3)
+          useTown.getState().toast(
+            TAB
+              ? { tone: "warn", title: "The town stopped answering", body: "Reloading this page continues it from where it was saved." }
+              : { tone: "warn", title: "Lost the town server", body: "Check that \u201Cga play\u201D is still running. Retrying…" },
+          );
         timer = window.setTimeout(tick, Math.min(5000, 500 * failures));
       }
     };
@@ -99,13 +105,17 @@ function Loading({ error }: { error: string | null }) {
           {error ? (
             <>
               <p className="text-[var(--muted)]">{error}</p>
-              <p className="text-sm text-[var(--muted)]">
-                Start the town with{" "}
-                <code className="rounded bg-[var(--panel-2)] px-1.5" translate="no">
-                  ga play --config configs/town_ollama.yaml
-                </code>
-                , then reload this page.
-              </p>
+              {TAB ? (
+                <p className="text-sm text-[var(--muted)]">Reload this page to try again.</p>
+              ) : (
+                <p className="text-sm text-[var(--muted)]">
+                  Start the town with{" "}
+                  <code className="rounded bg-[var(--panel-2)] px-1.5" translate="no">
+                    ga play --config configs/town_ollama.yaml
+                  </code>
+                  , then reload this page.
+                </p>
+              )}
             </>
           ) : (
             <p className="text-[var(--muted)]">Waking up the town…</p>

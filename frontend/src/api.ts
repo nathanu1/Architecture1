@@ -1,6 +1,8 @@
 import { ApiError } from "./apiError";
 import { demoApi } from "./demo/api";
 import { DEMO } from "./demo/flag";
+import { tabApi } from "./tab/api";
+import { TAB } from "./tab/flag";
 import type { BuildCheck, BuildOp, Info, MapPayload, Poll, ResidentDetail } from "./types";
 
 export { ApiError };
@@ -41,5 +43,5 @@ const liveApi = {
 
 export type Api = typeof liveApi;
 
-/** The town's server, or (in the demo build) a recording played back in the browser. */
-export const api: Api = DEMO ? demoApi : liveApi;
+/** The town's server, a recording played back in the browser (demo build), or a town running in this tab (tab build). */
+export const api: Api = DEMO ? demoApi : TAB ? tabApi : liveApi;

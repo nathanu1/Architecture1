@@ -74,6 +74,17 @@ No checkout is needed to try it:
 uvx --from "generative-agents-lab[viewer] @ git+https://github.com/nathanu1/Architecture1@main/feature-social-memory" ga town --app
 ```
 
+### Or with no server at all: the town in a tab
+
+The same town also builds into a static page that runs entirely on the visitor's device: the engine as Python compiled to WebAssembly, the residents' model on the graphics chip through WebGPU. One click starts it, nothing is installed, and hosting it costs nothing however many people open it. [The tab guide](docs/tab.md) explains how it works, what has been checked and how to publish it.
+
+```bash
+cd frontend
+npm install
+npm run build:tab
+python3 -m http.server 8095 --directory dist-tab
+```
+
 ### Path 2: the research route
 
 ```bash
@@ -149,6 +160,8 @@ These runs check the local model path from start to finish. They do not establis
 
 The living-town work (`ga town`, `ga bench`, habits, the salience gate, parallel deciding) is covered by tests against the offline model and a stand-in model server. It has not yet been run on a real model: the three runs above predate it, so run `ga bench` on your machine before relying on any speed.
 
+The town in a tab has been run end to end in a headless browser with scripted residents and with a stand-in for the model; none of its five offered models has been run on a real graphics chip yet.
+
 Hosted adapters are implemented but have not been exercised against their live APIs in the documented runs. LM Studio compatibility uses the OpenAI-compatible adapter; LM Studio itself has not been tested. The 35-resident neighborhood is an extension to the original 25-resident scenario.
 
 ### Development checks
@@ -163,7 +176,7 @@ npm run typecheck
 npm run build
 ```
 
-For this update, **261 Python tests passed (one skipped)** and the Python lint and format checks passed; the frontend passed 39 tests, its type check and its build.
+For this update, **267 Python tests passed (one skipped)** and the Python lint and format checks passed; the frontend passed 42 tests, its type check and its build.
 
 The tests cover memory isolation, retrieval and reflection, plan validation, private dialogue, world constraints, replay, evaluation, local adapters, and building rules. See the [reference](docs/reference.md#tests) for prompt-example maintenance.
 
@@ -177,6 +190,7 @@ The tests cover memory isolation, retrieval and reflection, plan validation, pri
 | Smallville scenarios and the added neighborhood | [`scenarios/`](scenarios/) |
 | Step-by-step install, run and test walkthrough | [Testing guide](docs/testing_guide.md) |
 | The living town on a local model: app, server, site | [Deployment](docs/deploy.md) |
+| The town in a browser tab, on the visitor's own device | [Tab guide](docs/tab.md) |
 | Why it is built this way, and what comes next | [Plan](docs/plan.md) |
 | Commands and configuration | [Reference](docs/reference.md) |
 | Town controls and local-run details | [Town guide](docs/game.md) |

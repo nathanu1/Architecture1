@@ -298,21 +298,31 @@ class LLMGateway:
                 return memo.raw_output or "", memo.id, True
         last_error: ProviderError | None = None
         reserved = getattr(self._tls, "ids", None)  # set while answering a task of a parallel round
-        for attempt in range(1 + self.settings.max_retries):
-            # every attempt takes the next reserved id, used or not, so a re-executed step
-            # numbers its remaining calls as the first execution would have
-            call_id_hint = next(reserved) if reserved is not None else None
+        attempt = 0
+        while attempt <= self.settings.max_retries:
+            # every occurrence looked at takes the next reserved id, used or not, so a
+            # re-executed step numbers its remaining calls as the first execution would have
+            # (after a failure there may be more occurrences than reserved ids: then the
+            # ledger numbers the call itself)
+            call_id_hint = next(reserved, None) if reserved is not None else None
             occurrence = self.ledger.next_occurrence(h)
             record = self.ledger.lookup(h, occurrence)
             if record is not None:
                 if reserved is None:
                     self.ledger.note_seen(record.id)
+                if record.status == "error" and not self.replay:
+                    # A transport or server failure recorded by an execution that was rolled
+                    # back (the model server was down; the town stopped; someone pressed Retry).
+                    # It says nothing about now: ask again, without spending this execution's
+                    # retries on it. A replay still reproduces the recorded sequence exactly.
+                    continue
                 self.budget.record_cache_hit()
                 if record.status in ("refusal", "truncated"):
                     raise TaskFailed(request.task, record.error or record.status, call_ids=[record.id], errors=[record.status])
                 if record.status == "error":
                     last_error = ProviderError(record.error or "error", retryable=record.error_retryable)
                     if last_error.retryable and attempt < self.settings.max_retries:
+                        attempt += 1
                         continue
                     raise last_error
                 return record.raw_output or "", record.id, True
@@ -329,6 +339,7 @@ class LLMGateway:
                 last_error = exc
                 if exc.retryable and attempt < self.settings.max_retries:
                     self.sleep(self.settings.backoff_s * (2**attempt))
+                    attempt += 1
                     continue
                 if isinstance(exc, ProviderRefusal | ProviderTruncated):
                     raise TaskFailed(request.task, str(exc), call_ids=[call_id], errors=[exc.kind]) from exc

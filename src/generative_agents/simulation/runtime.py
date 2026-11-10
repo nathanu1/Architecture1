@@ -46,6 +46,10 @@ def _provider_from(llm: Any, cfg: GAConfig) -> Any:
 
     if llm.kind == "mock":
         return MockLLM(seed=cfg.run.seed, model=llm.model)
+    if llm.kind == "browser":
+        from ..providers.deferred import DeferredLLM
+
+        return DeferredLLM(llm.model)
     if llm.kind == "anthropic":
         from ..providers.anthropic_provider import AnthropicProvider
 
@@ -125,7 +129,7 @@ def build_runtime(
         temperature=llm.temperature,
         max_retries=llm.max_retries,
         max_validation_repairs=llm.max_validation_repairs,
-        backoff_s=0.0 if llm.kind == "mock" else 2.0,
+        backoff_s=0.0 if llm.kind in ("mock", "browser") else 2.0,
         task_overrides=llm.task_overrides,
         zero_cost=llm.is_local(),
         memoize_tasks=frozenset(llm.memoize_tasks),

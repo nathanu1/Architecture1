@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { DEMO } from "../demo/flag";
+import { TAB } from "../tab/flag";
+
+/** A page with no server behind its paths (the recorded demo, the town in a tab): views live in the hash. */
+export const STATIC_PAGE = DEMO || TAB;
 
 export type View = "town" | "inspector";
 
@@ -25,11 +29,11 @@ export function useView(): View {
 }
 
 /** Links between the two views. The demo page lives in a frame that cannot change its path. */
-export const viewHref = (view: View) => (DEMO ? `#${view}` : view === "inspector" ? "/inspector" : "/");
+export const viewHref = (view: View) => (STATIC_PAGE ? `#${view}` : view === "inspector" ? "/inspector" : "/");
 
 /** Keep view state in the query string, so it can be linked and reloaded (not in the demo build). */
 export function replaceQuery(q: URLSearchParams): void {
-  if (DEMO) return;
+  if (STATIC_PAGE) return;
   try {
     const search = q.toString();
     window.history.replaceState(null, "", `${window.location.pathname}${search ? `?${search}` : ""}`);

@@ -81,6 +81,7 @@ A six-hour smoke run takes about five seconds: `ga run --config configs/offline_
 | `configs/town_n25_server.yaml` | All 25 residents on two local models (a 3B for the mechanical three quarters of calls, an 8B for judgment), for a town that runs continuously; `town_llama_api.yaml` is the same town on Llama through a hosted OpenAI-compatible API; `town_ollama_docker.yaml` targets the compose file's Ollama. See [deploy.md](deploy.md). |
 | `configs/town_n5_mock.yaml` / `town_n10_mock.yaml` / `town_n25_mock.yaml` / `town_n35_mock.yaml` | The research populations as towns on the offline MOCK model: the five pilot residents, the ten of the social experiment, all 25, and the 35-resident extension. |
 | `configs/game/` | Town game content: six affinity themes, motifs and gifts, catalog, paints and templates, Town Pulse levels, the Town Square, resident looks, a demo action script. |
+| `configs/town_tab.yaml` | The town that runs inside a browser tab ([tab.md](tab.md)): three residents, a place chosen in one question and kept for the hour block, repeats and habits from the record, the salience gate. The page picks the mind (`providers.llm.kind: browser`). |
 | `configs/residents_example.yaml` | Resident cards for `ga town --newcomers`: three example people and every field a card may have. |
 | `configs/defaults.yaml` | Every setting with its default, for reference. |
 | `configs/pricing.yaml` | USD per million tokens from the [published pricing page](https://platform.claude.com/docs/en/about-claude/pricing), fetched 2026-10-05. Without it, cost is reported as "unpriced". |
@@ -214,6 +215,13 @@ act. `Dockerfile`, `docker-compose.yml` (with an optional Ollama container) and 
 and `deploy/hearthside.service` cover the rest; the reasoning, sizes and speeds are in [deploy.md](deploy.md). The
 OpenAI-compatible adapter's `providers.llm.response_format` (`json_schema`, `json_object`,
 `none`) matches what a hosted API accepts.
+
+## The town in a tab
+
+`cd frontend && npm run build:tab` writes `frontend/dist-tab`: a static site with the page, the
+Python runtime (Pyodide), the engine's wheel and nothing else to install. `npm run test:tab`
+runs the engine inside that runtime under Node. `.github/workflows/tab-site.yml` publishes the
+site to GitHub Pages when run by hand or when a `site-*` tag is pushed. Details: [tab.md](tab.md).
 
 ## Living-town settings
 

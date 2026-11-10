@@ -60,6 +60,7 @@ question in its own right.
 | The town fits the machine: models by memory, parallel calls by measurement | `tests/test_founding.py` (`plan_models`, `probe_parallel` against a stand-in server with one slot and with several) |
 | A town of your own: name, cast, residents from cards, real-time pace | `tests/test_founding.py`; a named town with three written residents checked in a browser |
 | Installable page, app window | manifest and icons in the built interface; checked in a browser |
+| The town in a tab: engine in the browser's Python, model on WebGPU, no server | `tests/test_tab.py`, `npm run test:tab`, headless Chromium against the built site ([tab.md](tab.md)) |
 | Server units | `deploy/hearthside.service`, `docker-compose.yml`, `deploy/entrypoint.sh` |
 
 Not yet verified, and said so where it matters: no real model has been run on this work (the
@@ -84,6 +85,15 @@ image has not been built in CI.
 4. **Only then widen.** Parallel conversations (the remaining sequential half of the model
    time), 25 residents as the default, a public page, and the proposals in
    [research_review.md](research_review.md).
+
+## A third door: the town in a tab
+
+Asked for a version anyone can open with one click and nothing to install, the answer that
+stays free at any audience size is to let each visitor's device do the work. The engine turned
+out to run unmodified in the browser's Python, and the engine's transactional steps gave a way
+to wait for an in-browser model without threads ([tab.md](tab.md)). It is not a third path so
+much as a third door into the same town: same package, same interface, same inspector. What it
+still needs is a first run on real graphics hardware.
 
 ## What was dropped
 

@@ -32,3 +32,7 @@ docs/2304.03442v2.pdf
 # Frontend tooling
 node_modules/
 frontend/node_modules/
+
+# Built sites (made by `npm run build:demo` / `npm run build:tab`)
+frontend/dist-demo/
+frontend/dist-tab/

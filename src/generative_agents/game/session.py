@@ -113,56 +113,15 @@ class GameSession:
         self._thread.join(timeout)
 
     def _run(self) -> None:
+        """The engine thread: pass after pass until stopped, waiting between passes as the pace asks."""
+
         sim = self.sim
         try:
             while not self._stop.is_set():
-                if not self._ready:
-                    if self.error:  # wait for Retry
-                        self._wake.wait(0.5)
-                        self._wake.clear()
-                        continue
-                    try:
-                        self._set_status("initializing" if not sim.initialized() else "starting")
-                        sim.begin()
-                    except RunStopped as stop:
-                        self._failed(stop.status.value, stop.detail)
-                        continue
-                    self._ready = True
-                    self.game.ensure_started(sim.clock.now)
-                    self._publish(frame=True)
-                    continue
-                if self.paused or self.finished or self.error:
-                    with self.lock:  # only the engine thread reports that stepping has stopped
-                        if not self.error:
-                            self.status = "finished" if self.finished else "paused"
-                    self._service_actions()
-                    self._wake.wait(0.2)
+                wait = self.iterate()
+                if wait > 0:
+                    self._wake.wait(wait)
                     self._wake.clear()
-                    continue
-                started = time.monotonic()
-                with self.lock:
-                    self._in_step = True
-                    self.status = "running"
-                try:
-                    sim.advance()
-                except RunStopped as stop:
-                    sim._abort(stop.status, stop.detail)
-                    self._failed(stop.status.value, stop.detail)
-                    continue
-                finally:
-                    with self.lock:
-                        self._in_step = False
-                self._publish(frame=True)
-                if self.finished:
-                    self._set_status("finished")
-                    self.paused = True
-                rate = SPEEDS[self.speed]
-                if rate != 0:
-                    period = 1.0 / rate if rate > 0 else float(sim.cfg.scenario.seconds_per_step)
-                    left = period - (time.monotonic() - started)
-                    if left > 0:
-                        self._wake.wait(left)
-                        self._wake.clear()
             if self._ready and not self.error:
                 sim.finish(sim.wind_down())
             else:
@@ -171,6 +130,57 @@ class GameSession:
             self._failed("error", f"{type(exc).__name__}: {exc}\n{traceback.format_exc(limit=3)}")
         finally:
             sim.close()
+
+    def iterate(self) -> float:
+        """One pass of the town's loop; returns how many seconds to wait before the next.
+
+        A pass wakes the town up, or serves the player's actions while it is paused, or runs one
+        step. The engine thread calls this in a loop; a town without threads (one that runs
+        inside a browser tab, ``game/tab.py``) calls it from its own loop instead.
+        """
+
+        sim = self.sim
+        if not self._ready:
+            if self.error:  # wait for Retry
+                return 0.5
+            try:
+                self._set_status("initializing" if not sim.initialized() else "starting")
+                sim.begin()
+            except RunStopped as stop:
+                self._failed(stop.status.value, stop.detail)
+                return 0.0
+            self._ready = True
+            self.game.ensure_started(sim.clock.now)
+            self._publish(frame=True)
+            return 0.0
+        if self.paused or self.finished or self.error:
+            with self.lock:  # only the engine reports that stepping has stopped
+                if not self.error:
+                    self.status = "finished" if self.finished else "paused"
+            self._service_actions()
+            return 0.2
+        started = time.monotonic()
+        with self.lock:
+            self._in_step = True
+            self.status = "running"
+        try:
+            sim.advance()
+        except RunStopped as stop:
+            sim._abort(stop.status, stop.detail)
+            self._failed(stop.status.value, stop.detail)
+            return 0.0
+        finally:
+            with self.lock:
+                self._in_step = False
+        self._publish(frame=True)
+        if self.finished:
+            self._set_status("finished")
+            self.paused = True
+        rate = SPEEDS[self.speed]
+        if rate == 0:
+            return 0.0
+        period = 1.0 / rate if rate > 0 else float(sim.cfg.scenario.seconds_per_step)
+        return max(0.0, period - (time.monotonic() - started))
 
     @property
     def finished(self) -> bool:

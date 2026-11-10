@@ -245,3 +245,51 @@ def test_observe_mode_shows_a_research_run_in_the_town_without_changing_it(tmp_p
         s.stop()
     manifest = json.loads((out / "manifest.json").read_text())
     assert manifest["status"] == "completed" and manifest["game"]["mode"] == "observe" and manifest["replay_of"]["run_id"] == "research"
+
+
+class Outage:
+    """The mock, unreachable for ``down`` calls after ``after`` good ones (a model server restarting)."""
+
+    name = "outage"
+
+    def __init__(self, after: int, down: int):
+        self.inner, self.seen, self.after, self.down = MockLLM(seed=5), 0, after, down
+
+    def describe(self):
+        return {"provider": "outage"}
+
+    def complete(self, request):
+        self.seen += 1
+        if self.after < self.seen <= self.after + self.down:
+            raise ProviderError("ollama not reachable at http://localhost:11434", retryable=True)
+        return self.inner.complete(request)
+
+
+def test_retry_after_an_outage_asks_the_model_again_instead_of_replaying_the_failure(tmp_path):
+    """The failed calls stay in the ledger; a retry must not treat them as the answer forever."""
+
+    whole = make_session(tmp_path, name="whole", speed="max")
+    while not whole.finished:
+        whole.iterate()
+    s = make_session(tmp_path, name="outage", provider=Outage(after=25, down=3), speed="max")  # three failures: every retry of one call
+    while not s.error:
+        s.iterate()
+    assert s.status == "provider_failure" and "not reachable" in s.error
+    s.control("retry")
+    while not (s.finished or s.error):
+        s.iterate()
+    assert s.finished and s.error is None
+
+    # the same town an uninterrupted run gives (the three failed calls shift the call numbers
+    # that memories cite, so compare what happened, not the numbering)
+    def happened(session):
+        db = session.sim.db
+        memories = [
+            (r["owner_id"], r["created_at"], r["description"])
+            for r in db.query("SELECT owner_id, created_at, description FROM memories ORDER BY owner_id, seq")
+        ]
+        return memories, db.content_hash(("conversations", "agent_state"))
+
+    assert happened(s) == happened(whole)
+    failed = [r for r in s.sim.rt.ledger.rows() if r["status"] == "error"]
+    assert len(failed) == 3  # recorded, visible, and not replayed

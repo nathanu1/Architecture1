@@ -250,7 +250,9 @@ class ProviderPoolSection(_Base):
 
 
 class LLMProviderSection(_Base):
-    kind: Literal["mock", "anthropic", "openai", "ollama", "openai_compatible", "replay"] = "mock"
+    # "browser": the model runs in the page that hosts the town (WebGPU) and answers through
+    # providers/deferred.py; see docs/tab.md.
+    kind: Literal["mock", "anthropic", "openai", "ollama", "openai_compatible", "browser", "replay"] = "mock"
     model: str = "mock-llm-v1"
     max_output_tokens: int = 1024
     effort: Literal["low", "medium", "high", "xhigh", "max"] | None = None
@@ -299,7 +301,7 @@ class LLMProviderSection(_Base):
     def is_local(self) -> bool:
         if self.local is not None:
             return self.local
-        if self.kind == "ollama":
+        if self.kind in ("ollama", "browser"):
             return True
         if self.kind == "openai_compatible":
             from .providers.local_http import is_local_url
