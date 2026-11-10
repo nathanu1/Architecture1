@@ -1,0 +1,26 @@
+# Ten Smallville residents for one day on the local Llama pair: the base of the real-model
+# social-network experiment (configs/experiments/social_network_llama.yaml), i.e. the research
+# route on the same model server the living town uses.
+#
+# Unlike the living town (town_live.yaml) the cost switches are OFF here: no memoized repeats,
+# no habits, no salience gate, no forgetting, so the conditions differ only in what the protocol
+# changes. Parallel deciding is ON for every condition alike (it is deterministic and replayable,
+# and roughly halves the wait for the model); set engine.parallel_calls=1 for the sequential engine.
+#   ga bench --config configs/social_day_llama.yaml     # how long one run takes on your server
+#   ga doctor --config configs/social_day_llama.yaml
+extends: town_n25_server.yaml
+run:
+  name: social-day-llama
+  label: "ten residents, one day (local Llama)"
+scenario:
+  population: [isabella_rodriguez, maria_lopez, klaus_mueller, sam_moore, wolfgang_schulz, tom_moreno, jane_moreno, tamara_taylor, carmen_ortiz, ayesha_khan]
+  start: "2023-02-13T06:00:00"
+  end: "2023-02-13T22:00:00"
+game:
+  enabled: false
+output:
+  checkpoint_every_steps: 360
+engine:
+  parallel_calls: 4
+budget:
+  max_calls: 60000

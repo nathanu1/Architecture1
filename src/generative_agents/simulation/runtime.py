@@ -19,17 +19,43 @@ from .budget import Budget
 
 
 def build_llm_provider(cfg: GAConfig) -> Any:
+    """The default provider, rate-limited when the config sets a plan limit."""
+
     llm = cfg.providers.llm
+    if llm.kind == "replay":
+        return _NoCallProvider()
+    return _limited(_provider_from(llm, cfg), llm.rate_limit)
+
+
+def build_pools(cfg: GAConfig) -> dict[str, Any]:
+    """Named extra providers (providers.llm.pools), each with its own rate limit."""
+
+    return {name: _limited(_provider_from(section, cfg), section.rate_limit) for name, section in cfg.providers.llm.pools.items()}
+
+
+def _limited(provider: Any, limit: Any) -> Any:
+    if not limit.active():
+        return provider
+    from ..providers.ratelimit import RateLimitedProvider, RateLimits
+
+    return RateLimitedProvider(provider, RateLimits(limit.requests_per_minute, limit.tokens_per_minute, limit.requests_per_day, limit.tokens_per_day))
+
+
+def _provider_from(llm: Any, cfg: GAConfig) -> Any:
+    """Build one provider from an LLMProviderSection or a ProviderPoolSection."""
+
     if llm.kind == "mock":
         return MockLLM(seed=cfg.run.seed, model=llm.model)
     if llm.kind == "anthropic":
         from ..providers.anthropic_provider import AnthropicProvider
 
-        return AnthropicProvider(llm.model, timeout_s=llm.timeout_s, max_retries=llm.max_retries, refusal_fallback=llm.refusal_fallback)
+        return AnthropicProvider(
+            llm.model, timeout_s=llm.timeout_s, max_retries=getattr(llm, "max_retries", 2), refusal_fallback=getattr(llm, "refusal_fallback", "off")
+        )
     if llm.kind == "openai":
         from ..providers.openai_provider import OpenAIProvider
 
-        return OpenAIProvider(llm.model, timeout_s=llm.timeout_s, max_retries=llm.max_retries, seed=cfg.run.seed)
+        return OpenAIProvider(llm.model, timeout_s=llm.timeout_s, max_retries=getattr(llm, "max_retries", 2), seed=cfg.run.seed)
     if llm.kind == "ollama":
         from ..providers.ollama_provider import OllamaProvider
 
@@ -42,8 +68,6 @@ def build_llm_provider(cfg: GAConfig) -> Any:
         return OpenAICompatibleProvider(
             llm.model, base_url=llm.base_url, api_key_env=llm.api_key_env, seed=cfg.run.seed, timeout_s=llm.timeout_s, response_format=llm.response_format
         )
-    if llm.kind == "replay":
-        return _NoCallProvider()
     raise ValueError(f"unknown llm provider {llm.kind!r}")
 
 
@@ -105,11 +129,14 @@ def build_runtime(
         task_overrides=llm.task_overrides,
         zero_cost=llm.is_local(),
         memoize_tasks=frozenset(llm.memoize_tasks),
+        habit_tasks=frozenset(llm.habit_tasks),
+        pool_models={name: p.model for name, p in llm.pools.items()},
     )
     kwargs: dict[str, Any] = {}
     if sleep is not None:
         kwargs["sleep"] = sleep
-    gateway = LLMGateway(prov, registry, ledger, budget, settings, pricing=pricing, step_getter=step_getter, replay=replay, **kwargs)
+    pools = {} if replay else build_pools(cfg)
+    gateway = LLMGateway(prov, registry, ledger, budget, settings, pricing=pricing, step_getter=step_getter, replay=replay, pools=pools, **kwargs)
     emb_cfg = cfg.providers.embeddings
     emb_provider = embedding_provider or build_embedding_provider(emb_cfg)
     cache = EmbeddingCache(repo_path(emb_cfg.cache_dir) / "embeddings.sqlite" if emb_cfg.kind != "mock-hash" else None)

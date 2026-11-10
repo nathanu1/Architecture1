@@ -34,6 +34,13 @@ Documentation = "https://github.com/nathanu1/Architecture1/tree/HEAD/docs"
 [tool.hatch.build.targets.wheel]
 packages = ["src/generative_agents"]
 
+# The configs, prompt templates and scenarios travel inside the wheel, so an installed `ga`
+# (for example through uvx) starts a town from any folder, not only from a checkout.
+[tool.hatch.build.targets.wheel.force-include]
+"configs" = "generative_agents/_bundle/configs"
+"prompts" = "generative_agents/_bundle/prompts"
+"scenarios" = "generative_agents/_bundle/scenarios"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"

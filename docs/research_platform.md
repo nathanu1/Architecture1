@@ -96,6 +96,21 @@ the values before and after.
 task and an interruption resumes the block without a replan call. Day and hour planning are
 unchanged.
 
+### Living-town switches as research conditions
+
+The settings that keep a live town cheap are ordinary conditions for a study, each off by
+default and each a fidelity-table row: `providers.llm.memoize_tasks`, `providers.llm.habit_tasks`,
+`reaction.salience_gate` and `engine.parallel_calls` ([deploy.md](deploy.md) §3 and §4,
+specification T-14 to T-17). The first three change how often the model is consulted, which is
+a question the behavior and memory-probe measures below can answer: fork one recorded day with
+each switch off in turn. Parallel deciding changes only the order in which residents take their
+turns within a step; a run with it is deterministic for any worker count and replays exactly.
+
+The research route runs on the same local model server as the living town.
+`configs/social_day_llama.yaml` is the ten-resident day with every cost switch off, and
+`configs/experiments/social_network_llama.yaml` is experiment B on it (planned, not yet
+executed here).
+
 ## 3. Measures
 
 ### Retrieval probes (`evaluation/memory_probe.py`)
@@ -249,6 +264,7 @@ Programmatic use:
 
 ```python
 from generative_agents.evaluation.metrics import MetricContext, run_metrics
+
 ctx = MetricContext(run_dir, cfg, manifest)
 values, failures = run_metrics(ctx, ["network", "behavior", "beliefs"])
 ```

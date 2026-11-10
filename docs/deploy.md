@@ -1,231 +1,269 @@
-# Running the town as a website, with a local model and all the residents
+# The living town on a local model
 
-This page is the plan for turning Hearthside into something people open in a browser: a town
-that keeps living, with every resident, driven by a model on hardware you control. It starts
-with what the numbers allow, then gives the simplest setup that meets them, then the
-alternatives.
+Hearthside has two paths. This page is the first one: **a town that stays on, driven by a Llama
+you serve yourself**, reachable as an app, from a server, or as a site. The second path is the
+[research platform](research_platform.md), which studies the same town. The reasoning and the
+order of work are in [plan.md](plan.md).
 
-## 1. What the town costs to run
+## 1. The shape
 
-Everything below comes from the recorded runs in this repository.
-
-| Fact | Value | Source |
-| --- | --- | --- |
-| Model calls per resident per simulated hour | about 29 | ten residents, one day (experiment B) |
-| Calls per simulated hour with all 25 residents | about 730 | 29 × 25 |
-| Share of calls that are mechanical (choose a location, rate importance, ground an action) | 75% | the same run's call ledger |
-| Share that needs judgment (plans, reflections, dialogue, reactions) | 25% | same |
-| Prompt size | about 2,500 tokens in, 30–300 out | manifests |
-| Calls per step | sequential: the engine makes one call at a time | engine design (snapshot, decide, commit) |
-
-What this means: the town's speed is the model's time per call, times about 730 per game hour.
-Two things cut that down a lot, and both are already supported:
-
-* **Two models.** Send the mechanical 75% to a small model (Llama 3.2 3B answers these in a
-  fraction of a second on a GPU) and keep the 25% that needs judgment on a bigger one
-  (`providers.llm.task_overrides`, set in `configs/town_n25_server.yaml`).
-* **Fewer calls per hour.** `planning.decompose=false` (the hourly-only planner) removed about
-  a quarter of the calls in experiment C with no change in adaptation; `architecture.reflection=false`
-  removes about 12%. Both are research ablations, so use them knowingly.
-
-Rough speeds for the full 25-resident town (estimates from measured call counts and typical
-per-call latencies; measure your own with `ga doctor` and a one-hour slice):
-
-| Hardware | Models | Real time per game hour |
-| --- | --- | --- |
-| One consumer or cloud GPU with 24 GB (RTX 3090/4090, L4, A10G) | 3B mechanical + 8B judgment | about 15–30 min, i.e. faster than real time |
-| Apple Silicon laptop with 16–32 GB (Metal) | 3B + 8B | about 40–90 min |
-| Four CPU cores, no GPU | 3B only | several hours (the documented run: 2.25 game hours in 4.8 h of model time) |
-| Hosted Llama API (not local) | 70B | a few minutes, limited by rate limits; paid per token |
-
-A town that runs "at real time" is a good target for a website: it is always doing something
-when someone looks, and a game day costs one real day of GPU time.
-
-## 2. The simplest setup that meets the goal
-
-One Linux machine with an NVIDIA GPU (24 GB is comfortable; 12 GB works with the 3B model
-alone), Docker, and a DNS name. Everything runs from this repository:
-
-```bash
-git clone https://github.com/nathanu1/Architecture1.git hearthside && cd hearthside
+```
+ browsers, phones, the installed app
+              │  HTTPS (Caddy or a tunnel), password to act, anyone may watch
+              ▼
+ ┌───────────────────────────┐        HTTP         ┌──────────────────────────────┐
+ │ the town  (ga town)       │ ──────────────────▶ │ the model server             │
+ │ Python + SQLite, one      │  HEARTHSIDE_LLM_URL │ Ollama, llama.cpp or vLLM    │
+ │ process, any machine      │                     │ the only part that needs     │
+ │ engine · ledger · web UI  │ ◀────────────────── │ a GPU or many cores          │
+ └───────────────────────────┘                     └──────────────────────────────┘
+        runs/<town name>/  (state, call ledger, config: copy this folder to move the town)
 ```
 
+The town process has no hardware requirements: it is plain Python and SQLite and runs on any
+architecture Python runs on. Everything heavy sits behind one HTTP address. That is what makes
+the three ways of running it the same thing:
+
+| Where | Town process | Model server | Start |
+| --- | --- | --- | --- |
+| **App** on your own computer | your computer | your computer | `ga town --app` |
+| **Server** (workstation, lab machine, a Linux partition on a mainframe) | the server | the same server, or a GPU machine next to it | systemd unit or Docker, below |
+| **Site** | any always-on machine | wherever the GPU is | the server setup plus HTTPS and spectators |
+
+## 2. Start it
+
+### As an app
+
+Install [Ollama](https://ollama.com/download) and [uv](https://docs.astral.sh/uv/), then one
+command from any folder:
+
 ```bash
-cp .env.example .env    # then set HEARTHSIDE_PASSWORD=... (and HEARTHSIDE_SPECTATORS=1 for a public page)
+uvx --from "generative-agents-lab[viewer] @ git+https://github.com/nathanu1/Architecture1@main/feature-social-memory" ga town --app
+```
+
+From a checkout it is `ga town --app`. The command checks that the model server answers,
+downloads the three models the town uses if they are missing (Llama 3.1 8B, Llama 3.2 3B and an
+embedding model, about 7 GB once), founds the town in `runs/town-live/` or continues the one
+that is there, and opens it in its own window. Closing the terminal saves the town; the same
+command continues it.
+
+| Option | Effect |
+| --- | --- |
+| `--residents 25` | all 25 residents instead of ten |
+| `--app` / `--no-open` | its own window (needs Chrome, Edge, Chromium or Brave) / no window |
+| `--model-server URL` or `HEARTHSIDE_LLM_URL` | the model runs on another machine |
+| `--parallel N` | model calls sent at once; match the server's parallel slots (§4) |
+| `--host 0.0.0.0` | serve other machines; set `HEARTHSIDE_PASSWORD` first |
+| `--config FILE`, `--set key=value` | another town config, or single settings |
+
+The page is also installable: in Chrome or Edge use "Install Hearthside" in the address bar, on
+a phone "Add to Home Screen". That gives the same live town an icon and a window of its own on
+any device that can reach the server.
+
+### On a server
+
+Two equivalent setups. Both continue the same town after any restart.
+
+**systemd** (no containers): [`deploy/hearthside.service`](../deploy/hearthside.service) runs
+`ga town` as a service; its header has the five commands to install it. Settings go in
+`/etc/hearthside.env`:
+
+```bash
+HEARTHSIDE_PASSWORD=choose-one
+HEARTHSIDE_SPECTATORS=1
+HEARTHSIDE_LLM_URL=http://127.0.0.1:11434
+```
+
+**Docker**: `docker-compose.yml` has the town and an Ollama container. Put this in `.env` next
+to it, then start both:
+
+```bash
+TOWN_MODE=town
+TOWN_CONFIG=configs/town_live.yaml
+HEARTHSIDE_LLM_URL=http://ollama:11434
+HEARTHSIDE_PASSWORD=choose-one
+HEARTHSIDE_SPECTATORS=1
 ```
 
 ```bash
 docker compose --profile ollama up -d
 ```
 
-```bash
-docker compose exec ollama ollama pull llama3.2:3b
-```
+For an NVIDIA GPU, install the NVIDIA Container Toolkit and uncomment the four `deploy:` lines
+of the `ollama` service. The compose file sets `OLLAMA_NUM_PARALLEL=4` and keeps the three
+models loaded. The image and compose file were written against the documented formats and have
+not been built in this repository's CI, so check the first start with `docker compose logs -f`.
+
+**The model server on another machine.** Start Ollama there with `OLLAMA_HOST=0.0.0.0` and
+point the town at it with `HEARTHSIDE_LLM_URL=http://that-machine:11434`. Any server that
+speaks the OpenAI chat API works the same way (llama.cpp's `llama-server`, vLLM, LM Studio):
+use a config with `providers.llm.kind: openai_compatible` and give the address ending in `/v1`.
+`providers.llm.pools` names additional servers and `task_overrides.<task>.provider` routes
+tasks to them, for example the small model on one machine and the large one on another.
+
+### As a site
+
+Put HTTPS in front of the server and let visitors watch:
 
 ```bash
-docker compose exec ollama ollama pull llama3.1:8b
+caddy run --config deploy/Caddyfile
 ```
 
-```bash
-docker compose exec ollama ollama pull nomic-embed-text
-```
+[`deploy/Caddyfile`](../deploy/Caddyfile) is three lines; Caddy obtains the certificate. With
+`HEARTHSIDE_PASSWORD` set and `HEARTHSIDE_SPECTATORS=1`, anyone can open the town and the
+inspector, and only someone with the password can talk to residents, build or change the speed.
 
-Then start the full town against that Ollama (the compose file's `town` service reads these
-variables from `.env`):
-
-```
-TOWN_CONFIG=configs/town_n25_server.yaml
-TOWN_ARGS=--set providers.llm.base_url=http://ollama:11434 --set providers.embeddings.base_url=http://ollama:11434
-```
-
-```bash
-docker compose up -d --force-recreate town
-```
-
-The town is at `http://<machine>:8080`, the research inspector at `/inspector`. For HTTPS,
-run Caddy with `deploy/Caddyfile` (one reverse-proxy line; it fetches the certificate itself).
-The town saves every five game minutes; `docker compose restart town` resumes the same run,
-and the `/data` volume keeps it. On an NVIDIA machine, uncomment the four `deploy:` lines under
-`ollama` in `docker-compose.yml` after installing the NVIDIA Container Toolkit, otherwise Ollama
-runs on the CPU.
-
-**Access.** `HEARTHSIDE_PASSWORD` gates everything with HTTP Basic auth (the browser asks once).
-`HEARTHSIDE_SPECTATORS=1` opens reading to everyone: visitors watch the town and its inspector,
-and chatting, building, whispering and the clock controls ask for the password. That is the
-mode for a public page: one living town, one owner.
-
-Without Docker, the same thing by hand on the machine: install Ollama, pull the three models,
-`uv sync --extra viewer`, set the two variables, and run
-`ga play --config configs/town_n25_server.yaml --host 0.0.0.0` (plus `--resume runs/<id>` later).
-
-## 2b. Free: Ollama on a machine you already own, reached through a free tunnel
-
-Ollama costs nothing; what costs money is a machine that stays on. The free way is to use one
-you already have (a desktop with a GPU, a Mac with Apple Silicon, or the laptop while it is
-open) and expose port 8080 with a free tunnel. Nothing changes in the town; only who can reach it.
-
-**Cloudflare Tunnel** (free, gives you `https://<random>.trycloudflare.com` with no account, or
-a name under your own domain with a free account):
-
-```bash
-ga play --config configs/town_n25_server.yaml --host 127.0.0.1      # with HEARTHSIDE_PASSWORD set
-```
+Without a public address (a machine at home), a tunnel does the same:
 
 ```bash
 cloudflared tunnel --url http://127.0.0.1:8080
 ```
 
-**Tailscale Funnel** (free for personal use; HTTPS under `<machine>.<tailnet>.ts.net`):
-
 ```bash
 tailscale funnel 8080
 ```
 
-**ngrok** works the same way (`ngrok http 8080`); its free tier shows an interstitial page.
+## 3. What a day costs
 
-Set `HEARTHSIDE_PASSWORD` and `HEARTHSIDE_SPECTATORS=1` before exposing anything: visitors
-watch, you act. Close the tunnel with Ctrl+C; `ga play --resume runs/<id>` continues the same
-town next time. On a Mac, `caffeinate -i ga play ...` keeps the laptop from sleeping while it
-runs, and the town pauses itself when the end time is reached or the lid closes (a resume
-continues it).
+Counted on a recorded ten-resident day (06:00 to 22:00, offline MOCK model, so the counts are
+structural; a real model converses and reflects a different amount):
 
-What this gives, honestly:
+| Setting | Model calls | Change |
+| --- | ---: | --- |
+| Paper-like engine | 4,592 | 29 per resident per game hour |
+| + exact prompt repeats answered from the ledger (`memoize_tasks`) | 2,935 | −36% |
+| + recurring situations answered from the ledger (`habit_tasks`) | 2,636 | −43% in total |
+| + routine observations not deliberated again (`reaction.salience_gate`) | 2,624 | 17 observations skipped, 9 fewer reaction calls |
 
-* **A desktop with an NVIDIA GPU or a Mac with 16 GB or more** runs the two-model 25-resident
-  town at or near real time, for free, as long as the machine is on. This is the best match
-  for "free, all residents, Ollama".
-* **The MacBook Air** runs it, but a 25-resident game hour takes one to two real hours with
-  the 3B+8B pair (the 3B alone is faster and cruder). Three to ten residents feel live on it.
-* **Free cloud tiers** (Oracle Cloud's always-free Arm VM with 4 cores and 24 GB, no GPU) can
-  host the town plus Ollama, but CPU inference on a 3B model is several times slower than real
-  time for 25 residents; it suits a 5-resident town or a town that advances slowly in the
-  background. Free GPU notebooks (Colab, Kaggle) are not persistent and cannot host a website.
+A ten-resident day is therefore about **2,600 calls, 1.5 million prompt tokens and 0.1 million
+output tokens**; the 25-resident day measured the same way is 7,650 calls and 4.5 million
+prompt tokens. Three quarters of the paper-like calls are mechanical (choose a place, rate
+importance, ground an action); those are the ones the ledger answers, and the ones that go to
+the small model.
 
-**Always online without a machine on: publish the recording.** Record the full town on your
-own machine whenever it is on (`ga play --config configs/town_n25_server.yaml` or `ga run`),
-then export it as a static page and host it anywhere free (GitHub Pages, Cloudflare Pages,
-Netlify):
+What each switch does, and what it gives up:
+
+| Switch | What it does | What it gives up |
+| --- | --- | --- |
+| `task_overrides` → Llama 3.2 3B | the mechanical tasks use the small model | nothing measurable in the mock; on a real model, coarser place choices |
+| `memoize_tasks` | an identical prompt gets the first valid answer recorded for it | sampling variety on exact repeats |
+| `habit_tasks` | the same structured situation (same resident, same activity and offered places, same memory text) gets the same answer even when the date or the resident's summary changed the prompt text | the answer no longer reacts to that changed text |
+| `reaction.salience_gate` | an observation the resident already decided to carry on past is not sent to the model again for `routine_cooldown_minutes` (60) | a different decision on the second look; each skipped observation is logged as a `reaction_gated` event |
+| `retrieval.forgetting` | memories below an activation threshold are skipped before scoring; nothing is deleted | recall of old, never-revisited memories |
+| `engine.parallel_calls` | residents think in rounds and a round's calls go out together (§4) | the within-step order of the sequential engine |
+
+Every switch is a row of the run's fidelity table (class X when on) and of the manifest, so a
+study can turn exactly one off. The salience gate saved little on the mock day because the mock
+rarely answers "carry on"; its effect on a real model is one of the things the first live week
+should measure.
+
+## 4. Parallel deciding
+
+A server with a GPU can answer several requests at once. The sequential engine never asks for
+more than one. `engine.parallel_calls: N` changes that without giving up replay:
+
+1. Each resident with work left runs, one at a time and in the town's fixed order, until its
+   turn ends or reaches a model task.
+2. All model tasks reached in that round are sent together, up to N at once.
+3. Residents continue with their answers in the same fixed order; the next round begins.
+
+Who runs when depends only on how many model tasks each resident makes, never on how long a
+reply took, and a task is a pause point whether the model, a habit or the ledger answers it.
+So a replay interleaves exactly as the recorded run did, the town is the same for any N, and a
+town stopped mid-step resumes into exactly the uninterrupted one (`tests/test_parallel.py`).
+It is a different town from the sequential engine's, because a resident waiting for the model
+can be overtaken within the step; that is why it is its own switch.
+
+Measured on the same recorded days (manifest `parallel`):
+
+| Town | Calls made in residents' turns | Waits for the model | Gain |
+| --- | ---: | ---: | ---: |
+| 10 residents | 2,227 | 945 | 2.4× |
+| 25 residents | 6,335 | 2,373 | 2.7× |
+
+Conversations are a turn-by-turn chain and stay sequential (386 and 1,312 calls), so over the
+whole day the wait for the model roughly halves. The gain needs a server that really answers
+in parallel:
+
+| Server | Setting |
+| --- | --- |
+| Ollama | `OLLAMA_NUM_PARALLEL=4` (and `OLLAMA_MAX_LOADED_MODELS=3` so both chat models and the embedding model stay loaded) |
+| llama.cpp `llama-server` | `--parallel 4` with a context large enough for four slots |
+| vLLM | nothing; it batches continuously, so `engine.parallel_calls` of 8 to 16 is reasonable |
+
+Turning the rounds on costs about 0.4 ms of thread hand-off per resident per step, which is
+invisible next to a model call and roughly doubles the time of an offline mock run.
+
+## 5. Measure your machine
 
 ```bash
-cd frontend && npm run build:demo && cd ..
+ga bench
 ```
 
-```bash
-ga export-demo --run-dir runs/<id> --out frontend/dist-demo
-```
+It runs the first 20 game minutes of a three-resident town on your model server (the morning
+burst: day plans, schedules, first actions), prints each task's measured latency, sends four
+copies of one prompt at once to see whether the server gains from concurrency, and projects how
+long a game day takes for 10 and 25 residents with and without parallel deciding. Use
+`--model-server URL` for a remote server and `--config` for another town config.
 
-The page replays the recorded town in the browser with the research inspector (Decisions,
-Network, Behavior, Beliefs at their final state) and needs no server and no model; nobody can
-act in it. Update it by recording more and exporting again. A good free combination is a
-public recorded town that is always online plus a tunnel to the live one when your machine is
-on.
+The only real measurement in this repository so far is on four CPU cores with Llama 3.2 3B:
+2,525 calls took 4.8 hours of model time, 6.8 seconds per call on average (median 3 s; see the
+[town guide](game.md#running-it)). At that rate, one call at a time and with the 3B model for
+everything, a ten-resident game day (2,600 calls) is about 5 hours of model time and a
+25-resident game day (7,650 calls) about 14 hours: both faster than real time on a machine with
+no GPU. The 8B model for the judgment tasks is slower on CPU; `ga bench` tells you by how much
+on yours. GPU and Apple Silicon numbers are not measured here; run the bench and trust that.
 
-## 2c. Always live, not a recording
+A town is live at any pace. Residents keep perceiving, planning, talking and remembering; the
+clock in the HUD moves as fast as the model allows, and the "thinking" indicator shows who is
+waiting.
 
-A town that never stops needs three things: an end date that never arrives, a model budget that
-a free machine can sustain for weeks, and memory that does not slow down as it grows. Both
-`configs/town_live.yaml` (ten residents) and `configs/town_live_25.yaml` (all 25) set them:
+## 6. Keeping it on
 
-| Lever | Setting | Effect, measured on recorded runs |
+* **It continues, it does not restart.** The town checkpoints every 30 steps (five game
+  minutes). `ga town` continues whatever is in its folder; calls recorded after the last
+  checkpoint are re-used, never made twice.
+* **Move it by copying the folder.** `runs/town-live/` holds the state, the ledger and the
+  config. Copy it to another machine and run `ga town --run-dir` there.
+* **Watch the disk.** A 25-resident day is about 150 MB of state and ledger. The ledger is the
+  habit memory and the replay source, so it stays.
+* **Labels stay on.** The HUD names the model and marks mock runs; the inspector shows the
+  served model and every call.
+* **It is a research run.** The inspector at `/inspector` analyses the live town; every
+  experiment metric runs on its snapshots; `ga play --watch runs/town-live` replays it with no
+  model calls.
+* **One town per process.** Several visitors share one town. For several towns, run several
+  services on different ports and folders.
+
+## 7. What is not a path, and why
+
+**Free hosted model APIs.** Checked in November 2026 against the providers' own pages. A
+ten-resident day needs about 2,600 requests and 1.6 million tokens, every day:
+
+| Provider | Free allowance | Verdict |
 | --- | --- | --- |
-| Small model for mechanical tasks | `task_overrides` → Llama 3.2 3B for location, importance, grounding | 75% of calls go to the fast model |
-| Answer repeated prompts from the ledger | `memoize_tasks: [choose_location, importance, importance_batch, action_grounding]` | 42–56% of location and importance prompts and 62–74% of grounding prompts are exact repeats; about a third of all calls disappear. Trade-off: no sampling variety on those repeats (the run's fidelity table marks it X). |
-| Keep retrieval bounded | `retrieval.forgetting.enabled: true` | memories below the activation threshold are skipped before scoring, so a resident with weeks of memories retrieves as fast as one with days (nothing is deleted) |
-| Open-ended run | `scenario.end` months away; `snapshots: [initial]` | the engine keeps planning each new day from the residents' identities; the seeded party stays on 14 February |
-| Survive restarts | `checkpoint_every_steps: 30`; the container entrypoint resumes | at most five game minutes are lost; recorded calls are never paid twice |
+| Groq | 1,000 requests and 200,000 tokens per day per model (`openai/gpt-oss-20b`); Llama 3.1 8B and 3.3 70B were shut down on 16 August 2026 ([limits](https://console.groq.com/docs/rate-limits), [deprecations](https://console.groq.com/docs/deprecations)) | an eighth of a day's tokens |
+| OpenRouter `:free` models | 50 requests per day, 1,000 after buying 10 credits once ([limits](https://openrouter.ai/docs/api-reference/limits)) | under half a day's requests at best |
+| Cerebras | no permanent free tier; $5 of credit for 30 days after adding a payment method ([limits](https://inference-docs.cerebras.ai/support/rate-limits)) | a trial |
+| SambaNova | 20 requests per day per model ([limits](https://docs.sambanova.ai/docs/en/models/rate-limits)) | no |
+| Cloudflare Workers AI | 10,000 neurons per day; Llama 3.2 3B costs 4,625 per million prompt tokens and 30,475 per million output tokens ([pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/)) | one ten-resident day on the 3B model alone uses almost exactly the allowance; nothing left for the 8B |
+| Google AI Studio | Flash-Lite models are free of charge with per-project limits shown only in AI Studio, and free-tier content is used to improve Google's products ([pricing](https://ai.google.dev/gemini-api/docs/pricing)) | limits not published; not a Llama |
 
-What that buys, per game hour of the full 25-resident town: about 730 calls become about
-490, of which roughly 370 go to the 3B model and 120 to the 8B. On four CPU cores (the free
-tier, or a spare laptop) that is about 1.5 real hours per game hour with the 3B pair, so a
-game day takes a day and a half; **ten residents run at about real time on the same CPU**, and
-either size runs faster than real time on one GPU. The town is live either way: residents keep
-perceiving, planning, talking and remembering; only the clock moves at the pace the hardware
-allows, which the HUD's clock shows. Model latency shows as the resident "thinking" indicator.
+Free machines do not change this: Oracle's Always Free Arm instance is now 2 cores and 12 GB
+and idle instances are reclaimed
+([Oracle](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm));
+Render's free service sleeps after 15 minutes and has no disk
+([Render](https://render.com/docs/free)); Hugging Face Docker Spaces need a paid plan
+([Hugging Face](https://huggingface.co/docs/hub/spaces-overview)); Fly.io has no free
+allowance ([Fly](https://docs.fly.io/about/pricing)). The allowances also change every few
+months. A town meant to stay on for weeks should not depend on them, so free means hardware
+you already have: `ga town` on your own machine and a tunnel.
 
-Three practical rules for a town that runs for weeks:
+The plumbing for remote APIs still exists and is tested (`providers.llm.kind:
+openai_compatible`, `providers.llm.rate_limit` to stay inside a plan's limits,
+`configs/town_llama_api.yaml`), because the research path sometimes wants a larger model for
+one experiment. It is not a way to keep the town on.
 
-1. **Let it resume.** `ga play --resume runs/<id>` (the Docker entrypoint does it) continues the
-   same world after any restart; `--set scenario.end=...` on a resume extends the horizon.
-2. **Watch the disk.** A 25-resident day is about 150 MB of state and ledger; a month is a few
-   GB. `runs/<id>/exports` and old snapshots can be deleted; the ledger cannot (it is the
-   memo cache and the replay source).
-3. **Extend memoization only to mechanical tasks.** Memoizing dialogue or planning would make
-   residents repeat themselves; the configs leave those alone.
-
-## 3. Alternatives, and when to pick them
-
-| Option | When | What changes |
-| --- | --- | --- |
-| **Hosted Llama through an API** (`configs/town_llama_api.yaml`; Together, Groq, OpenRouter, Fireworks) | No GPU, want 70B quality, fine with per-token cost | The town runs on a $5 VPS or even the laptop; the model is not local. About 2.8M input tokens per five-resident two-day run; multiply by five for the full town, then by the provider's price per token. `response_format: json_object` for broad compatibility. |
-| **Cloud GPU rental** (RunPod, Lambda, Vast.ai, AWS g5/g6, GCP L4) | Local model, no hardware at home | Same compose file; the machine costs roughly a dollar an hour while it runs, so pause the town (`--paused`, or stop the container) when nobody is watching. |
-| **Your laptop, exposed with a tunnel** (Tailscale Funnel, Cloudflare Tunnel, ngrok) | Trying it with friends before buying anything | `ga play --config configs/town_n25_server.yaml --host 127.0.0.1` behind the tunnel; speed as in the table above. |
-| **Fewer residents live, all residents recorded** | GPU time is scarce | Run `town_n10_mock`/`town_ollama` live for visitors, and run the 25-resident town headless overnight (`ga run`), then publish it with `ga play --watch` or the static demo (`ga export-demo`, no server at all). |
-| **Static demo page** (`npm run build:demo`, `ga export-demo`) | A page that needs no server | Visitors replay a recorded town in the browser, inspector included; nobody can act. |
-
-What to avoid: serverless hosts (Vercel, Netlify, Cloud Run with scale-to-zero). The town is one
-long-running process with a SQLite database and a background engine thread; it needs a machine
-that stays up and a disk that persists.
-
-## 4. Keeping it alive and honest
-
-* **Resume, not restart.** The town checkpoints every 30 steps (five game minutes). A crash or
-  a redeploy loses at most that; `--resume` continues from the checkpoint and re-uses recorded
-  calls, so nothing is paid twice.
-* **Budget ceilings.** `budget.max_calls`, `max_runtime_s` and `max_cost_usd` stop a run at its
-  last checkpoint instead of spending without limit; local models record a cost of zero.
-* **Labels.** The HUD says which model runs the residents and marks mock runs; the inspector
-  shows the served model and every call. Keep them on a public page.
-* **One town per process.** `ga play` runs one simulation. Several visitors can watch and act
-  on the same town; for several towns, run several containers on different ports.
-* **Replay and research.** A running town is a research run: `ga serve --run-dir /data/town`
-  (or the inspector) analyses it live, every experiment metric runs on its snapshots, and
-  `ga replay` reproduces it from the ledger with no model calls.
-
-## 5. What would make it faster still
-
-The engine makes its calls one after another. Within a step every resident decides against the
-same frozen snapshot, so their calls are independent until conversations are resolved; running
-the per-resident decisions on a thread pool against a batching server (vLLM, or Ollama with
-`OLLAMA_NUM_PARALLEL`) could bring the full town close to the speed of the three-resident one.
-It touches the engine's transaction model (one SQLite connection per step), so it is proposed,
-not done; everything in this page works with the sequential engine.
+**A static recording.** `ga export-demo` publishes a recorded town as a page with no server.
+It is a good companion (always reachable, free to host) but it is a recording: nobody can act
+in it and nothing new happens.

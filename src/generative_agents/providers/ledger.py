@@ -9,8 +9,10 @@ reusing samples across independent runs (spec O-1, O-2, K-4).
 
 from __future__ import annotations
 
+import functools
 import json
 import sqlite3
+import threading
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -57,6 +59,15 @@ CREATE TABLE IF NOT EXISTS calls (
 CREATE INDEX IF NOT EXISTS idx_calls_task ON calls(task);
 CREATE INDEX IF NOT EXISTS idx_calls_agent ON calls(agent_id);
 
+-- Habits (research extension): the call that answered a task for given structured inputs,
+-- reused when the same inputs recur even though the rendered prompt differs (date, summary).
+CREATE TABLE IF NOT EXISTS habits (
+  scope TEXT NOT NULL,
+  key TEXT NOT NULL,
+  call_id INTEGER NOT NULL,
+  PRIMARY KEY(scope, key)
+);
+
 CREATE TABLE IF NOT EXISTS embedding_calls (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   model TEXT NOT NULL,
@@ -81,6 +92,17 @@ class CallRecord:
     metadata: dict[str, Any]
 
 
+def _locked(method: Any) -> Any:
+    """Run a ledger method under the ledger's lock (see ``CallLedger._lock``)."""
+
+    @functools.wraps(method)
+    def wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
+        with self._lock:
+            return method(self, *args, **kwargs)
+
+    return wrapper
+
+
 class CallLedger:
     def __init__(self, path: str | Path | None, scope: str):
         self.path = str(path) if path else ":memory:"
@@ -91,8 +113,13 @@ class CallLedger:
         self.conn.commit()
         self._counts: dict[str, int] = {}
         self.readonly_scope: str | None = None  # replay: read from this scope, never write
+        # One connection shared by the engine thread and, under parallel deciding, the
+        # model-call threads: every method that touches it holds this lock.
+        self._lock = threading.RLock()
+        self._watermark = 0
 
     # ------------------------------------------------------------------ occurrence counting
+    @_locked
     def reset_counts(self, committed_step: int | None) -> None:
         """Initialize per-request occurrence counters from calls in committed steps.
 
@@ -110,12 +137,14 @@ class CallLedger:
         ):
             self._counts[row["request_hash"]] = int(row["n"])
 
+    @_locked
     def next_occurrence(self, request_hash: str) -> int:
         n = self._counts.get(request_hash, 0)
         self._counts[request_hash] = n + 1
         return n
 
     # ------------------------------------------------------------------ lookup / record
+    @_locked
     def lookup(self, request_hash: str, occurrence: int) -> CallRecord | None:
         scope = self.readonly_scope or self.scope
         row = self.conn.execute(
@@ -136,6 +165,7 @@ class CallLedger:
             metadata=json.loads(row["metadata_json"] or "{}"),
         )
 
+    @_locked
     def lookup_memo(self, request_hash: str) -> CallRecord | None:
         """The first *valid* reply ever recorded for this exact request, whatever its occurrence.
 
@@ -159,6 +189,57 @@ class CallLedger:
             metadata=json.loads(row["metadata_json"] or "{}"),
         )
 
+    @_locked
+    def lookup_habit(self, key: str) -> CallRecord | None:
+        scope = self.readonly_scope or self.scope
+        row = self.conn.execute(
+            "SELECT c.* FROM habits h JOIN calls c ON c.id = h.call_id WHERE h.scope=? AND h.key=? AND c.status='ok'", (scope, key)
+        ).fetchone()
+        if row is None:
+            return None
+        return CallRecord(
+            id=row["id"],
+            status=row["status"],
+            raw_output=row["raw_output"],
+            error=row["error"],
+            error_retryable=bool(row["error_retryable"]),
+            input_tokens=row["input_tokens"],
+            output_tokens=row["output_tokens"],
+            served_model=row["served_model"],
+            metadata=json.loads(row["metadata_json"] or "{}"),
+        )
+
+    @_locked
+    def remember_habit(self, key: str, call_id: int) -> None:
+        if self.readonly_scope is not None:
+            return
+        self.conn.execute("INSERT OR IGNORE INTO habits(scope, key, call_id) VALUES(?,?,?)", (self.scope, key, call_id))
+        self.conn.commit()
+
+    # ------------------------------------------------------------------ call ids under parallel deciding
+    # Tasks answered at the same time record their calls in whatever order replies arrive. To keep
+    # call ids (which memories and plans cite) independent of timing, each task's ids are set
+    # aside beforehand in the town's fixed order. The numbering restarts each step from the last
+    # id of earlier steps, so a step that is re-executed after a stop numbers its calls exactly as
+    # an uninterrupted run would. Ids a task does not use are skipped.
+    @_locked
+    def begin_step(self, step: int) -> None:
+        row = self.conn.execute("SELECT id FROM calls WHERE NOT (scope=? AND step>=?) ORDER BY id DESC LIMIT 1", (self.scope, step)).fetchone()
+        self._watermark = int(row["id"]) if row else 0
+
+    @_locked
+    def note_seen(self, call_id: int) -> None:
+        """A call made (or re-used) outside any reservation: later reservations start after it."""
+
+        self._watermark = max(self._watermark, call_id)
+
+    @_locked
+    def reserve_ids(self, n: int) -> int:
+        base = self._watermark + 1
+        self._watermark += n
+        return base
+
+    @_locked
     def record(self, **fields: Any) -> int:
         if self.readonly_scope is not None:
             raise RuntimeError("ledger is read-only in replay mode")
@@ -170,6 +251,7 @@ class CallLedger:
         self.conn.commit()
         return int(cur.lastrowid)
 
+    @_locked
     def record_embedding(self, model: str, n_texts: int, cached: bool, latency_ms: float) -> None:
         if self.readonly_scope is not None:
             return
@@ -180,6 +262,7 @@ class CallLedger:
         self.conn.commit()
 
     # ------------------------------------------------------------------ reporting
+    @_locked
     def totals(self, scope: str | None = None) -> dict[str, Any]:
         scope = scope or self.scope
         row = self.conn.execute(
@@ -209,6 +292,7 @@ class CallLedger:
         out["served_models"] = served
         return out
 
+    @_locked
     def rows(self, scope: str | None = None, *, task: str | None = None, agent_id: str | None = None, limit: int | None = None) -> list[dict[str, Any]]:
         sql = "SELECT * FROM calls WHERE scope=?"
         params: list[Any] = [scope or self.scope]

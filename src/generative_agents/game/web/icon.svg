@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Hearthside">
+  <rect width="512" height="512" fill="#8fd0f2"/>
+  <circle cx="396" cy="118" r="44" fill="#fff3c4"/>
+  <ellipse cx="256" cy="452" rx="300" ry="96" fill="#8ccf7e"/>
+  <rect x="318" y="150" width="40" height="84" rx="6" fill="#b5654a"/>
+  <path d="M256 118 L428 262 H84 Z" fill="#e2725b" stroke="#b5503d" stroke-width="10" stroke-linejoin="round"/>
+  <rect x="128" y="258" width="256" height="158" rx="14" fill="#fff6e3" stroke="#d9c7a3" stroke-width="8"/>
+  <rect x="226" y="316" width="60" height="100" rx="10" fill="#9a6a4a"/>
+  <circle cx="272" cy="368" r="5" fill="#f6d27a"/>
+  <rect x="152" y="292" width="54" height="54" rx="10" fill="#ffd166" stroke="#e8a93b" stroke-width="6"/>
+  <rect x="306" y="292" width="54" height="54" rx="10" fill="#ffd166" stroke="#e8a93b" stroke-width="6"/>
+</svg>

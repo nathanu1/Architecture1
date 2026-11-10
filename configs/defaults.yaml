@@ -78,6 +78,11 @@ dialogue:
   no_chat_after_hour: 23
 constraints:
   policy: strict-v1
+reaction:
+  salience_gate: false
+  routine_cooldown_minutes: 60
+engine:
+  parallel_calls: 1
 social:
   track: true
   appraisal: none
@@ -108,7 +113,14 @@ providers:
     api_key_env: null
     response_format: json_schema
     memoize_tasks: []
+    habit_tasks: []
     local: null
+    rate_limit:
+      requests_per_minute: null
+      tokens_per_minute: null
+      requests_per_day: null
+      tokens_per_day: null
+    pools: {}
   embeddings:
     kind: mock-hash
     model: mock-hash-256

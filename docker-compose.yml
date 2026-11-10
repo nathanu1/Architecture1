@@ -1,9 +1,17 @@
-# Two ways to run the town as a service. See docs/deploy.md.
+# The town as a service. See docs/deploy.md.
 #
-#   docker compose up -d                       # town on the mock model (or a hosted API: set TOWN_CONFIG)
-#   docker compose --profile ollama up -d      # town + Ollama in the next container (CPU, or GPU: see below)
+#   docker compose --profile ollama up -d      # the living town + its model server (Ollama) on this machine
+#   docker compose up -d                       # the town alone: the offline mock, or a model server elsewhere
 #
-# Put secrets in a .env file next to this file (HEARTHSIDE_PASSWORD, LLAMA_API_KEY); it is git-ignored.
+# With the ollama profile, put this in a .env file next to this file (it is git-ignored):
+#   TOWN_MODE=town
+#   TOWN_CONFIG=configs/town_live.yaml         # or configs/town_live_25.yaml
+#   HEARTHSIDE_LLM_URL=http://ollama:11434
+#   HEARTHSIDE_PASSWORD=choose-one
+#   HEARTHSIDE_SPECTATORS=1
+# The town downloads its models into the Ollama container on first start and continues the same
+# town after every restart. A model server on another machine: the same .env without the profile
+# and with HEARTHSIDE_LLM_URL=http://that-machine:11434.
 services:
   town:
     build:
@@ -11,6 +19,7 @@ services:
       args:
         EXTRAS: ${EXTRAS:-viewer}
     image: hearthside:latest
+    command: ["${TOWN_MODE:-play}"]
     ports:
       - "${HEARTHSIDE_PORT:-8080}:8080"
     environment:
@@ -19,6 +28,7 @@ services:
       TOWN_ARGS: ${TOWN_ARGS:-}
       HEARTHSIDE_PASSWORD: ${HEARTHSIDE_PASSWORD:-}
       HEARTHSIDE_SPECTATORS: ${HEARTHSIDE_SPECTATORS:-}
+      HEARTHSIDE_LLM_URL: ${HEARTHSIDE_LLM_URL:-}
       LLAMA_API_KEY: ${LLAMA_API_KEY:-}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
@@ -29,6 +39,10 @@ services:
   ollama:
     profiles: ["ollama"]
     image: ollama/ollama:latest
+    environment:
+      OLLAMA_NUM_PARALLEL: ${OLLAMA_NUM_PARALLEL:-4}      # requests answered at once; match engine.parallel_calls
+      OLLAMA_MAX_LOADED_MODELS: ${OLLAMA_MAX_LOADED_MODELS:-3}   # the 8B, the 3B and the embedding model stay loaded
+      OLLAMA_KEEP_ALIVE: 24h
     volumes:
       - ollama-models:/root/.ollama
     # NVIDIA GPU: install the NVIDIA Container Toolkit and uncomment the next four lines.

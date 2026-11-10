@@ -32,6 +32,9 @@ class LLMRequest:
     # providers ignore them. They never enter cache keys (the rendered prompt does).
     variables: dict[str, Any] = field(default_factory=dict)
     attempt_kind: str = "initial"  # initial | repair
+    # Named provider pool this task is routed to (providers.llm.pools); None is the default
+    # provider. Not part of the cache key: the model is, and replay matches on the model.
+    pool: str | None = None
     # A tighter copy of output_schema for servers that decode within a grammar (Ollama,
     # llama.cpp, LM Studio): the offered choices, item counts and ranges the call's validator
     # checks anyway. Other providers send output_schema. Built from the rendered prompt's own

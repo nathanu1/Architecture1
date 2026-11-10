@@ -29,6 +29,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
+from functools import partial
 from pathlib import Path
 from typing import Any
 
@@ -53,6 +54,7 @@ from ..world.perception import AgentView, Perceiver, Percept
 from ..world.spatial import SpatialMemory, SpatialStore
 from ..world.state import IDLE, AmbientEvent, WorldState
 from .clock import SimClock, long_time
+from .parallel import RoundScheduler
 from .runtime import Runtime, build_runtime, make_services
 
 Tile = tuple[int, int]
@@ -187,6 +189,12 @@ class Simulation:
         self.reflection = ReflectionEngine(self.svc)
         self.locations = LocationChooser(self.svc, self.summary, self.world)
         self.reaction = ReactionEngine(self.svc, self.summary)
+        # Parallel deciding: residents' turns run in rounds, a round's model tasks go out together.
+        self.scheduler: RoundScheduler | None = None
+        if cfg.engine.parallel_calls > 1:
+            providers = [self.rt.provider, *self.rt.gateway.pools.values()]
+            self.scheduler = RoundScheduler(cfg.engine.parallel_calls, concurrent=all(getattr(p, "concurrent_safe", True) for p in providers))
+            self.rt.gateway.scheduler = self.scheduler
         self.dialogue = DialogueEngine(self.svc, self.summary, self.reaction)
         self.spatial = SpatialStore(self.db)
         self.world_state = WorldState(self.db)
@@ -477,13 +485,18 @@ class Simulation:
         self._talk_requests = []
         self._busy = set()
         try:
+            if self.scheduler is not None:
+                self.rt.ledger.begin_step(self.clock.step)
             self._apply_interventions(now)
             for hook in self.before_step_hooks:
                 hook(now)
             views = self.views()
             occupancy = self._occupancy(views)
-            for aid in self.order:
-                self._agent_step(aid, now, views, occupancy)
+            if self.scheduler is not None:
+                self.scheduler.run([(aid, partial(self._agent_step, aid, now, views, occupancy)) for aid in self.order])
+            else:
+                for aid in self.order:
+                    self._agent_step(aid, now, views, occupancy)
             self._resolve_talks(now, views)
             self._commit_moves(now)
             for hook in self.after_step_hooks:
@@ -660,6 +673,9 @@ class Simulation:
             if other is None or other.sleeping or other.conversation_id or st.action.kind == "wait":
                 return  # released lets_react / lets_talk preconditions
         st.last_reaction_key = key
+        if focal.kind == "agent" and self._routine(st, key, now):
+            self.svc.events.log("reaction_gated", now, aid, observation=focal.description, key=key)
+            return
         can_talk = focal.kind == "agent" and self._can_talk(aid, focal.agent_id or "", now, views)
         dec = self.reaction.decide(
             ident,
@@ -670,6 +686,11 @@ class Simulation:
             observed_name=self.identities[focal.agent_id].name if focal.agent_id in self.identities else None,
             last_chat=self._last_chat(aid, focal.agent_id or "") if can_talk else None,
         )
+        if focal.kind == "agent" and self.cfg.reaction.salience_gate and dec.decision == "continue":
+            routine = st.extra.setdefault("routine", {})
+            routine[key] = iso(now)
+            for old_key in list(routine)[:-100]:  # bounded: the hundred most recent routines
+                del routine[old_key]
         self.svc.events.log(
             "reaction",
             now,
@@ -701,6 +722,16 @@ class Simulation:
                 displace=False,
             )
             self._start_action(ident, item, now, occupancy, views)
+
+    def _routine(self, st: Any, key: str, now: datetime) -> bool:
+        """Salience gate: the same observation was already waved through within the cooldown."""
+
+        if not self.cfg.reaction.salience_gate:
+            return False
+        last = (st.extra.get("routine") or {}).get(key)
+        if not last:
+            return False
+        return now - parse_iso(last) < timedelta(minutes=self.cfg.reaction.routine_cooldown_minutes)
 
     def _notable(self, pc: Percept) -> bool:
         st = self.world_state.get(pc.address or "")
@@ -997,6 +1028,8 @@ class Simulation:
             "fidelity": cfg.fidelity_table(),
             "prompts": self.rt.registry.manifest(),
             "llm": self.rt.provider.describe() if hasattr(self.rt.provider, "describe") else {"provider": self.rt.provider_name},
+            "llm_pools": {name: p.describe() for name, p in self.rt.gateway.pools.items()} or None,
+            "parallel": {"calls": cfg.engine.parallel_calls, **self.scheduler.stats} if self.scheduler is not None else None,
             "embeddings": self.rt.embeddings.describe(),
             "ledger": {k: v for k, v in totals.items() if k != "by_task"},
             "calls_by_task": totals.get("by_task"),
@@ -1032,6 +1065,8 @@ class Simulation:
         }
 
     def close(self) -> None:
+        if self.scheduler is not None:
+            self.scheduler.close()
         self.db.close()
         self.rt.ledger.close()
 

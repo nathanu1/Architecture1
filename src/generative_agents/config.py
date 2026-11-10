@@ -15,7 +15,16 @@ from typing import Any, Literal
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+
+def _data_root() -> Path:
+    """Where configs/, prompts/ and scenarios/ live: the checkout, or the copy inside an installed wheel."""
+
+    checkout = Path(__file__).resolve().parents[2]
+    bundle = Path(__file__).resolve().parent / "_bundle"
+    return bundle if not (checkout / "prompts").is_dir() and bundle.is_dir() else checkout
+
+
+REPO_ROOT = _data_root()
 
 
 class _Base(BaseModel):
@@ -149,6 +158,20 @@ class ConstraintsSection(_Base):
     policy: Literal["strict-v1", "none"] = "strict-v1"
 
 
+class ReactionSection(_Base):
+    """Reaction decisions (paper §4.3.1) and the salience gate, a research extension.
+
+    With ``salience_gate`` on, a resident that has already decided to carry on when seeing a
+    given person doing a given thing does not ask the model again about that same observation
+    within ``routine_cooldown_minutes``; anything new, or any observation that previously led
+    to a reaction or a conversation, is still deliberated. Gated observations are logged
+    (``reaction_gated`` events) so they can be audited. Off by default (class X when on).
+    """
+
+    salience_gate: bool = False
+    routine_cooldown_minutes: int = 60
+
+
 class SocialSection(_Base):
     """Social memory: per-agent relationship records that evolve from observed interactions.
 
@@ -174,6 +197,56 @@ class SocialSection(_Base):
 
 
 LOCAL_KINDS = ("ollama", "openai_compatible")
+
+
+class EngineSection(_Base):
+    """How a step is executed (not what residents decide).
+
+    ``parallel_calls`` above 1 turns on parallel deciding (simulation/parallel.py): residents'
+    turns run in rounds and the model tasks of a round are sent together, up to this many at
+    once. Use it with a model server that answers requests concurrently (Ollama with
+    OLLAMA_NUM_PARALLEL, llama.cpp --parallel, vLLM). The town stays deterministic and
+    replayable, but residents interleave within a step differently from the sequential engine,
+    so it is off by default (class X when on).
+    """
+
+    parallel_calls: int = Field(default=1, ge=1, le=256)
+
+
+class RateLimitSection(_Base):
+    """Client-side caps so a hosted plan's limits are never exceeded (providers/ratelimit.py).
+
+    Set them to the plan's published numbers; the limiter keeps 10% headroom and waits before a
+    call that would cross one. Unset means unlimited.
+    """
+
+    requests_per_minute: int | None = None
+    tokens_per_minute: int | None = None
+    requests_per_day: int | None = None
+    tokens_per_day: int | None = None
+
+    def active(self) -> bool:
+        return any(v is not None for v in (self.requests_per_minute, self.tokens_per_minute, self.requests_per_day, self.tokens_per_day))
+
+
+class ProviderPoolSection(_Base):
+    """An additional model endpoint that ``task_overrides[<task>].provider`` can route tasks to.
+
+    Each pool has its own kind, model, server, key and rate limit, so one town can spread its
+    calls over several free plans (docs/deploy.md §2d). Pools share the default provider's
+    retry, timeout and repair settings.
+    """
+
+    kind: Literal["mock", "anthropic", "openai", "ollama", "openai_compatible"] = "openai_compatible"
+    model: str
+    base_url: str | None = None
+    api_key_env: str | None = None
+    response_format: Literal["json_schema", "json_object", "none"] = "json_schema"
+    timeout_s: float = 120.0
+    num_ctx: int = 8192
+    keep_alive: str | None = "30m"
+    think: bool | None = None
+    rate_limit: RateLimitSection = Field(default_factory=RateLimitSection)
 
 
 class LLMProviderSection(_Base):
@@ -205,7 +278,23 @@ class LLMProviderSection(_Base):
     # (for towns that run for weeks; docs/deploy.md). Repeats are 40-75% of the mechanical
     # tasks in recorded runs. Off by default: it removes sampling variety on those prompts.
     memoize_tasks: list[str] = Field(default_factory=list)
+    # Tasks answered from the ledger when their structured inputs recur, whatever the rendered
+    # prompt (a habit: the same situation, the same answer). Stronger than memoize_tasks, which
+    # needs the exact prompt. For the mechanical tasks only; off by default.
+    habit_tasks: list[str] = Field(default_factory=list)
     local: bool | None = None  # no API charges; None infers it (ollama, or a localhost base_url)
+    # Client-side rate limit for the default provider (hosted free plans; see RateLimitSection).
+    rate_limit: RateLimitSection = Field(default_factory=RateLimitSection)
+    # Extra endpoints by name; task_overrides[<task>] = {provider: <name>} routes a task there.
+    pools: dict[str, ProviderPoolSection] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def _pools_resolve(self) -> LLMProviderSection:
+        for task, override in self.task_overrides.items():
+            pool = override.get("provider")
+            if pool is not None and pool not in self.pools:
+                raise ValueError(f"task_overrides.{task}.provider={pool!r} names no entry of providers.llm.pools ({sorted(self.pools) or 'none'})")
+        return self
 
     def is_local(self) -> bool:
         if self.local is not None:
@@ -296,6 +385,8 @@ class GAConfig(_Base):
     location: LocationSection = Field(default_factory=LocationSection)
     dialogue: DialogueSection = Field(default_factory=DialogueSection)
     constraints: ConstraintsSection = Field(default_factory=ConstraintsSection)
+    reaction: ReactionSection = Field(default_factory=ReactionSection)
+    engine: EngineSection = Field(default_factory=EngineSection)
     social: SocialSection = Field(default_factory=SocialSection)
     providers: ProvidersSection = Field(default_factory=ProvidersSection)
     budget: BudgetSection = Field(default_factory=BudgetSection)
@@ -352,6 +443,10 @@ class GAConfig(_Base):
             ("social.appraisal", self.social.appraisal, "X" if self.social.appraisal != "none" else "P"),
             ("social.inform_prompts", self.social.inform_prompts, "X" if self.social.inform_prompts else "P"),
             ("providers.llm.memoize_tasks", sorted(self.providers.llm.memoize_tasks), "X" if self.providers.llm.memoize_tasks else "P"),
+            ("providers.llm.habit_tasks", sorted(self.providers.llm.habit_tasks), "X" if self.providers.llm.habit_tasks else "P"),
+            ("providers.llm.pools", sorted(self.providers.llm.pools), "E" if self.providers.llm.pools else "P"),
+            ("reaction.salience_gate", self.reaction.salience_gate, "X" if self.reaction.salience_gate else "P"),
+            ("engine.parallel_calls", self.engine.parallel_calls, "X" if self.engine.parallel_calls > 1 else "P"),
             ("scenario.seed_rendering", self.scenario.seed_rendering, "P" if self.scenario.seed_rendering == "verbatim" else "C"),
             ("game.enabled", self.game.enabled, "X" if self.game.enabled else "P"),
             (

@@ -1,0 +1,33 @@
+# The living town as a system service on a Linux server (a workstation, a lab machine, a
+# mainframe partition running Linux). The town process is plain Python and SQLite; the model
+# server (Ollama, llama.cpp's llama-server, vLLM) is reached over HTTP and may be this machine
+# or another one.
+#
+#   sudo useradd --system --create-home --home-dir /var/lib/hearthside hearthside
+#   sudo -u hearthside sh -c 'curl -LsSf https://astral.sh/uv/install.sh | sh'
+#   sudo install -m 600 /dev/null /etc/hearthside.env      # then put the settings below in it
+#   sudo cp deploy/hearthside.service /etc/systemd/system/ && sudo systemctl enable --now hearthside
+#   journalctl -u hearthside -f                              # the log; `systemctl restart hearthside` continues the same town
+#
+# /etc/hearthside.env (never commit it):
+#   HEARTHSIDE_PASSWORD=choose-one
+#   HEARTHSIDE_SPECTATORS=1
+#   HEARTHSIDE_LLM_URL=http://127.0.0.1:11434              # or the machine that serves the model
+[Unit]
+Description=Hearthside: a living town on a local model
+After=network-online.target ollama.service
+Wants=network-online.target
+
+[Service]
+User=hearthside
+WorkingDirectory=/var/lib/hearthside
+EnvironmentFile=/etc/hearthside.env
+ExecStart=/var/lib/hearthside/.local/bin/uvx --from "generative-agents-lab[viewer] @ git+https://github.com/nathanu1/Architecture1@main/feature-social-memory" ga town --residents 10 --host 127.0.0.1 --port 8080 --no-open
+Restart=always
+RestartSec=10
+# A stop request lets the town write its checkpoint before it exits.
+KillSignal=SIGINT
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

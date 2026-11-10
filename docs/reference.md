@@ -50,6 +50,8 @@ A six-hour smoke run takes about five seconds: `ga run --config configs/offline_
 | `ga experiment --protocol FILE [--measured-run DIR] [--execute] [--yes]` | Independent runs for a protocol (conditions × seeds, named metrics, optional forks and interventions, determinism check); plans and projects usage by default; runs only with `--execute`. |
 | `ga fork --run-dir DIR --snapshot NAME --out DIR [--set k=v] [--interventions FILE] [--run]` | Counterfactual: a new run that continues from a snapshot of another run with changed settings or interventions (research platform). |
 | `ga serve --run-dir DIR [--experiment DIR]` | Local read-only viewer and inspector. |
+| `ga town [--residents 10\|25] [--app] [--model-server URL] [--parallel N] [--host H] [--run-dir DIR]` | The living town on a local model in one command: checks the model server, downloads missing models, founds the town or continues the one in its folder, opens it (in its own window with `--app`). `HEARTHSIDE_LLM_URL` names a model server on another machine. See [deploy.md](deploy.md). |
+| `ga bench [--config FILE] [--model-server URL] [--parallel N] [--minutes M]` | Measures the model server on the town's real workload (per-task latency, gain from concurrent requests) and projects how long a game day takes for 10 and 25 residents. |
 | `ga play --config FILE` / `--resume DIR` / `--replay DIR` / `--watch DIR` `[--speed S] [--paused] [--open] [--port N]` | Hearthside town interface (extension): a live town in the browser at http://127.0.0.1:8080, research inspector at `/inspector`. Replays make no model calls; `--watch` opens any recorded run (headless or experiment) read-only in observe mode. |
 | `ga export-demo --run-dir DIR --out DIR` | A recorded town as static files for the front end's demo build: a page that plays the recording (and its research inspector) in any browser, with no server and no model. |
 | `ga export --run-dir DIR` | JSONL events, transcripts, retrieval traces and model calls; CSV memories, plans and usage; Markdown run report. |
@@ -72,9 +74,10 @@ A six-hour smoke run takes about five seconds: `ga run --config configs/offline_
 | `configs/experiments/social_network_mock.yaml` | Experiment B: ten residents, one day; contact opportunity and social-memory conditions; network measures. MOCK. |
 | `configs/experiments/adaptation_fork_mock.yaml` | Experiment C: forks of one recorded morning with and without a fire in Hobbs Cafe; adaptation measures. MOCK. |
 | `configs/offline_social_day.yaml` | Ten residents for one day (base of experiment B). |
+| `configs/social_day_llama.yaml`, `configs/experiments/social_network_llama.yaml` | Experiment B on the local Llama pair: the same conditions and outcomes on a real model, cost switches off, determinism check on. Not yet executed; plan with `ga experiment --protocol ...` and measure with `ga bench` first. |
 | `configs/probes/memory_facts.yaml` | Planted facts for the retrieval probe. |
 | `configs/town_mock.yaml` / `town_ollama.yaml` / `town_n25_ollama.yaml` / `town_n35_ollama.yaml` | The town game: offline MOCK; three residents on Ollama (start here); all 25 residents on Ollama; 35 residents, with ten original newcomers in a new neighborhood (an extension). |
-| `configs/town_live.yaml` / `town_live_25.yaml` | A town that stays live for weeks (ten or 25 residents): open-ended end date, mechanical tasks on a small model and answered from the ledger when they repeat (`providers.llm.memoize_tasks`), forgetting on to keep retrieval bounded. See [deploy.md](deploy.md) §2c. |
+| `configs/town_live.yaml` / `town_live_25.yaml` | **The living town** (ten or 25 residents) that `ga town` runs: open-ended end date, mechanical tasks on a small model, repeats and habits answered from the ledger (`memoize_tasks`, `habit_tasks`), the reaction salience gate, parallel deciding (`engine.parallel_calls: 4`), forgetting on. See [deploy.md](deploy.md) §3 and §4. |
 | `configs/town_n25_server.yaml` | All 25 residents on two local models (a 3B for the mechanical three quarters of calls, an 8B for judgment), for a town that runs continuously; `town_llama_api.yaml` is the same town on Llama through a hosted OpenAI-compatible API; `town_ollama_docker.yaml` targets the compose file's Ollama. See [deploy.md](deploy.md). |
 | `configs/town_n5_mock.yaml` / `town_n10_mock.yaml` / `town_n25_mock.yaml` / `town_n35_mock.yaml` | The research populations as towns on the offline MOCK model: the five pilot residents, the ten of the social experiment, all 25, and the 35-resident extension. |
 | `configs/game/` | Town game content: six affinity themes, motifs and gifts, catalog, paints and templates, Town Pulse levels, the Town Square, resident looks, a demo action script. |
@@ -204,12 +207,27 @@ The full list, with sources, is in the spec (§3 and §6). In short:
 
 ## Serving to a network
 
-`ga play` and `ga serve` take `--host 0.0.0.0`. Set `HEARTHSIDE_PASSWORD` to gate them with HTTP
+`ga town`, `ga play` and `ga serve` take `--host 0.0.0.0`. Set `HEARTHSIDE_PASSWORD` to gate them with HTTP
 Basic auth, and `HEARTHSIDE_SPECTATORS=1` to let anyone watch while the password is needed to
 act. `Dockerfile`, `docker-compose.yml` (with an optional Ollama container) and `deploy/Caddyfile`
-cover the rest; the reasoning, sizes and speeds are in [deploy.md](deploy.md). The
+and `deploy/hearthside.service` cover the rest; the reasoning, sizes and speeds are in [deploy.md](deploy.md). The
 OpenAI-compatible adapter's `providers.llm.response_format` (`json_schema`, `json_object`,
 `none`) matches what a hosted API accepts.
+
+## Living-town settings
+
+```yaml
+providers.llm.memoize_tasks: []     # tasks whose exact prompt repeats are answered from the ledger
+providers.llm.habit_tasks: []       # tasks answered from the ledger when their structured inputs recur
+reaction: {salience_gate: false, routine_cooldown_minutes: 60}
+engine.parallel_calls: 1            # above 1: residents think in rounds, a round's calls go out together
+providers.llm.pools: {}             # extra model servers by name; task_overrides.<task>.provider routes to one
+providers.llm.rate_limit: {}        # requests/tokens per minute/day, for a remote API with a quota
+```
+
+All off by default (class X when on); `configs/town_live.yaml` turns the first four on.
+Measurements and trade-offs: [deploy.md](deploy.md) §3 and §4. `HEARTHSIDE_LLM_URL` moves the
+model endpoints of `ga town` and `ga bench` to another machine.
 
 ## Research platform settings
 

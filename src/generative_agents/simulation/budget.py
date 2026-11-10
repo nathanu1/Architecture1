@@ -8,6 +8,7 @@ Nothing is fabricated to finish the step.
 
 from __future__ import annotations
 
+import threading
 import time
 from dataclasses import dataclass, field
 from typing import Any
@@ -39,6 +40,8 @@ class Budget:
     usage: BudgetUsage = field(default_factory=BudgetUsage)
     _session_start: float = field(default_factory=time.monotonic)
     _session_base_runtime: float = 0.0
+    # usage is updated from model-call threads under parallel deciding
+    _lock: Any = field(default_factory=threading.Lock, repr=False, compare=False)
 
     @classmethod
     def from_config(cls, cfg: Any) -> Budget:
@@ -77,16 +80,18 @@ class Budget:
             raise BudgetExceeded("cost_usd", round(u.cost_usd, 4), self.max_cost_usd)
 
     def record(self, input_tokens: int, output_tokens: int, cost: float | None) -> None:
-        self.usage.calls += 1
-        self.usage.input_tokens += input_tokens
-        self.usage.output_tokens += output_tokens
-        if cost is None:
-            self.usage.unpriced_calls += 1
-        else:
-            self.usage.cost_usd += cost
+        with self._lock:
+            self.usage.calls += 1
+            self.usage.input_tokens += input_tokens
+            self.usage.output_tokens += output_tokens
+            if cost is None:
+                self.usage.unpriced_calls += 1
+            else:
+                self.usage.cost_usd += cost
 
     def record_cache_hit(self) -> None:
-        self.usage.cache_hits += 1
+        with self._lock:
+            self.usage.cache_hits += 1
 
     def limits(self) -> dict[str, Any]:
         return {

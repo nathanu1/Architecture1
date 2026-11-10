@@ -25,41 +25,50 @@ The project focuses on two questions: how past experiences shape an agent's next
 - **Build around their requests.** Give gifts, collect motifs, and place or decorate objects residents can notice and use.
 - **Look inside a decision.** Inspect memories, retrieval scores, plans, reflections, and recorded model calls.
 - **Run an experiment.** Compare reflection settings, interview agents under different memory conditions, and measure information spread or event attendance.
+- **Leave the town on.** One command founds or continues a town on a model you serve yourself, as an app window, on a server, or as a site others can watch.
 - **Return to a saved run.** Resume from a checkpoint or replay a recording without making new model calls.
 - **Study cognition and social dynamics.** Switch memory, planning and social-memory conditions, fork a recorded run into counterfactual futures, and measure recall, plan adherence, social networks, beliefs and Theory of Mind with the research platform.
 
 ## Quick start
 
-Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/). The town's built frontend is included, so you can start without Node.js.
+Hearthside has two paths: **a living town on a local model**, and **a research platform** that studies it. Both need Python 3.11+ and [uv](https://docs.astral.sh/uv/). The built interface is included, so there is no Node.js step.
 
 ```bash
 git clone https://github.com/nathanu1/Architecture1.git hearthside
 cd hearthside
 uv sync --extra dev --extra viewer
 source .venv/bin/activate
+```
+
+To look around first, the offline demo needs no model and no download. Its MOCK label marks scripted responses that exercise the simulation and interface:
+
+```bash
 ga play --config configs/town_mock.yaml --open
 ```
 
-This opens the town at [localhost:8080](http://127.0.0.1:8080). The offline demo needs no API key or model download. Its MOCK label identifies scripted model responses used to exercise the simulation and interface.
+### Path 1: the living town on a local Llama
 
-For installation alternatives and the full command list, see the [reference](docs/reference.md).
-
-### Use a local model
-
-With [Ollama](https://ollama.com/) installed and running:
+With [Ollama](https://ollama.com/download) installed and running:
 
 ```bash
-ollama pull llama3.2:3b
-ollama pull nomic-embed-text
-ga play --config configs/town_ollama.yaml \
-  --set providers.llm.model=llama3.2:3b --open
+ga town --app
 ```
 
-This starts with three residents. Llama 3.2 3B is the model used in the documented local runs; the config also supports its default `llama3.1:8b`. Local inference needs no hosted API key, and its speed depends on your hardware.
+This checks the model server, downloads the models it needs (about 7 GB, once), founds a ten-resident town or continues the one you left, and opens it in its own window. The town is built to stay on: residents keep living while it runs, and the same command picks it up after any restart.
 
-Scenarios for [25 residents](configs/town_n25_ollama.yaml) and [35 residents](configs/town_n35_ollama.yaml) are included. Start with three to see how the simulation runs on your machine. The [town guide](docs/game.md) covers controls, building, local providers, and the larger neighborhood.
+```bash
+ga bench
+```
 
-### Run the research workflow
+`ga bench` measures your model server on the town's real workload and tells you how fast a ten or 25-resident town will run on it. `ga town --residents 25` runs the full town, `HEARTHSIDE_LLM_URL=http://gpu-box:11434 ga town` uses a model server on another machine, and `ga town --host 0.0.0.0` serves it to others. The [deployment guide](docs/deploy.md) covers running it as an app, on a server and as a site, with the measurements behind each setting; the [plan](docs/plan.md) explains the design.
+
+No checkout is needed to try it:
+
+```bash
+uvx --from "generative-agents-lab[viewer] @ git+https://github.com/nathanu1/Architecture1@main/feature-social-memory" ga town --app
+```
+
+### Path 2: the research route
 
 ```bash
 ga run --config configs/offline_pilot_2day.yaml --run-id first-town
@@ -68,7 +77,7 @@ ga interview --run-dir runs/first-town --protocol configs/interviews_reference.y
 ga serve --run-dir runs/first-town
 ```
 
-The viewer opens at [localhost:8000](http://127.0.0.1:8000). This workflow uses the offline mock provider. Experiment protocols and hosted-provider options are in the [reference](docs/reference.md) and [experiment guide](docs/experiment_protocol.md).
+The viewer opens at [localhost:8000](http://127.0.0.1:8000). This workflow uses the offline mock provider; the same commands run on the local model. A live town is itself a research run: its inspector, snapshots, forks and replay work while it is on. Experiment protocols are in the [reference](docs/reference.md) and the [experiment guide](docs/experiment_protocol.md).
 
 ## Research platform
 
@@ -132,6 +141,8 @@ The repository documents completed offline simulations with five and 25 agents, 
 
 These runs check the local model path from start to finish. They do not establish human-like behavior or reproduce the paper's human-rated results. Detailed timings, validation failures, and limitations are in the [town guide](docs/game.md#running-it).
 
+The living-town work (`ga town`, `ga bench`, habits, the salience gate, parallel deciding) is covered by tests against the offline model and a stand-in model server. It has not yet been run on a real model: the three runs above predate it, so run `ga bench` on your machine before relying on any speed.
+
 Hosted adapters are implemented but have not been exercised against their live APIs in the documented runs. LM Studio compatibility uses the OpenAI-compatible adapter; LM Studio itself has not been tested. The 35-resident neighborhood is an extension to the original 25-resident scenario.
 
 ### Development checks
@@ -146,7 +157,7 @@ npm run typecheck
 npm run build
 ```
 
-For this update, **218 Python tests passed (one skipped)** and the Python lint and format checks passed; the frontend passed 39 tests, its type check and its build.
+For this update, **252 Python tests passed (one skipped)** and the Python lint and format checks passed; the frontend passed 39 tests, its type check and its build.
 
 The tests cover memory isolation, retrieval and reflection, plan validation, private dialogue, world constraints, replay, evaluation, local adapters, and building rules. See the [reference](docs/reference.md#tests) for prompt-example maintenance.
 
@@ -159,7 +170,8 @@ The tests cover memory isolation, retrieval and reflection, plan validation, pri
 | Model prompts and recorded examples | [`prompts/`](prompts/) |
 | Smallville scenarios and the added neighborhood | [`scenarios/`](scenarios/) |
 | Step-by-step install, run and test walkthrough | [Testing guide](docs/testing_guide.md) |
-| Running the town as a website with a local model | [Deployment](docs/deploy.md) |
+| The living town on a local model: app, server, site | [Deployment](docs/deploy.md) |
+| Why it is built this way, and what comes next | [Plan](docs/plan.md) |
 | Commands and configuration | [Reference](docs/reference.md) |
 | Town controls and local-run details | [Town guide](docs/game.md) |
 | Paper correspondence and deviations | [Reproduction specification](docs/reproduction_spec.md) |

@@ -1,0 +1,30 @@
+# Experiment B on a real model: social network emergence from local encounters, ten residents,
+# one day, on the local Llama pair (Llama 3.1 8B for judgment, Llama 3.2 3B for mechanical tasks).
+# The same four conditions and outcomes as social_network_mock.yaml, so the two write-ups line up.
+# With a real model the `informed` condition is the one of interest: residents read their own
+# relationship record, which the mock model ignores.
+#
+# Size: about 4,600 model calls per run on the mock day; 4 conditions x 3 seeds = 12 runs, about
+# 55,000 calls, plus the determinism check. Measure first, then plan, then run:
+#   ga bench --config configs/social_day_llama.yaml
+#   ga experiment --protocol configs/experiments/social_network_llama.yaml            # plan and projected usage only
+#   ga experiment --protocol configs/experiments/social_network_llama.yaml --execute
+# A stopped experiment continues where it was; recorded calls are never made twice.
+# A local model is not bit-reproducible across machines; the determinism check reports whether
+# it is on yours (same seed, same server, same weights). Either way `ga replay` reproduces every
+# run from its ledger.
+name: social_network_llama
+base_config: configs/social_day_llama.yaml
+question: "Does a stable social structure (ties, components, reciprocity) form from local encounters with a real language model, and does telling residents about their own relationships change who they talk to?"
+hypothesis: "Density and the largest component rise with contact opportunity, as in the mock run. Informing prompts concentrates conversations on existing ties: higher reciprocity and clustering than baseline at similar density. If informed equals baseline, the relationship line is not being used by the model."
+conditions:
+  baseline: []
+  informed: ["social.appraisal=llm", "social.inform_prompts=true"]
+  low_contact: ["dialogue.cooldown_minutes=720"]
+  high_contact: ["dialogue.cooldown_minutes=30"]
+seeds: [11, 12, 13]
+metrics: [network, behavior, evaluation]
+primary_outcomes: [network_density, network_largest_component, network_reciprocity, conversations_per_agent, probe_density_supported]
+evaluate_relationships: true
+determinism_check: true
+output_dir: runs/experiments

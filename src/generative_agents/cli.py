@@ -564,16 +564,83 @@ def cmd_play(args: argparse.Namespace) -> int:
         f"{where}\nmodel: {cfg.providers.llm.kind}:{cfg.providers.llm.model} ({'MOCK' if cfg.run_mode == 'mock' else 'local, no API cost' if cfg.providers.llm.is_local() else cfg.run_mode})"
     )
     print(f"open {url} (town) or {url}/inspector (research inspector). Ctrl+C saves and stops.")
-    if args.open:
-        import webbrowser
+    if args.open or getattr(args, "app", False):
+        from .town import open_window
 
-        webbrowser.open(url)
+        shown = "localhost" if args.host in ("0.0.0.0", "::") else args.host
+        print(open_window(f"http://{shown}:{args.port}", app=getattr(args, "app", False)))
     try:
         uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
     finally:
         session.stop()
         print(f"saved. Continue with: ga play --resume {session.run_dir}   |   watch again: ga play --replay {session.run_dir}")
     return 0
+
+
+def cmd_town(args: argparse.Namespace) -> int:
+    """The living town on a local model: check the model server, fetch models, continue the town, open it."""
+
+    from . import town
+
+    url = args.model_server or os.environ.get(town.ENV_URL)
+    cfg, sets = town.load_town_config(args.config, args.residents, args.set, url)
+    if args.parallel:
+        sets.append(f"engine.parallel_calls={args.parallel}")
+    run_dir = town.town_dir(cfg, args.run_dir)
+    resuming = (run_dir / "state.sqlite").exists() and (run_dir / "config.yaml").exists()
+    if resuming:
+        from .simulation.engine import load_run_config
+
+        saved = load_run_config(run_dir)
+        sets = [*(args.set or []), *town.server_overrides(saved, url), *([f"engine.parallel_calls={args.parallel}"] if args.parallel else [])]
+        cfg = load_run_config(run_dir, sets)
+    elif sets != list(args.set or []):
+        from .config import load_config
+
+        cfg = load_config(args.config or town.TOWN_CONFIGS[args.residents], overrides=sets)
+    if cfg.run_mode == "live" and not cfg.providers.llm.is_local() and not args.yes:
+        print(
+            f"{cfg.providers.llm.kind}:{cfg.providers.llm.model} is not a local model. `ga town` is for a model server you run; use `ga play --yes` for a paid API."
+        )
+        return 2
+    if not town.prepare_models(cfg, pull=not args.no_pull):
+        return 2
+    local = args.host in ("127.0.0.1", "localhost", "::1")
+    play = argparse.Namespace(
+        config=args.config or town.TOWN_CONFIGS[args.residents],
+        set=sets,
+        run_id=None,
+        run_dir=str(run_dir),
+        resume=str(run_dir) if resuming else None,
+        replay=None,
+        watch=None,
+        host=args.host,
+        port=args.port,
+        speed=args.speed,
+        paused=False,
+        open=not args.no_open and local and not args.app and not town.is_headless(),
+        app=args.app,
+        yes=True,
+    )
+    print(f"{'continuing' if resuming else 'founding'} the town in {run_dir}")
+    return cmd_play(play)
+
+
+def cmd_bench(args: argparse.Namespace) -> int:
+    """Measure the model server on the town's workload and project how fast a town runs on it."""
+
+    from . import town
+
+    cfg, _sets = town.load_town_config(args.config, 10, args.set, args.model_server or os.environ.get(town.ENV_URL))
+    if cfg.run_mode == "live" and not cfg.providers.llm.is_local() and not args.yes:
+        print("this config uses a paid API; pass --yes to benchmark it (about 150 calls)")
+        return 2
+    if not town.prepare_models(cfg, pull=not args.no_pull):
+        return 2
+    result = town.bench(cfg, minutes=args.minutes, residents=args.residents, parallel=args.parallel)
+    if args.json:
+        print(json.dumps(result, indent=2))
+    return 0 if result.get("calls") else 1
 
 
 def _guard_network(app: Any, host: str) -> None:
@@ -787,6 +854,32 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--open", action="store_true", help="open the browser")
     sp.add_argument("--yes", action="store_true", help="confirm a paid (non-local) model")
     sp.set_defaults(func=cmd_play)
+
+    sp = sub.add_parser("town", help="the living town on a local model, in one command: checks the model server, fetches models, continues the town")
+    with_config(sp)
+    sp.add_argument("--residents", type=int, choices=[10, 25], default=10, help="town size when no --config is given")
+    sp.add_argument("--model-server", metavar="URL", help="address of the model server if it is not this machine (or set HEARTHSIDE_LLM_URL)")
+    sp.add_argument("--run-dir", help="where the town lives between sessions (default runs/<town name>)")
+    sp.add_argument("--host", default="127.0.0.1", help="0.0.0.0 to serve other machines (set HEARTHSIDE_PASSWORD)")
+    sp.add_argument("--port", type=int, default=8080)
+    sp.add_argument("--speed", default="normal", choices=["slow", "normal", "fast", "max"])
+    sp.add_argument("--parallel", type=int, metavar="N", help="model calls sent at once (engine.parallel_calls); match the server's parallel slots")
+    sp.add_argument("--app", action="store_true", help="open the town in its own window instead of a browser tab")
+    sp.add_argument("--no-open", action="store_true", help="do not open a window")
+    sp.add_argument("--no-pull", action="store_true", help="do not download missing models")
+    sp.add_argument("--yes", action="store_true", help="allow a config that uses a paid API")
+    sp.set_defaults(func=cmd_town)
+
+    sp = sub.add_parser("bench", help="measure your model server on the town's workload and project the town's pace")
+    with_config(sp)
+    sp.add_argument("--model-server", metavar="URL", help="address of the model server (or set HEARTHSIDE_LLM_URL)")
+    sp.add_argument("--minutes", type=int, default=20, help="game minutes to run (default 20: the morning burst)")
+    sp.add_argument("--residents", type=int, default=3)
+    sp.add_argument("--parallel", type=int, default=4, help="concurrent requests to probe the server with (1 skips the probe)")
+    sp.add_argument("--no-pull", action="store_true")
+    sp.add_argument("--json", action="store_true", help="also print the result as JSON")
+    sp.add_argument("--yes", action="store_true")
+    sp.set_defaults(func=cmd_bench)
 
     sp = sub.add_parser("export-demo", help="a recorded town as static files for the front end's demo build (no model calls)")
     sp.add_argument("--run-dir", required=True, help="a run made with the town game")

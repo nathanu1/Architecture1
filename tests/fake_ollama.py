@@ -1,7 +1,8 @@
 """A stand-in Ollama server for tests: real HTTP on 127.0.0.1, documented endpoints only.
 
 No Ollama binary or model is available where these tests run. The server implements
-``GET /api/version``, ``GET /api/tags``, ``POST /api/chat`` and ``POST /api/embed`` with the
+``GET /api/version``, ``GET /api/tags``, ``POST /api/chat``, ``POST /api/embed`` and
+``POST /api/pull`` with the
 response fields of Ollama's API reference, and records every request body so tests can check
 exactly what the adapter sent. Chat replies come from a scripted queue, or from the offline
 mock model when a provider registers the originating request (``MockBackedOllama``).
@@ -37,6 +38,7 @@ class FakeOllama:
         self.mock = MockLLM(seed=0)
         self.embedder = MockHashEmbedding(dims=embed_dims)
         self.fail_next: list[tuple[int, dict[str, Any]]] = []
+        self.unknown: set[str] = set()  # names /api/pull refuses (no such model in the registry)
         outer = self
 
         class Handler(BaseHTTPRequestHandler):
@@ -81,6 +83,20 @@ class FakeOllama:
                 if outer.fail_next:
                     code, payload = outer.fail_next.pop(0)
                     return self._send(code, payload)
+                if self.path == "/api/pull":
+                    name = body.get("model")
+                    if name in outer.unknown:
+                        lines = [{"error": "pull model manifest: file does not exist"}]
+                    else:
+                        outer.models.append(name)
+                        lines = [{"status": "pulling manifest"}, {"status": "pulling abc", "total": 100, "completed": 50}, {"status": "success"}]
+                    raw = "".join(json.dumps(x) + "\n" for x in lines).encode()
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/x-ndjson")
+                    self.send_header("Content-Length", str(len(raw)))
+                    self.end_headers()
+                    self.wfile.write(raw)
+                    return None
                 if self.path == "/api/chat":
                     if body.get("model") not in outer.models:
                         return self._send(404, {"error": f"model '{body.get('model')}' not found"})

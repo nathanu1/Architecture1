@@ -244,3 +244,22 @@ def ollama_status(base_url: str | None, models: list[str], *, timeout_s: float =
         found = find_model(tags, m)
         out["present"][m] = {"digest": found.get("digest"), "size": found.get("size")} if found else None
     return out
+
+
+def ollama_pull(base_url: str | None, model: str, *, on_progress: Any = None, timeout_s: float = 7200.0) -> None:
+    """Download ``model`` into the Ollama server at ``base_url`` (``POST /api/pull``, streamed).
+
+    ``on_progress(status, completed_bytes, total_bytes)`` is called as the download advances.
+    Raises ``ProviderError`` if the server reports an error or never confirms success.
+    """
+
+    client = JSONClient(base_url or DEFAULT_URL, timeout_s=timeout_s, label="ollama")
+    last = ""
+    for event in client.stream("POST", "/api/pull", {"model": model, "stream": True}):
+        if event.get("error"):
+            raise ProviderError(f"ollama could not pull {model}: {event['error']}", retryable=False)
+        last = str(event.get("status") or last)
+        if on_progress is not None:
+            on_progress(last, int(event.get("completed") or 0), int(event.get("total") or 0))
+    if last != "success":
+        raise ProviderError(f"ollama did not confirm the download of {model} (last status: {last or 'none'})", retryable=True)

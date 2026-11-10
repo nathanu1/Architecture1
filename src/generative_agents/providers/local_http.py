@@ -56,6 +56,28 @@ class JSONClient:
             raise ProviderError(f"{self.label} returned unexpected JSON from {path}", retryable=False)
         return out
 
+    def stream(self, method: str, path: str, body: dict[str, Any] | None = None, *, timeout_s: float | None = None) -> Any:
+        """Yield the JSON objects of a newline-delimited streaming reply (Ollama's /api/pull)."""
+
+        data = json.dumps(body).encode("utf-8") if body is not None else None
+        req = urllib.request.Request(self.base_url + path, data=data, method=method, headers=self.headers)
+        try:
+            with self._opener.open(req, timeout=timeout_s or self.timeout_s) as resp:
+                for line in resp:
+                    line = line.strip()
+                    if line:
+                        yield json.loads(line)
+        except urllib.error.HTTPError as exc:
+            raise ProviderError(
+                f"{self.label} {exc.code}: {_error_detail(exc)}", retryable=exc.code >= 500, metadata={"status": exc.code, "path": path}
+            ) from exc
+        except (urllib.error.URLError, ConnectionError, TimeoutError) as exc:
+            raise ProviderError(
+                f"{self.label} not reachable at {self.base_url} ({getattr(exc, 'reason', exc)})", retryable=True, metadata={"path": path}
+            ) from exc
+        except json.JSONDecodeError as exc:
+            raise ProviderError(f"{self.label} returned non-JSON from {path}", retryable=True) from exc
+
 
 def _error_detail(exc: urllib.error.HTTPError) -> str:
     try:

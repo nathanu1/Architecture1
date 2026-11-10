@@ -626,6 +626,7 @@ class ScriptedLLM:
     """Test helper: returns queued raw outputs per task (to exercise repairs and failures)."""
 
     name = "scripted"
+    concurrent_safe = False  # answers come from a queue, so calls must arrive in order
 
     def __init__(self, script: dict[str, list[Any]], fallback: MockLLM | None = None):
         self.script = {k: list(v) for k, v in script.items()}

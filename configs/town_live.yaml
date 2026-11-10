@@ -1,17 +1,23 @@
-# A town that stays live for weeks: ten residents on your own hardware through Ollama.
+# The living town: ten residents on a local Llama, built to stay on for weeks.
 #
-# What makes it sustainable (docs/deploy.md, "Always live"):
+# One command starts or continues it (it checks the model server and downloads the models):
+#   ga town                       # this config, on this machine, opened in the browser
+#   ga town --app                 # in its own window
+#   ga town --residents 25        # all 25 residents (town_live_25.yaml)
+#   ga town --host 0.0.0.0        # serve other machines; set HEARTHSIDE_PASSWORD and HEARTHSIDE_SPECTATORS=1
+#   HEARTHSIDE_LLM_URL=http://gpu-box:11434 ga town    # the model server is another machine
+#   ga bench                      # measure your model server and see how fast the town will run
+#
+# What keeps it cheap enough to leave on (docs/deploy.md has the measurements):
 # * the mechanical three quarters of calls go to a small model (task_overrides, from town_n25_server);
-# * identical mechanical prompts are answered from the run's own ledger (memoize_tasks): in
-#   recorded runs 40-75% of those prompts repeat, so about a third of all calls disappear;
-# * forgetting keeps retrieval bounded as memory streams grow over weeks (nothing is deleted);
-# * the end date is far away, so the town does not stop; `ga play --resume runs/<id>` continues it
-#   after any restart, re-using every recorded call.
-# Ten residents at this setting run at about real time on four CPU cores with the 3B model, and
-# faster than real time on any GPU. town_live_25.yaml is the same with all 25 residents.
-#   ollama pull llama3.2:3b && ollama pull llama3.1:8b && ollama pull nomic-embed-text
-#   export HEARTHSIDE_PASSWORD=... HEARTHSIDE_SPECTATORS=1
-#   ga play --config configs/town_live.yaml --host 0.0.0.0
+# * a situation a resident has already settled is answered from the ledger: exact prompt repeats
+#   (memoize_tasks) and recurring structured situations (habit_tasks);
+# * an observation a resident already waved through is not deliberated again for an hour
+#   (reaction.salience_gate); every skipped one is logged;
+# * residents think in parallel rounds (engine.parallel_calls), so a server with parallel slots is used;
+# * forgetting keeps retrieval bounded as memory streams grow (nothing is deleted);
+# * the end date is far away; a restart continues the same town and re-uses every recorded call.
+# Each switch is its own row in the run's fidelity table (class X), so a study can turn one off.
 extends: town_n25_server.yaml
 run:
   name: town-live
@@ -28,5 +34,11 @@ retrieval:
 providers:
   llm:
     memoize_tasks: [choose_location, importance, importance_batch, action_grounding]
+    habit_tasks: [choose_location, importance, importance_batch, action_grounding]
+reaction:
+  salience_gate: true
+  routine_cooldown_minutes: 60
+engine:
+  parallel_calls: 4                          # match the model server's parallel slots (OLLAMA_NUM_PARALLEL)
 budget:
   max_calls: 50000000

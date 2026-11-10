@@ -93,10 +93,17 @@ def town_info(session: GameSession) -> dict[str, Any]:
     }
 
 
-def town_map(session: GameSession) -> dict[str, Any]:
-    """The base map, run-length encoded, plus what the front end needs to draw it (``/api/game/map``)."""
+def town_map(session: GameSession, placed: set[str] | None = None) -> dict[str, Any]:
+    """The base map, run-length encoded, plus what the front end needs to draw it (``/api/game/map``).
+
+    ``placed`` is the set of addresses of player-placed items. A server passes it from its own
+    read-only connection, because the engine thread may already be stepping on the town's
+    connection; without it the town's store is read directly (safe when nothing is running).
+    """
 
     sim, game = session.sim, session.game
+    if placed is None:
+        placed = {p.address for p in game.store.items()}
     editor, world = game.editor, sim.world
     arenas = sorted({a for a in world.address_tiles if a.count(":") == 2})
     return {
@@ -112,7 +119,7 @@ def town_map(session: GameSession) -> dict[str, Any]:
         },
         "outdoor_arenas": [a for a in arenas if editor.is_outdoor(a)],
         "ground_objects": sorted(editor._ground_size),
-        "objects": sorted(a for a in world.address_tiles if a.count(":") == 3 and not any(p.address == a for p in game.store.items())),
+        "objects": sorted(a for a in world.address_tiles if a.count(":") == 3 and a not in placed),
     }
 
 
@@ -134,7 +141,7 @@ def create_game_app(session: GameSession, *, web_dir: Path | None = None) -> Fas
             return reader.query(sql, params)
 
     info_payload = town_info(session)
-    map_payload = town_map(session)
+    map_payload = town_map(session, placed={json.loads(r["json"]).get("address") for r in rows("SELECT json FROM game_items ORDER BY seq")})
 
     # ------------------------------------------------------------------ game endpoints
     @app.get("/api/game/info")
