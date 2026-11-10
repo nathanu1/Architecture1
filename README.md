@@ -76,7 +76,7 @@ uvx --from "generative-agents-lab[viewer] @ git+https://github.com/nathanu1/Arch
 
 ### Or with no server at all: the town in a tab
 
-The same town also builds into a static page that runs entirely on the visitor's device: the engine as Python compiled to WebAssembly, the residents' model on the graphics chip through WebGPU. One click starts it, nothing is installed, and hosting it costs nothing however many people open it. [The tab guide](docs/tab.md) explains how it works, what has been checked and how to publish it.
+The same town also builds into a static page that runs entirely on the visitor's device: the engine as Python compiled to WebAssembly, the residents' model on the graphics chip through WebGPU. One click starts it, nothing is installed, and hosting it costs nothing however many people open it. The model plans each resident's day and writes everything they say, a second small model lets them search their memory by meaning, and the town opens at dawn with residents waking and planning one at a time. [The tab guide](docs/tab.md) explains how it works, what has been checked and how to publish it.
 
 ```bash
 cd frontend
@@ -160,7 +160,7 @@ These runs check the local model path from start to finish. They do not establis
 
 The living-town work (`ga town`, `ga bench`, habits, the salience gate, parallel deciding) is covered by tests against the offline model and a stand-in model server. It has not yet been run on a real model: the three runs above predate it, so run `ga bench` on your machine before relying on any speed.
 
-The town in a tab has been run end to end in a headless browser with scripted residents and with a stand-in for the model; none of its five offered models has been run on a real graphics chip yet.
+The town in a tab has been run end to end in a headless browser with scripted residents and with a stand-in for the model. Its embedding model has been run there for real and compared with the same model run natively. None of its five language models has been run here on a real graphics chip, so how well each follows the planning prompts, and how fast, is not measured.
 
 Hosted adapters are implemented but have not been exercised against their live APIs in the documented runs. LM Studio compatibility uses the OpenAI-compatible adapter; LM Studio itself has not been tested. The 35-resident neighborhood is an extension to the original 25-resident scenario.
 

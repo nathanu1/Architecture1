@@ -804,6 +804,8 @@ class Simulation:
             act.address = self.world.address_at(*act.target_tile, level="arena") or self.world.address_at(*act.target_tile, level="sector")
             act.path = self.nav.path(here, act.target_tile) or []
             act.predicate, act.object = "chat with", task.metadata.get("partner_name", "")
+        elif task.source == "asleep":
+            self._stay_asleep(ident, st, act, here, views)
         elif task.source == "wait":
             act.kind = "wait"
             act.address = self.world.address_at(*here, level="arena") or self.world.address_at(*here, level="sector")
@@ -878,6 +880,28 @@ class Simulation:
             )
         st.action = act
         self.planner.mark_active(task)
+
+    def _stay_asleep(self, ident: AgentIdentity, st: Any, act: ActionState, here: Tile, views: dict[str, AgentView]) -> None:
+        """Sleeping until the usual waking hour (``planning.at_waking``): nobody is asked
+        anything. Someone already asleep stays where they lie; a town that has just been
+        founded finds each resident in their own bed."""
+
+        was = st.action
+        if is_sleep(was.description) and was.kind == "plan" and was.address and not was.path:
+            act.address, act.target_tile = was.address, was.target_tile or here
+            act.subject, act.predicate, act.object = was.subject, was.predicate, was.object
+            act.object_state, act.lasting_state = was.object_state, was.lasting_state
+            return
+        home = ident.living_area
+        bed = next((a for a in self.world.object_addresses_in(home) if a.split(":")[-1].lower() == "bed"), None)
+        act.address = bed or home
+        others = {tuple(v.tile) for k, v in views.items() if k != ident.id}
+        pick = self.nav.nearest(here, self.world.walkable_tiles_for(act.address), avoid=others) or self.nav.nearest(here, self.world.walkable_tiles_for(home))
+        act.target_tile = pick[0] if pick else here
+        act.path = self.nav.path(here, act.target_tile) or []
+        act.subject, act.predicate, act.object = ident.name, "is", "sleeping"
+        if bed:
+            act.object_state = "being slept in"
 
     def _ground(self, ident: AgentIdentity, act: ActionState, now: datetime) -> None:
         parts = (act.address or "").split(":")

@@ -1,5 +1,5 @@
 import { tabTown } from "./client";
-import type { Answer, Need } from "./protocol";
+import type { Answer, Need, Vectors } from "./protocol";
 
 /** How the residents think: scripted, or a language model that runs on this device's graphics chip. */
 export interface Mind {
@@ -81,6 +81,78 @@ interface Completion {
   choices: { message: { content: string | null }; finish_reason: string }[];
   usage?: { prompt_tokens: number; completion_tokens: number; extra?: { prefill_tokens_per_s?: number; decode_tokens_per_s?: number } };
 }
+
+/** The embedding model for memory by meaning: 33M parameters, 384 numbers per text (the id is the runtime's). */
+export const MEMORY_MODEL = "snowflake-arctic-embed-s-q0f32-MLC-b4";
+export const MEMORY_DOWNLOAD_MB = 130;
+
+interface EmbeddingEngine {
+  embeddings: { create(body: { input: string[]; model?: string }): Promise<{ data: { index: number; embedding: number[] }[] }> };
+}
+
+function toBase64(bytes: Uint8Array): string {
+  let out = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) out += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(out);
+}
+
+/** Vectors as the engine reads them: little-endian float32, base64. */
+export function packVectors(rows: ArrayLike<number>[]): Vectors {
+  const dims = rows[0]?.length ?? 0;
+  const flat = new Float32Array(rows.length * dims);
+  rows.forEach((row, i) => flat.set(row, i * dims));
+  return { data: toBase64(new Uint8Array(flat.buffer)), count: rows.length };
+}
+
+let memoryLoading: Promise<void> | null = null;
+
+/**
+ * Download (once) and start the embedding model, in a worker of its own, so the residents can
+ * search their memory by meaning. Resolves when it is ready; rejects where it cannot run.
+ */
+export function loadMemory(onProgress: (fraction: number, text: string) => void = () => undefined, test = false): Promise<void> {
+  if (tabTown.embedder) return Promise.resolve();
+  if (test) {
+    // not a model: stand-in vectors from the engine, to exercise the page's plumbing
+    tabTown.embedder = async (need) => {
+      const [data, count] = await tabTown.scriptedVectors(need.key);
+      return { data, count };
+    };
+    return Promise.resolve();
+  }
+  memoryLoading ??= (async () => {
+    const webllm = await import("@mlc-ai/web-llm");
+    const worker = new Worker(new URL("./llm.worker.ts", import.meta.url), { type: "module" });
+    const engine = (await webllm.CreateWebWorkerMLCEngine(worker, MEMORY_MODEL, {
+      initProgressCallback: (p: { progress: number; text: string }) => onProgress(p.progress, p.text),
+    })) as unknown as EmbeddingEngine;
+    // One text per forward pass: in a padded batch a text's vector shifts with its neighbours'
+    // lengths, and a memory's vector must depend on the memory alone.
+    const embed = async (texts: string[]): Promise<number[][]> => {
+      const rows: number[][] = [];
+      for (const text of texts) rows.push((await engine.embeddings.create({ input: [text] })).data[0].embedding);
+      return rows;
+    };
+    tabTown.embedder = async (need: Need): Promise<Vectors> => {
+      let texts = need.texts ?? [];
+      for (let attempt = 0; ; attempt++) {
+        try {
+          return packVectors(await embed(texts));
+        } catch (e) {
+          // a text longer than the model's window: shorten and ask again (the start of a memory says what it is)
+          if (attempt >= 3) throw e;
+          const longest = Math.max(...texts.map((t) => t.length));
+          texts = texts.map((t) => t.slice(0, Math.max(80, Math.floor(longest / 2))));
+        }
+      }
+    };
+  })().catch((e) => {
+    memoryLoading = null;
+    throw e;
+  });
+  return memoryLoading;
+}
+tabTown.memoryLoader = () => loadMemory();
 
 /** Speeds the model reported for its last answers (tokens per second), for the curious. */
 export const speed = { prefill: 0, decode: 0, answers: 0, seconds: 0 };

@@ -1,3 +1,4 @@
+import { thought } from "../lib/thought";
 import { ChatCircleDots, Crosshair, Gift as GiftIcon, PaperPlaneRight, Question, SealCheck, Wind, X } from "@phosphor-icons/react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
@@ -61,7 +62,8 @@ export function ResidentCard({ id }: { id: string }) {
   const schedule = poll?.schedules?.[id];
   const now = poll?.clock?.time;
   const busy = Object.values(pending).some((p) => p.agent === id);
-  const thinking = !!poll?.thinking[id];
+  const thinkingOf = poll?.thinking[id];
+  const thinking = !!thinkingOf;
   const replay = !!(poll?.replay || poll?.observe);
   const chatting = chatWith === id;
   const unavailable = a?.sleeping ? `${r.first_name} is asleep` : a?.partner ? `${r.first_name} is talking with ${a.partner}` : null;
@@ -96,7 +98,7 @@ export function ResidentCard({ id }: { id: string }) {
           </div>
           <p className="mt-2 flex items-center gap-1.5 text-[15px] font-semibold">
             <Act size={18} weight="fill" aria-hidden="true" />
-            <span className="min-w-0 truncate">{thinking ? `${r.first_name} is thinking…` : a?.sleeping ? "Sleeping" : activityLabel(a?.activity ?? "")}</span>
+            <span className="min-w-0 truncate">{thinking ? `${r.first_name} ${thought(thinkingOf?.task)}…` : a?.sleeping ? "Sleeping" : activityLabel(a?.activity ?? "")}</span>
           </p>
           {place ? <p className="truncate text-sm text-[var(--muted)]">{place}</p> : null}
         </div>

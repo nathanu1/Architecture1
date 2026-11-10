@@ -336,7 +336,9 @@ export function TownView() {
           const line = conv ? currentLine(conv, now) : null;
           const think = thinking[r.id];
           const req = game?.requests.find((q) => q.agent_id === r.id && q.status !== "fulfilled");
-          const text = said?.text ?? line?.text ?? null;
+          // a conversation still being written: the line this resident has just said, while the other finds an answer
+          const draft = Object.values(thinking).find((t) => t.heard?.from === r.id)?.heard?.text;
+          const text = said?.text ?? line?.text ?? draft ?? null;
           const Icon = activityIcon(a?.activity ?? "");
           return (
             <div key={r.id} ref={(el) => void (bubbleRefs.current[r.id] = el)} className="absolute left-0 top-0 flex flex-col items-center gap-1" style={{ visibility: "hidden" }}>

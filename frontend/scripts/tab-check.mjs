@@ -20,7 +20,8 @@ const out = JSON.parse(
 import json, time
 from generative_agents.game.tab import TabTown
 t = time.time()
-town = TabTown("/town/scripted", mind="scripted", overrides=["scenario.end=2023-02-13T08:00:00"], speed="max")
+SEVEN = "scenario.start=2023-02-13T07:00:00"  # a fixed opening hour, so the step counts below are known
+town = TabTown("/town/scripted", mind="scripted", overrides=[SEVEN, "scenario.end=2023-02-13T08:00:00"], speed="max")
 while not town.session.finished:
     town.tick()
 scripted = {"steps": town.sim.clock.step, "seconds": round(time.time() - t, 2)}
@@ -29,23 +30,27 @@ poll = json.loads(town.call("poll", "[-2, 0]"))["ok"]
 memories = json.loads(town.call("research", json.dumps(["agent/" + info["residents"][0]["id"] + "/memories?limit=3"])))["ok"]
 town.close()
 t = time.time()
-live = TabTown("/town/model", mind="some-model", overrides=["scenario.end=2023-02-13T07:30:00"], speed="max")
-needs = 0
+live = TabTown("/town/model", mind="some-model", overrides=[SEVEN, "scenario.end=2023-02-13T07:30:00"], speed="max")
+needs = batches = 0
 while not live.session.finished:
     r = live.tick()
-    if "need" in r:
+    if "need" in r and r["need"].get("kind") == "embed":
+        batches += 1
+        live.deliver_vectors(r["need"]["key"], *live.scripted_vectors(r["need"]["key"]))
+    elif "need" in r:
         needs += 1
         live.deliver(r["need"]["key"], live.scripted_answer(r["need"]["key"]))
+stats = live.stats()
 json.dumps({"scripted": scripted, "residents": len(info["residents"]), "frames": len(poll["frames"]), "memories": len(memories),
             "questions": needs, "repeated_steps": live.repeats, "seconds": round(time.time() - t, 2), "steps": live.sim.clock.step,
-            "error": live.session.error})
+            "memory": live.info()["memory"], "vector_batches": batches, "vectors": stats["embedded"], "error": live.session.error})
 `),
 );
 console.log(out);
-const ok = out.scripted.steps === 360 && out.residents === 3 && out.frames > 300 && out.memories === 3 && out.questions > 20 && out.questions === out.repeated_steps && out.steps === 180 && !out.error;
+const ok = out.scripted.steps === 360 && out.residents === 3 && out.frames > 300 && out.memories === 3 && out.questions > 5 && out.questions + out.vector_batches === out.repeated_steps && out.steps === 180 && out.memory === "meaning" && out.vectors > out.vector_batches && !out.error;
 fs.rmSync(tmp, { recursive: true, force: true });
 if (!ok) {
   console.error("the town did not run as expected inside Pyodide");
   process.exit(1);
 }
-console.log("ok: the town runs inside the browser's Python runtime, with and without pausing for a model");
+console.log("ok: the town runs inside the browser's Python runtime, with and without pausing for a model and for its memory's vectors");

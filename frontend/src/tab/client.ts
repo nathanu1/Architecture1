@@ -1,5 +1,5 @@
 import { ApiError } from "../apiError";
-import type { Answer, FromWorker, Need, Phase, ToWorker } from "./protocol";
+import type { Answer, FromWorker, Need, Phase, ToWorker, Vectors } from "./protocol";
 
 type Pending = { resolve: (v: unknown) => void; reject: (e: Error) => void };
 
@@ -18,6 +18,11 @@ class TabTownClient {
   answerer: ((need: Need) => Promise<Answer>) | null = null;
   /** Stops the answer in progress, if the mind can (set by the mind that is plugged in). */
   interrupter: (() => void) | null = null;
+  /** Turns texts into vectors for memory by meaning (set once the embedding model is loaded). */
+  embedder: ((need: Need) => Promise<Vectors>) | null = null;
+  /** Loads the embedding model when a town that needs it is opened without it. */
+  memoryLoader: (() => Promise<void>) | null = null;
+  embedded = 0;
   private thinkingAbout: Need | null = null;
   private setAside = false;
   onPhase: ((p: Phase) => void) | null = null;
@@ -65,7 +70,21 @@ class TabTownClient {
     else p.resolve(m.ok);
   }
 
+  /** Memory by meaning: the texts of one pass become vectors in one batch. No one is "thinking". */
+  private async embed(need: Need): Promise<void> {
+    try {
+      if (!this.embedder) await this.memoryLoader?.();
+      if (!this.embedder) throw new Error("this town remembers by meaning, and its memory model could not be loaded here");
+      const vectors = await this.embedder(need);
+      this.embedded += vectors.count;
+      this.worker!.postMessage({ type: "vectors", key: need.key, vectors } as ToWorker);
+    } catch (e) {
+      this.worker!.postMessage({ type: "fail", key: need.key, message: (e as Error).message || String(e) } as ToWorker);
+    }
+  }
+
   private async think(need: Need): Promise<void> {
+    if (need.kind === "embed") return this.embed(need);
     this.asked++;
     this.onNeed?.(need);
     this.thinkingAbout = need;
@@ -85,9 +104,17 @@ class TabTownClient {
   }
 
   /** Found the town (or continue the one saved in this browser) with the given mind. */
-  async start(mind: string, opts: { fresh?: boolean; speed?: string; residents?: number; depth?: string } = {}): Promise<void> {
+  async start(mind: string, opts: { fresh?: boolean; speed?: string; residents?: number; depth?: string; memory?: string } = {}): Promise<void> {
     await this.boot();
-    this.started = this.send({ type: "start", mind, fresh: !!opts.fresh, speed: opts.speed ?? "normal", residents: opts.residents ?? 10, depth: opts.depth ?? "words" });
+    this.started = this.send({
+      type: "start",
+      mind,
+      fresh: !!opts.fresh,
+      speed: opts.speed ?? "normal",
+      residents: opts.residents ?? 10,
+      depth: opts.depth ?? "mind",
+      memory: opts.memory ?? "words",
+    });
     this.startedResolve?.(await this.started);
   }
 
@@ -104,6 +131,11 @@ class TabTownClient {
   /** What the offline fixture would answer (used by the test mind to exercise the plumbing). */
   scripted(key: string): Promise<string> {
     return this.send<string>({ type: "call", method: "scripted_answer", args: [key] });
+  }
+
+  /** Stand-in vectors from the engine itself (used by the test mind to exercise the plumbing). */
+  scriptedVectors(key: string): Promise<[string, number]> {
+    return this.send<[string, number]>({ type: "call", method: "scripted_vectors", args: [key] });
   }
 
   save(): Promise<void> {

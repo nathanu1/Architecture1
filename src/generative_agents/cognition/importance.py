@@ -5,6 +5,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
+import numpy as np
+
 from ..schemas import AgentIdentity
 from .context import identity_block
 
@@ -103,3 +105,98 @@ class ImportanceScorer:
         )
         by_id = {r.id: r.rating for r in result.output.ratings}
         return [int(by_id[i]) for i, _ in items]
+
+
+# Everyday and momentous things, in the spirit of the paper's own examples (p. 9). A memory's
+# rating is read from which of the two groups its meaning sits closer to.
+EVERYDAY = (
+    "brushing teeth",
+    "making the bed",
+    "doing the dishes",
+    "walking the dog",
+    "a routine greeting or goodbye",
+    "getting dressed",
+    "eating a meal",
+    "an object sitting idle or in ordinary use",
+    "tidying up the room",
+    "walking down the street",
+    "checking email and messages",
+    "cooking a meal",
+    "running errands and shopping",
+    "ordinary tasks at work",
+    "small talk about the weather",
+    "sleeping or resting",
+)
+MOMENTOUS = (
+    "a break up",
+    "a college acceptance",
+    "a death in the family",
+    "falling in love",
+    "a wedding",
+    "losing a job",
+    "a fight with a close friend",
+    "a lifelong dream",
+    "an invitation to a special occasion",
+    "an emergency",
+    "running for office",
+    "a betrayal or a lie discovered",
+    "a crime such as a robbery",
+    "winning an award or a prize",
+    "a serious illness or accident",
+    "a big life decision such as moving away",
+)
+
+
+class MeaningImportance:
+    """Importance without a model question (``importance.strategy: meaning``; deviation class X).
+
+    The memory is embedded anyway to be stored. Its rating is how far its vector leans from
+    the everyday examples toward the momentous ones: the mean cosine similarity to one group
+    minus the mean to the other. The scale calibrates itself on the examples: a typical
+    everyday example (left out of its own group) reads 1 and a typical momentous one reads 8,
+    so the same code serves any embedding model. Checked against hand ratings in docs/tab.md.
+    """
+
+    def __init__(self, embeddings: Any, *, idle_shortcut: bool = True):
+        self.embeddings = embeddings
+        self.idle_shortcut = idle_shortcut
+        self._scale: tuple[np.ndarray, np.ndarray, float, float] | None = None
+
+    @staticmethod
+    def _lean(x: np.ndarray, everyday: np.ndarray, momentous: np.ndarray) -> np.ndarray:
+        x = x.astype(np.float64)
+        return (x @ momentous.T).mean(axis=1) - (x @ everyday.T).mean(axis=1)
+
+    def _calibrated(self) -> tuple[np.ndarray, np.ndarray, float, float]:
+        if self._scale is not None:
+            return self._scale
+        both = self.embeddings.embed([*EVERYDAY, *MOMENTOUS]).astype(np.float64)
+        both /= np.maximum(np.linalg.norm(both, axis=1, keepdims=True), 1e-12)
+        ev, mo = both[: len(EVERYDAY)], both[len(EVERYDAY) :]
+        low = float(np.mean([self._lean(ev[i : i + 1], np.delete(ev, i, axis=0), mo)[0] for i in range(len(ev))]))
+        high = float(np.mean([self._lean(mo[i : i + 1], ev, np.delete(mo, i, axis=0))[0] for i in range(len(mo))]))
+        if high - low < 1e-6:
+            high = low + 1e-6  # vectors that tell nothing apart: everything reads as everyday
+        scale = (ev, mo, low, high)
+        if not getattr(self.embeddings, "provisional", False):
+            self._scale = scale  # stand-in vectors (a browser pass still waiting for its model) are never kept
+        return scale
+
+    def rate(self, texts: list[str]) -> list[int]:
+        ev, mo, low, high = self._calibrated()
+        x = self.embeddings.embed(texts).astype(np.float64)
+        x /= np.maximum(np.linalg.norm(x, axis=1, keepdims=True), 1e-12)
+        lean = self._lean(x, ev, mo)
+        return [int(v) for v in np.clip(np.rint(1 + (lean - low) / (high - low) * 7), 1, 10)]
+
+    def score(self, identity: AgentIdentity, text: str, kind: str, now: datetime, purpose: str | None = None) -> int:
+        if self.idle_shortcut and is_idle_text(text):
+            return 1
+        return self.rate([text])[0]
+
+    def score_batch(self, identity: AgentIdentity, texts: list[str], now: datetime, purpose: str | None = None, kind: str = "conversation") -> list[int]:
+        if not texts:
+            return []
+        idle = [self.idle_shortcut and is_idle_text(t) for t in texts]
+        rated = iter(self.rate([t for t, i in zip(texts, idle, strict=True) if not i]) if not all(idle) else [])
+        return [1 if i else next(rated) for i in idle]

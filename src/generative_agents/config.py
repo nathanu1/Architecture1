@@ -102,6 +102,10 @@ class RetrievalSection(_Base):
 class ImportanceSection(_Base):
     idle_shortcut: bool = True
     batch_statements: bool = True
+    # "llm": the model rates each memory 1-10 (the paper). "meaning": the rating is read from
+    # where the memory's embedding sits between everyday and momentous examples, with no model
+    # question (cognition/importance.py). Needs real embeddings. Deviation class X.
+    strategy: Literal["llm", "meaning"] = "llm"
 
 
 class ReflectionSection(_Base):
@@ -120,6 +124,10 @@ class SummarySection(_Base):
     refresh_every_minutes: int = 180
     refresh_on_new_day: bool = True
     retrieval_items: int = 15
+    # The three summaries are written only once the resident holds at least this many memories
+    # beyond the authored seed ones; before that there is nothing lived to summarise and the
+    # identity text stands alone. 0: always write them (the paper). Deviation class X.
+    min_lived: int = 0
 
 
 class PlanningSection(_Base):
@@ -133,6 +141,10 @@ class PlanningSection(_Base):
     # Research ablation: with ``decompose`` off, agents follow their hour blocks as single
     # tasks and never break them into 5-15 minute actions (an "hourly only" planner).
     decompose: bool = True
+    # A day is planned when its owner wakes (their lifestyle's usual hour) instead of at
+    # midnight; until then they sleep where they are, and a new town opens with everyone in
+    # bed. Spreads the planning over the morning. Deviation class X (docs/reference.md).
+    at_waking: bool = False
 
 
 class PerceptionSection(_Base):
@@ -311,7 +323,8 @@ class LLMProviderSection(_Base):
 
 
 class EmbeddingProviderSection(_Base):
-    kind: Literal["mock-hash", "openai", "sentence-transformers", "ollama", "openai_compatible"] = "mock-hash"
+    # "browser": vectors come from the page's own embedding model (providers/deferred.py)
+    kind: Literal["mock-hash", "openai", "sentence-transformers", "ollama", "openai_compatible", "browser"] = "mock-hash"
     model: str = "mock-hash-256"
     dims: int | None = 256
     revision: str | None = None
@@ -319,6 +332,9 @@ class EmbeddingProviderSection(_Base):
     cache_dir: str = ".ga_cache"
     base_url: str | None = None  # ollama / openai_compatible servers
     api_key_env: str | None = None
+    # Put in front of a retrieval query (not of stored memories) for embedding models trained
+    # with an instruction for queries, e.g. the snowflake-arctic-embed family.
+    query_prefix: str = ""
 
 
 class ProvidersSection(_Base):
@@ -449,6 +465,9 @@ class GAConfig(_Base):
             ("providers.llm.habit_tasks", sorted(self.providers.llm.habit_tasks), "X" if self.providers.llm.habit_tasks else "P"),
             ("providers.llm.pools", sorted(self.providers.llm.pools), "E" if self.providers.llm.pools else "P"),
             ("reaction.salience_gate", self.reaction.salience_gate, "X" if self.reaction.salience_gate else "P"),
+            ("planning.at_waking", self.planning.at_waking, "X" if self.planning.at_waking else "P"),
+            ("summary.min_lived", self.summary.min_lived, "X" if self.summary.min_lived else "P"),
+            ("importance.strategy", self.importance.strategy, "X" if self.importance.strategy == "meaning" else "P"),
             ("engine.parallel_calls", self.engine.parallel_calls, "X" if self.engine.parallel_calls > 1 else "P"),
             ("scenario.seed_rendering", self.scenario.seed_rendering, "P" if self.scenario.seed_rendering == "verbatim" else "C"),
             ("game.enabled", self.game.enabled, "X" if self.game.enabled else "P"),

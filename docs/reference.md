@@ -232,6 +232,10 @@ reaction: {salience_gate: false, routine_cooldown_minutes: 60}
 engine.parallel_calls: 1            # above 1: residents think in rounds, a round's calls go out together
 providers.llm.pools: {}             # extra model servers by name; task_overrides.<task>.provider routes to one
 providers.llm.rate_limit: {}        # requests/tokens per minute/day, for a remote API with a quota
+planning.at_waking: false           # a day is planned when its owner wakes; until then they sleep in their own bed
+summary.min_lived: 0                # write the self-summaries only once this many non-seed memories exist
+importance.strategy: llm            # "meaning": read the 1-10 rating from the memory's embedding, no model call
+providers.embeddings.query_prefix: ""   # instruction some embedding models want in front of a query
 ```
 
 All off by default (class X when on); `configs/town_live.yaml` turns the first four on.

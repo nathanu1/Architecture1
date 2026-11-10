@@ -291,7 +291,7 @@ class Retriever:
             return []
         s = self.settings
         vectors = self.store.vectors_for(memories)
-        qvec = self.embedder.embed_one(query)
+        qvec = self.embedder.embed_query(query) if hasattr(self.embedder, "embed_query") else self.embedder.embed_one(query)
         relevance, zero = cosine_to(vectors, qvec)
         importance = np.array([m.importance for m in memories], dtype=np.float64)
         positions: list[int | None] = [None] * len(memories)

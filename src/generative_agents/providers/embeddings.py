@@ -193,8 +193,9 @@ class EmbeddingCache:
 class EmbeddingService:
     """Embeds texts through the run store first, then the shared cache, then the provider."""
 
-    def __init__(self, provider: Any, *, store: Any = None, cache: EmbeddingCache | None = None, ledger: Any = None):
+    def __init__(self, provider: Any, *, store: Any = None, cache: EmbeddingCache | None = None, ledger: Any = None, query_prefix: str = ""):
         self.provider = provider
+        self.query_prefix = query_prefix
         self.store = store  # MemoryStore of the current run (keeps the run self-contained)
         self.cache = cache or EmbeddingCache(None)
         self.ledger = ledger
@@ -246,6 +247,17 @@ class EmbeddingService:
     def embed_one(self, text: str) -> np.ndarray:
         return self.embed([text])[0]
 
+    def embed_query(self, text: str) -> np.ndarray:
+        """The vector of a retrieval query: the text behind the model's query instruction, if it has one."""
+
+        return self.embed([self.query_prefix + text])[0]
+
+    @property
+    def provisional(self) -> bool:
+        """True while the provider is handing out stand-in vectors (a browser pass that will be undone)."""
+
+        return bool(getattr(self.provider, "missing", None))
+
     def describe(self) -> dict[str, Any]:
         d = dict(self.provider.describe())
         d["model_key"] = self.model_key
@@ -267,4 +279,8 @@ def build_embedding_provider(cfg: Any) -> Any:
         from .openai_compatible import OpenAICompatibleEmbedding
 
         return OpenAICompatibleEmbedding(cfg.model, cfg.dims, base_url=cfg.base_url, api_key_env=cfg.api_key_env, revision=cfg.revision)
+    if cfg.kind == "browser":
+        from .deferred import DeferredEmbedding
+
+        return DeferredEmbedding(cfg.model, cfg.dims or 384)
     raise ValueError(f"unknown embedding provider {cfg.kind!r}")

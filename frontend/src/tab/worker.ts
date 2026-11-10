@@ -3,7 +3,7 @@
 // Python package a server would, driven one pass at a time (generative_agents/game/tab.py).
 // The page asks through messages; when the residents need the model, the worker posts the
 // question and waits for the page to send the answer back.
-import type { Answer, FromWorker, Need, Phase, ToWorker } from "./protocol";
+import type { Answer, FromWorker, Need, Phase, ToWorker, Vectors } from "./protocol";
 
 declare const self: DedicatedWorkerGlobalScope;
 
@@ -34,7 +34,8 @@ let town: PyProxy | null = null;
 let running = false;
 let lastSave = 0;
 let dirty = false;
-let answerWaiter: ((a: { key: string; answer?: Answer; message?: string; skip?: boolean }) => void) | null = null;
+type Got = { key: string; answer?: Answer; vectors?: Vectors; message?: string; skip?: boolean };
+let answerWaiter: ((a: Got) => void) | null = null;
 
 function call<T>(method: string, args: unknown[]): T {
   if (!town) throw { status: 503, detail: "the town is still waking up" };
@@ -79,7 +80,7 @@ async function boot(base: string): Promise<void> {
   phase("ready");
 }
 
-function start(mind: string, fresh: boolean, speed: string, residents: number, depth: string): unknown {
+function start(mind: string, fresh: boolean, speed: string, residents: number, depth: string, memory: string): unknown {
   if (!py) throw { status: 503, detail: "the engine has not loaded yet" };
   running = false;
   py.globals.set("_mind", mind);
@@ -87,6 +88,7 @@ function start(mind: string, fresh: boolean, speed: string, residents: number, d
   py.globals.set("_speed", speed);
   py.globals.set("_residents", residents);
   py.globals.set("_depth", depth);
+  py.globals.set("_memory", memory);
   py.runPython(`
 import os, shutil
 if globals().get("town") is not None:
@@ -94,7 +96,7 @@ if globals().get("town") is not None:
     town = None
 if _fresh and os.path.isdir("/town/run"):
     shutil.rmtree("/town/run")
-town = TabTown("/town/run", mind=_mind, residents=_residents, depth=_depth, speed=_speed)
+town = TabTown("/town/run", mind=_mind, residents=_residents, depth=_depth, memory=_memory, speed=_speed)
 `);
   town = py.globals.get("town") as PyProxy;
   dirty = true;
@@ -118,11 +120,12 @@ async function loop(): Promise<void> {
     if (r.need) {
       const need = r.need;
       post({ type: "need", need });
-      const got = await new Promise<{ key: string; answer?: Answer; message?: string; skip?: boolean }>((res) => (answerWaiter = res));
+      const got = await new Promise<Got>((res) => (answerWaiter = res));
       answerWaiter = null;
       if (town !== mine) return;
       if (got.skip) continue; // set aside for the player's own words; the same question comes back afterwards
-      if (got.answer) call("deliver", [need.key, got.answer.text, got.answer.inputTokens ?? null, got.answer.outputTokens ?? null, got.answer.finish, got.answer.latencyMs]);
+      if (got.vectors) call("deliver_vectors", [need.key, got.vectors.data, got.vectors.count]);
+      else if (got.answer) call("deliver", [need.key, got.answer.text, got.answer.inputTokens ?? null, got.answer.outputTokens ?? null, got.answer.finish, got.answer.latencyMs]);
       else call("fail", [need.key, got.message ?? "no answer"]);
       continue;
     }
@@ -134,12 +137,13 @@ async function loop(): Promise<void> {
 self.onmessage = async (ev: MessageEvent<ToWorker>) => {
   const m = ev.data;
   if (m.type === "answer") return answerWaiter?.({ key: m.key, answer: m.answer });
+  if (m.type === "vectors") return answerWaiter?.({ key: m.key, vectors: m.vectors });
   if (m.type === "fail") return answerWaiter?.({ key: m.key, message: m.message });
   if (m.type === "skip") return answerWaiter?.({ key: m.key, skip: true });
   try {
     let ok: unknown = null;
     if (m.type === "boot") await boot(m.base);
-    else if (m.type === "start") ok = start(m.mind, m.fresh, m.speed, m.residents, m.depth);
+    else if (m.type === "start") ok = start(m.mind, m.fresh, m.speed, m.residents, m.depth, m.memory);
     else if (m.type === "call") ok = call(m.method, m.args);
     else if (m.type === "save") {
       dirty = true;

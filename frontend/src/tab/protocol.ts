@@ -3,6 +3,9 @@
 /** A question the residents need answered by the model before the town can go on. */
 export interface Need {
   key: string;
+  /** "embed": the texts below need vectors from the embedding model; otherwise a question for the model. */
+  kind?: "embed";
+  texts?: string[];
   task: string;
   agent_id: string | null;
   model: string;
@@ -21,15 +24,22 @@ export interface Answer {
   latencyMs: number;
 }
 
+/** Vectors for an "embed" need: `count` of them, as base64 of their float32 numbers, in the order asked. */
+export interface Vectors {
+  data: string;
+  count: number;
+}
+
 export type Phase = "runtime" | "packages" | "engine" | "storage" | "ready";
 
 export type ToWorker =
   | { id: number; type: "boot"; base: string }
-  | { id: number; type: "start"; mind: string; fresh: boolean; speed: string; residents: number; depth: string }
+  | { id: number; type: "start"; mind: string; fresh: boolean; speed: string; residents: number; depth: string; memory: string }
   | { id: number; type: "call"; method: string; args: unknown[] }
   | { id: number; type: "save" }
   | { id: number; type: "stop" }
   | { type: "answer"; key: string; answer: Answer }
+  | { type: "vectors"; key: string; vectors: Vectors }
   | { type: "fail"; key: string; message: string }
   | { type: "skip"; key: string };
 

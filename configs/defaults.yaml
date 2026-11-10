@@ -40,6 +40,7 @@ retrieval:
 importance:
   idle_shortcut: true
   batch_statements: true
+  strategy: llm
 reflection:
   mode: paper
   threshold: 150.0
@@ -54,6 +55,7 @@ summary:
   refresh_every_minutes: 180
   refresh_on_new_day: true
   retrieval_items: 15
+  min_lived: 0
 planning:
   day_chunks_min: 5
   day_chunks_max: 8
@@ -63,6 +65,7 @@ planning:
   max_repairs: 1
   store_hourly_in_memory: true
   decompose: true
+  at_waking: false
 perception:
   vision_r: null
   att_bandwidth: null
@@ -130,6 +133,7 @@ providers:
     cache_dir: .ga_cache
     base_url: null
     api_key_env: null
+    query_prefix: ''
 budget:
   max_calls: 5000
   max_input_tokens: 5000000

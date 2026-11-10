@@ -143,15 +143,17 @@ def build_runtime(
     gateway = LLMGateway(prov, registry, ledger, budget, settings, pricing=pricing, step_getter=step_getter, replay=replay, pools=pools, **kwargs)
     emb_cfg = cfg.providers.embeddings
     emb_provider = embedding_provider or build_embedding_provider(emb_cfg)
-    cache = EmbeddingCache(repo_path(emb_cfg.cache_dir) / "embeddings.sqlite" if emb_cfg.kind != "mock-hash" else None)
-    embeddings = EmbeddingService(emb_provider, store=store, cache=cache, ledger=ledger)
+    # no shared cache for the fixture, nor for a browser's model (its vectors arrive in passes
+    # that may be undone; the run's own store is the only place they are kept)
+    cache = EmbeddingCache(repo_path(emb_cfg.cache_dir) / "embeddings.sqlite" if emb_cfg.kind not in ("mock-hash", "browser") else None)
+    embeddings = EmbeddingService(emb_provider, store=store, cache=cache, ledger=ledger, query_prefix=emb_cfg.query_prefix)
     return Runtime(gateway, embeddings, ledger, budget, registry, pricing, prov, getattr(prov, "name", "unknown"))
 
 
 def make_services(cfg: GAConfig, db: Any, runtime: Runtime, identities: dict[str, Any], step_getter: Callable[[], int | None] | None = None) -> Any:
     """Wire the cognitive services around one run database."""
 
-    from ..cognition.importance import ImportanceScorer
+    from ..cognition.importance import ImportanceScorer, MeaningImportance
     from ..cognition.services import Services
     from ..memory.retrieval import RetrievalSettings, Retriever
     from ..memory.trace import TraceStore
@@ -160,7 +162,10 @@ def make_services(cfg: GAConfig, db: Any, runtime: Runtime, identities: dict[str
     store = runtime.embeddings.store if runtime.embeddings.store is not None else MemoryStore(db)
     traces = TraceStore(db)
     retriever = Retriever(store, runtime.embeddings, RetrievalSettings.from_config(cfg.retrieval), trace_sink=traces.sink)
-    importance = ImportanceScorer(runtime.gateway, idle_shortcut=cfg.importance.idle_shortcut, batch_statements=cfg.importance.batch_statements)
+    if cfg.importance.strategy == "meaning" and not runtime.embeddings.is_fixture:
+        importance: Any = MeaningImportance(runtime.embeddings, idle_shortcut=cfg.importance.idle_shortcut)
+    else:  # the fixture's vectors carry no meaning to read a rating from
+        importance = ImportanceScorer(runtime.gateway, idle_shortcut=cfg.importance.idle_shortcut, batch_statements=cfg.importance.batch_statements)
     return Services(
         cfg=cfg,
         db=db,

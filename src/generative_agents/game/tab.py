@@ -19,14 +19,18 @@ Nothing here knows about JavaScript, so the same class runs under CPython in the
 
 from __future__ import annotations
 
+import base64
 import json
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+
 from ..config import GAConfig, load_config
 from ..db import Database
-from ..providers.deferred import Deferred, DeferredLLM
+from ..providers.deferred import Deferred, DeferredEmbedding, DeferredLLM
 from ..providers.mock import MockLLM
 from ..simulation.engine import load_run_config, save_config
 from ..viewer.routes import NotFound, dispatch
@@ -37,10 +41,15 @@ CONFIG = "configs/town_tab.yaml"
 SCRIPTED = "scripted"
 
 
-# With `depth="words"` the model writes what a visitor reads and judges (conversations, replies
-# to the player, reactions, reflections) and the day's routine (plans, places, importance) comes
-# from the scripted fixture, answered at once. One in-browser model answers one question at a
-# time, so this is what keeps a town of ten moving. `depth="full"` asks the model everything.
+# How much of a resident's mind is the model (the page's `?depth=`):
+# * "mind" (the default): the model plans each day, decides what to do, where, and what to say;
+#   only a memory's importance is read from its meaning instead of asked (when the town has an
+#   embedding model), residents plan as they wake, and a resident who has lived nothing yet is
+#   not asked to summarise it;
+# * "full": the paper's procedure to the letter: the model also rates every memory, everyone
+#   plans at once, summaries are always written. The slowest;
+# * "words": the model writes what a visitor reads (conversations, replies, reactions,
+#   reflections) and the routine below comes from the scripted fixture. The fastest.
 ROUTINE_TASKS = (
     "day_plan",
     "hourly_schedule",
@@ -52,19 +61,46 @@ ROUTINE_TASKS = (
     "importance_batch",
     "summary_aspect",
 )
+DEPTHS = ("mind", "full", "words")
+
+# The embedding model the page runs for memory by meaning (its id in the in-browser runtime),
+# and the instruction its authors prescribe in front of a retrieval query.
+EMBED_MODEL = "snowflake-arctic-embed-s-q0f32-MLC-b4"
+EMBED_DIMS = 384
+EMBED_QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
 
 
-def mind_overrides(mind: str | None, depth: str = "words") -> list[str]:
+def mind_overrides(mind: str | None, depth: str = "mind") -> list[str]:
     """Config overrides for the residents' mind: ``scripted`` (the offline fixture) or a model id
     that the page's in-browser model runtime will serve."""
 
     if not mind or mind == SCRIPTED:
         return ["providers.llm.kind=mock", "providers.llm.model=mock-llm-v1"]
+    if depth not in DEPTHS:
+        raise ValueError(f"depth must be one of {', '.join(DEPTHS)}")
     sets = ["providers.llm.kind=browser", f"providers.llm.model={json.dumps(mind)}"]
-    if depth != "full":
+    if depth == "words":
         sets += ["providers.llm.pools.routine.kind=mock", "providers.llm.pools.routine.model=mock-llm-v1"]
         sets += [f"providers.llm.task_overrides.{task}.provider=routine" for task in ROUTINE_TASKS]
+    sets += [f"importance.strategy={'meaning' if depth == 'mind' else 'llm'}"]
+    if depth == "full":
+        sets += ["planning.at_waking=false", "summary.min_lived=0", "summary.refresh_every_minutes=180"]
     return sets
+
+
+def memory_overrides(memory: str) -> list[str]:
+    """How a new town's residents search their memory: by ``meaning`` (the page's embedding
+    model) or by shared ``words`` (the lexical fixture). Fixed when the town is founded: the
+    vectors in its store belong to one model."""
+
+    if memory != "meaning":
+        return []
+    return [
+        "providers.embeddings.kind=browser",
+        f"providers.embeddings.model={EMBED_MODEL}",
+        f"providers.embeddings.dims={EMBED_DIMS}",
+        f"providers.embeddings.query_prefix={json.dumps(EMBED_QUERY_PREFIX)}",
+    ]
 
 
 def cast_overrides(residents: int | None) -> list[str]:
@@ -77,6 +113,20 @@ def cast_overrides(residents: int | None) -> list[str]:
     return [f"scenario.path={BASE}/scenario.yaml", f"scenario.population=[{', '.join(choose_cast(min(int(residents), 25)))}]"]
 
 
+def first_waking(cfg: GAConfig) -> str | None:
+    """The moment the town's earliest riser wakes on its first day (ISO), for a town whose
+    residents plan as they wake: it opens then, with everyone else still in bed."""
+
+    from ..cognition.planning import waking_at
+    from ..config import repo_path
+    from ..scenario.loader import load_scenario
+
+    scenario = load_scenario(repo_path(cfg.scenario.path), population=cfg.scenario.population, candidacy_seed_policy=cfg.scenario.candidacy_seed_policy)
+    day = datetime.fromisoformat(str(cfg.scenario.start)).date()
+    times = [t for t in (waking_at(ident, day) for ident in scenario.identities().values()) if t is not None]
+    return min(times).replace(second=0, microsecond=0).isoformat() if times else None
+
+
 class TabTown:
     def __init__(
         self,
@@ -84,7 +134,8 @@ class TabTown:
         *,
         mind: str | None = None,
         residents: int | None = None,
-        depth: str = "words",
+        depth: str = "mind",
+        memory: str | None = None,
         config: str = CONFIG,
         overrides: list[str] | None = None,
         speed: str = "normal",
@@ -97,8 +148,15 @@ class TabTown:
             self.cfg: GAConfig = load_run_config(self.run_dir, sets)
             self.resumed = True
         else:
-            sets = [*cast_overrides(residents), *sets]
-            self.cfg = load_config(config, overrides=[*sets, *([] if mind is not None else mind_overrides(SCRIPTED))])
+            modelled = bool(mind) and mind != SCRIPTED
+            # a new town with a model for a mind remembers by meaning unless told otherwise
+            sets = [*cast_overrides(residents), *memory_overrides(memory or ("meaning" if modelled else "words")), *sets]
+            sets += [] if mind is not None else mind_overrides(SCRIPTED)
+            self.cfg = load_config(config, overrides=sets)
+            if not any(o.startswith("scenario.start=") for o in overrides or []):
+                # the town opens as its first resident wakes; at seven where everyone plans at once
+                opens = (first_waking(self.cfg) if self.cfg.planning.at_waking else None) or f"{self.cfg.scenario.start.date().isoformat()}T07:00:00"
+                self.cfg = load_config(config, overrides=[*sets, f"scenario.start={json.dumps(opens)}"])
             self.run_dir.mkdir(parents=True, exist_ok=True)
             self.resumed = False
         save_config(self.cfg, self.run_dir)
@@ -106,12 +164,18 @@ class TabTown:
         self.sim = self.session.sim
         inner = self.sim.rt.provider
         self.model: DeferredLLM | None = inner if isinstance(inner, DeferredLLM) else None
+        vectors = self.sim.rt.embeddings.provider
+        self.embedder: DeferredEmbedding | None = vectors if isinstance(vectors, DeferredEmbedding) else None
+        if self.embedder is not None:
+            self.sim.flush_hooks.append(self._hold_for_vectors)  # before anything is committed
         self._script = MockLLM(seed=self.cfg.run.seed)
         self._reader: Database | None = None
         self._data: Any = None
         self._info: dict[str, Any] | None = None
         self._map: dict[str, Any] | None = None
         self.repeats = 0  # steps run again because the model had to answer first
+        self.embedded = 0  # texts turned into vectors by the page's embedding model
+        self.embed_rounds = 0
         # what the last commit looked like outside the database: the ledger's occurrence counters
         # and the feed the page has been shown; a rollback returns to exactly this
         self._mark: tuple[dict[str, int], int] = ({}, 0)
@@ -136,14 +200,50 @@ class TabTown:
             self._commit()
         except Deferred as need:
             self._roll_back()
+            if self.embedder is not None and self.embedder.missing:
+                # the pass ran on stand-in vectors: whatever it was about to ask the model is
+                # void; the real vectors first
+                return {"need": self.embedder.need()}
+            thought: dict[str, Any] = {"task": need.payload.get("task"), "since": time.time()}
+            heard = self._just_said(need.payload)
+            if heard:
+                thought["heard"] = heard
             with session.lock:
-                session._thinking[need.payload.get("agent_id") or "town"] = {"task": need.payload.get("task"), "since": time.time()}
+                session._thinking[need.payload.get("agent_id") or "town"] = thought
             return {"need": need.payload}
         except Exception as exc:  # shown to the visitor with a Retry button, as the engine thread would
             self._roll_back()
+            if self.embedder is not None and self.embedder.missing:
+                return {"need": self.embedder.need()}  # it stumbled on a stand-in; run it on the real vectors
             session._failed("error", f"{type(exc).__name__}: {exc}")
             return {"wait": 0.5, "status": "error"}
         return {"wait": wait, "status": session.status}
+
+    def _just_said(self, need: dict[str, Any]) -> dict[str, str] | None:
+        """A conversation is written line by line while the town's clock stands still. The line
+        the other speaker has just been given (it is in the ledger, and in this question's
+        transcript) is shown over their head while this one thinks of an answer."""
+
+        if need.get("task") != "dialogue_turn":
+            return None
+        ledger = self.sim.rt.ledger
+        with ledger._lock:
+            row = ledger.conn.execute(
+                "SELECT agent_id, parsed_json FROM calls WHERE scope=? AND task='dialogue_turn' AND status='ok' AND step=? ORDER BY id DESC LIMIT 1",
+                (ledger.scope, self.sim.clock.step),
+            ).fetchone()
+        if row is None or row["agent_id"] == need.get("agent_id") or not row["parsed_json"]:
+            return None
+        text = str(json.loads(row["parsed_json"]).get("utterance") or "").strip()
+        if not text or text not in str(need.get("prompt") or ""):
+            return None  # a line from another conversation of the same step
+        return {"from": row["agent_id"], "text": text}
+
+    def _hold_for_vectors(self) -> None:
+        """Nothing computed from stand-in vectors is ever saved (``DeferredEmbedding``)."""
+
+        if self.embedder is not None and self.embedder.missing:
+            raise Deferred("embed", {"kind": "embed"})
 
     def _commit(self) -> None:
         sim = self.sim
@@ -154,6 +254,8 @@ class TabTown:
             hook()
         sim.db.commit()
         self._mark = (dict(sim.rt.ledger._counts), self.session._feed_seq)
+        if self.embedder is not None:
+            self.embedder.settle()
 
     def _roll_back(self) -> None:
         """Undo the unanswered work: back to the last commit, caches dropped, and nothing the
@@ -179,7 +281,24 @@ class TabTown:
         self._require_model().deliver(key, text, input_tokens=input_tokens, output_tokens=output_tokens, finish=finish, latency_ms=latency_ms)
         self._done_thinking()
 
+    def deliver_vectors(self, key: str, data: str, count: int) -> None:
+        """The embedding model's answer to an ``embed`` need: ``count`` vectors as base64 of
+        their little-endian float32 numbers, in the order the texts were asked."""
+
+        embedder = self._require_embedder()
+        if embedder.need()["key"] != key:
+            return  # an answer to a question no longer open
+        flat = np.frombuffer(base64.b64decode(data), dtype="<f4")
+        if count <= 0 or flat.size % count:
+            raise ValueError(f"{flat.size} numbers do not make {count} vectors")
+        embedder.deliver(flat.reshape(count, -1))
+        self.embedded += count
+        self.embed_rounds += 1
+
     def fail(self, key: str, message: str, retryable: bool = False) -> None:
+        if self.embedder is not None and self.embedder.missing and self.embedder.need()["key"] == key:
+            self.session._failed("error", f"the memory model in this tab could not answer: {message}")
+            return
         self._require_model().fail(key, message, retryable=retryable)
         self._done_thinking()
 
@@ -194,6 +313,21 @@ class TabTown:
             raise ValueError("this town's residents are scripted; there is no model to answer for")
         return self.model
 
+    def _require_embedder(self) -> DeferredEmbedding:
+        if self.embedder is None:
+            raise ValueError("this town searches its memory by words; there is no embedding model to answer for")
+        return self.embedder
+
+    def scripted_vectors(self, key: str) -> list[Any]:
+        """Stand-in vectors for the open ``embed`` need as ``[base64, count]`` (for tests of the page's plumbing)."""
+
+        embedder = self._require_embedder()
+        need = embedder.need()
+        if need["key"] != key:
+            raise KeyError("no such question")
+        vecs = embedder._stand_in.embed(need["texts"]).astype("<f4")
+        return [base64.b64encode(vecs.tobytes()).decode(), len(need["texts"])]
+
     def _done_thinking(self) -> None:
         with self.session.lock:
             self.session._thinking.clear()
@@ -201,7 +335,15 @@ class TabTown:
     # ------------------------------------------------------------------ what the interface asks
     def info(self) -> dict[str, Any]:
         if self._info is None:
-            self._info = {**town_info(self.session), "tab": True, "mind": self.cfg.providers.llm.model if self.model else SCRIPTED, "resumed": self.resumed}
+            self._info = {
+                **town_info(self.session),
+                "tab": True,
+                "mind": self.cfg.providers.llm.model if self.model else SCRIPTED,
+                "resumed": self.resumed,
+                # how residents search their memory, and the model the page must run for it
+                "memory": "meaning" if self.embedder else "words",
+                "embed_model": self.embedder.model_id if self.embedder else None,
+            }
         return self._info
 
     def map(self) -> dict[str, Any]:
@@ -243,7 +385,14 @@ class TabTown:
 
     def stats(self) -> dict[str, Any]:
         usage = self.sim.rt.budget.usage
-        return {"step": self.sim.clock.step, "calls": usage.calls, "answered_from_memory": usage.cache_hits, "repeated_steps": self.repeats}
+        return {
+            "step": self.sim.clock.step,
+            "calls": usage.calls,
+            "answered_from_memory": usage.cache_hits,
+            "repeated_steps": self.repeats,
+            "embedded": self.embedded,
+            "embed_rounds": self.embed_rounds,
+        }
 
     # ------------------------------------------------------------------ one door for the page
     def call(self, method: str, args_json: str = "[]") -> str:

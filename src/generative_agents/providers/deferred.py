@@ -25,6 +25,8 @@ from __future__ import annotations
 import hashlib
 from typing import Any
 
+import numpy as np
+
 from .base import LLMRequest, LLMResponse, ProviderError, ProviderTruncated
 from .schema import inline_refs
 
@@ -107,3 +109,69 @@ class DeferredLLM:
 
     def fail(self, key: str, message: str, *, retryable: bool = False) -> None:
         self.ready = {key: ProviderError(f"the model in this tab could not answer: {message}", retryable=retryable)}
+
+
+class DeferredEmbedding:
+    """Vectors from an embedding model the town cannot call itself (the page's, on WebGPU).
+
+    Meaning-based memory asks for many vectors in one step, so they are not fetched one by one.
+    A text whose vector is not known yet gets a *stand-in* (a lexical hash vector of the same
+    size) and is noted in ``missing``; the pass carries on and gathers every other text it
+    needs. The driver then undoes the pass, has all of them embedded in one batch, ``deliver``s
+    them and runs the pass again with the real vectors. Nothing computed from a stand-in
+    survives: the driver refuses to commit while ``missing`` is not empty.
+    """
+
+    name = "browser"
+    is_fixture = False
+    revision: str | None = None
+    MAX_CHARS = 1200  # well inside the 512-token window of the small embedding models
+
+    def __init__(self, model: str, dims: int):
+        from .embeddings import MockHashEmbedding
+
+        self.model_id = model
+        self.dims = int(dims)
+        self.known: dict[str, np.ndarray] = {}
+        self.missing: dict[str, None] = {}  # insertion-ordered set
+        self._stand_in = MockHashEmbedding(self.dims)
+
+    def describe(self) -> dict[str, Any]:
+        return {"kind": "browser", "model": self.model_id, "dims": self.dims, "revision": None, "fixture": False, "local": True}
+
+    def embed(self, texts: list[str]) -> np.ndarray:
+        rows = []
+        for text in texts:
+            vec = self.known.get(text)
+            if vec is None:
+                self.missing[text] = None
+                vec = self._stand_in.embed([text])[0]
+            rows.append(vec)
+        return np.stack(rows).astype(np.float32)
+
+    def need(self) -> dict[str, Any]:
+        """What to ask the page for: every text of the undone pass, shortened to the model's window."""
+
+        texts = list(self.missing)
+        key = hashlib.sha256("\x00".join(texts).encode()).hexdigest()
+        return {"kind": "embed", "key": key, "task": "embed", "agent_id": None, "model": self.model_id, "texts": [t[: self.MAX_CHARS] for t in texts]}
+
+    def deliver(self, vectors: Any) -> None:
+        """The vectors for ``need()['texts']``, in order."""
+
+        texts = list(self.missing)
+        arr = np.asarray(vectors, dtype=np.float32)
+        if arr.ndim != 2 or arr.shape != (len(texts), self.dims):
+            raise ValueError(f"expected {len(texts)} vectors of {self.dims} numbers, got an array of shape {arr.shape}")
+        if not np.isfinite(arr).all():
+            raise ValueError("the embedding model returned numbers that are not finite")
+        arr = arr / np.maximum(np.linalg.norm(arr, axis=1, keepdims=True), 1e-12)
+        for text, vec in zip(texts, arr, strict=True):
+            self.known[text] = vec
+        self.missing.clear()
+
+    def settle(self) -> None:
+        """After a commit: the vectors used are in the run's own store now."""
+
+        if len(self.known) > 4096:
+            self.known.clear()

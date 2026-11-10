@@ -247,7 +247,8 @@ export interface Poll {
   /** Observe mode: a research run shown in the town; nothing can be changed. */
   observe?: boolean;
   error: string | null;
-  thinking: Record<string, { task: string; since: number }>;
+  /** Who is waiting for the model, and for what; `heard` is the line just said to them in a conversation still being written. */
+  thinking: Record<string, { task: string; since: number; heard?: { from: string; text: string } }>;
   clock: { step: number; time: string; end: string } | null;
   frames: Frame[];
   feed: FeedEvent[];

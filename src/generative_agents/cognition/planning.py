@@ -25,6 +25,7 @@ call. This gives an "hourly only" planner to compare against the full hierarchy.
 
 from __future__ import annotations
 
+import hashlib
 import re
 from datetime import date, datetime, timedelta
 from typing import Any
@@ -45,6 +46,37 @@ CLOCK_OR_MIDNIGHT = r"^(([01]?[0-9]|2[0-3]):[0-5][0-9]|24:00)$"
 
 def is_sleep(activity: str) -> bool:
     return bool(SLEEP_RE.search(activity or ""))
+
+
+WAKE_RE = re.compile(r"\b(?:a?wakes?|gets?|rises?)\s+up\s+(?:at|around|about|by)\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?", re.I)
+
+
+def usual_wake(lifestyle: str) -> int | None:
+    """Minutes after midnight at which this person usually wakes, read from their lifestyle
+    ("... awakes up around 6am ..."); ``None`` when it does not say."""
+
+    m = WAKE_RE.search(lifestyle or "")
+    if not m:
+        return None
+    hour, minute, half = int(m.group(1)), int(m.group(2) or 0), (m.group(3) or "am").lower()
+    if hour > 23 or minute > 59:
+        return None
+    if hour == 12:
+        hour = 0 if half == "am" else 12
+    elif half == "pm" and hour < 12:
+        hour += 12
+    return hour * 60 + minute
+
+
+def waking_at(identity: AgentIdentity, day: date) -> datetime | None:
+    """When this person wakes on ``day``: their usual hour, give or take ("around 6am" is
+    06:04 one day and 05:52 another; the same person and day always give the same minute)."""
+
+    minute = usual_wake(identity.lifestyle)
+    if minute is None:
+        return None
+    drift = int(hashlib.sha256(f"{identity.id}|{day.isoformat()}|waking".encode()).hexdigest()[:8], 16) % 31 - 10  # -10 .. +20 minutes
+    return _day_start(day) + timedelta(minutes=max(0, minute + drift))
 
 
 def floor_minute(t: datetime) -> datetime:
@@ -205,6 +237,8 @@ class Planner:
         if self.has_day(identity.id, today):
             return True
         state = self.svc.states.get(identity.id)
+        if self.cfg.at_waking and self._sleep_in(identity, state, now):
+            return False
         retry = state.extra.get("plan_retry_after")
         if retry and now < parse_iso(retry):
             return False
@@ -217,6 +251,26 @@ class Planner:
             return False
         state.extra.pop("plan_retry_after", None)
         state.plan_day = today.isoformat()
+        return True
+
+    def _sleep_in(self, identity: AgentIdentity, state: Any, now: datetime) -> bool:
+        """With ``planning.at_waking`` a day is planned when its owner wakes, not at midnight
+        (the paper's agents also settle their waking hour first). Until their usual hour a
+        resident who is in bed stays asleep; True while that holds."""
+
+        wake = waking_at(identity, now.date())
+        if wake is None or now >= wake:
+            return False
+        act = state.action
+        in_bed = state.plan_day is None or (is_sleep(act.description) and act.kind != "conversation")
+        if not in_bed:
+            return False  # still up after midnight: plan the new day now
+        if self.plans.at(identity.id, PlanLevel.TASK, now) is None:
+            start = max(_day_start(now.date()), floor_minute(now))
+            minutes = int((wake - start).total_seconds() // 60)
+            if minutes <= 0:
+                return False
+            self.plans.new(identity.id, PlanLevel.TASK, start, minutes, "sleeping", now, source="asleep", day=now.date().isoformat())
         return True
 
     def plan_summary(self, identity: AgentIdentity, now: datetime) -> str:

@@ -1,3 +1,4 @@
+import { thought } from "../lib/thought";
 import { ArrowClockwise, ArrowCounterClockwise, Binoculars, CloudMoon, FastForward, Flask, Hammer, Minus, Notebook, Pause, Play, Plus, Sun, SunHorizon, UsersThree, Warning } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { api } from "../api";
@@ -190,7 +191,7 @@ export function Hud() {
         {DEMO ? <DemoBar /> : null}
         {thinking.length && info.mode === "live" ? (
           <span className="max-w-[min(92vw,520px)] truncate rounded-full bg-[var(--panel)]/90 px-3 py-1 text-xs font-bold text-[var(--muted)] shadow">
-{thinking.map((id) => info.residents.find((r) => r.id === id)?.first_name ?? "The town").join(", ")} {thinking.length > 1 ? "are" : "is"} thinking…
+{thinking.map((id) => info.residents.find((r) => r.id === id)?.first_name ?? "The town").join(", ")} {thinking.length > 1 ? "are thinking" : thought(poll?.thinking[thinking[0]]?.task)}…
           </span>
         ) : null}
         <div aria-live="polite" className="pointer-events-auto">

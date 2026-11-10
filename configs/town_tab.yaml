@@ -1,26 +1,41 @@
 # The town that runs inside a browser tab (docs/tab.md): the engine in Pyodide, the residents'
 # model in the page through WebGPU, everything on the visitor's own device.
 #
-# Three residents and every setting that keeps the number of model questions low, because one
-# in-browser model answers one question at a time:
+# The model plans each resident's day, decides what they do and where, and writes what they say.
+# One in-browser model answers one question at a time, so the settings below keep the questions
+# few and spread out without scripting any behaviour:
+# * a day is planned when its owner wakes, so the town opens at dawn with its first riser and
+#   the others' plans arrive through the morning instead of all at once (planning.at_waking);
+# * a resident who has lived nothing yet is not asked to summarise it, and the summaries are
+#   rewritten once a day (summary);
+# * a memory's importance is read from its meaning instead of asked (importance.strategy);
 # * a place is chosen in one question instead of three, and kept for the hour block (location);
 # * situations already settled are answered from the town's own record (memoize, habits);
 # * routine sightings are not deliberated again within the hour (salience gate);
 # * forgetting keeps recall bounded as the weeks go by.
-# The page chooses the mind: `scripted` (no download, placeholder words) or a model id.
-# Memory search is lexical here (mock-hash embeddings): no second model to download.
+# The page chooses the mind (`scripted`, or a model id) and, for a new town with a model, an
+# embedding model so that memory is searched by meaning (game/tab.py). The fixture below is
+# what a scripted town uses.
 run:
   name: town-tab
   label: "a town in this tab"
 scenario:
   path: scenarios/pilot3/scenario.yaml
-  start: "2023-02-13T07:00:00"
+  # the day the town is founded; it opens at the hour its first resident wakes (game/tab.py)
+  start: "2023-02-13T00:00:00"
   end: "2023-06-01T00:00:00"
 output:
   checkpoint_every_steps: 1
   snapshots: []
 game:
   enabled: true
+planning:
+  at_waking: true
+summary:
+  min_lived: 30
+  refresh_every_minutes: 1440
+importance:
+  strategy: meaning
 location:
   strategy: single_call
   reuse_within_block: true

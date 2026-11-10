@@ -2,7 +2,7 @@ import { ArrowRight } from "@phosphor-icons/react";
 import { useEffect, useId, useState, type ReactNode } from "react";
 import { Button } from "../components/ui";
 import { tabTown } from "./client";
-import { loadMind, lookAtDevice, mindById, MINDS, modelFor, type Device, type Mind } from "./mind";
+import { loadMemory, loadMind, lookAtDevice, mindById, MINDS, modelFor, type Device, type Mind } from "./mind";
 import { TitleBackdrop } from "./TitleScene";
 
 const SAVED = "hearthside-tab-town";
@@ -62,9 +62,23 @@ export function Gate({ children }: { children: ReactNode }) {
     try {
       void (navigator.storage?.persist?.() ?? Promise.resolve()).catch(() => undefined); // ask the browser to keep the town
       const model = modelFor(mind, device ?? (await lookAtDevice()));
-      await loadMind(model, (fraction) => setProgress(fraction));
+      // a new town with a model for a mind also gets a small embedding model, so that its
+      // residents search their memory by meaning; a saved town loads it only if it was founded so
+      const founding = fresh || !saved;
+      const wantsMemory = !!model && founding && query.get("memory") !== "words";
+      const real = !!model && model !== "test";
+      await loadMind(model, (fraction) => setProgress(real && wantsMemory ? fraction * 0.93 : fraction));
+      let memory = "words";
+      if (wantsMemory) {
+        try {
+          await loadMemory((fraction) => setProgress(0.93 + fraction * 0.07), model === "test");
+          memory = "meaning";
+        } catch (e) {
+          console.warn("Memory by meaning is not available on this device; residents will remember by shared words.", e);
+        }
+      }
       setProgress(null);
-      await tabTown.start(model ?? "scripted", { fresh, residents, depth: query.get("depth") ?? "words" });
+      await tabTown.start(model ?? "scripted", { fresh, residents, depth: query.get("depth") ?? "mind", memory });
       remember(mind.id, residents);
       setStage("running");
     } catch {

@@ -42,6 +42,8 @@ class SummaryService:
         cache = state.summaries.get(mask.key)
         if cache is not None and not force and self._fresh(cache, now):
             return cache.text
+        if self.cfg.min_lived and self.svc.store.count(identity.id, lived=True) < self.cfg.min_lived:
+            return ""  # nothing lived yet: the identity speaks for itself (not cached, so it is written once there is)
         aspects: dict[str, str] = {}
         if not mask.empty:
             for key, template in ASPECTS:

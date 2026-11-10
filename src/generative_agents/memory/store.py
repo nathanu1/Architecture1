@@ -192,8 +192,10 @@ class MemoryStore:
             params.append(limit)
         return [self._row_to_memory(r) for r in self.db.query(sql, tuple(params))]
 
-    def count(self, owner_id: str) -> int:
-        row = self.db.one("SELECT COUNT(*) AS n FROM memories WHERE owner_id=?", (owner_id,))
+    def count(self, owner_id: str, *, lived: bool = False) -> int:
+        """How many memories ``owner_id`` holds; ``lived`` leaves the authored seed ones out."""
+
+        row = self.db.one("SELECT COUNT(*) AS n FROM memories WHERE owner_id=?" + (" AND origin != 'seed'" if lived else ""), (owner_id,))
         return int(row["n"])
 
     def vectors_for(self, memories: list[Memory]) -> np.ndarray:
