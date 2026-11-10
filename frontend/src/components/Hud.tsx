@@ -190,7 +190,7 @@ export function Hud() {
         {DEMO ? <DemoBar /> : null}
         {thinking.length && info.mode === "live" ? (
           <span className="max-w-[min(92vw,520px)] truncate rounded-full bg-[var(--panel)]/90 px-3 py-1 text-xs font-bold text-[var(--muted)] shadow">
-            <span translate="no">{info.llm.model}</span> is thinking for {thinking.map((id) => info.residents.find((r) => r.id === id)?.first_name ?? "the town").join(", ")}…
+{thinking.map((id) => info.residents.find((r) => r.id === id)?.first_name ?? "The town").join(", ")} {thinking.length > 1 ? "are" : "is"} thinking…
           </span>
         ) : null}
         <div aria-live="polite" className="pointer-events-auto">

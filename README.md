@@ -176,7 +176,7 @@ npm run typecheck
 npm run build
 ```
 
-For this update, **267 Python tests passed (one skipped)** and the Python lint and format checks passed; the frontend passed 42 tests, its type check and its build.
+For this update, **269 Python tests passed (one skipped)** and the Python lint and format checks passed; the frontend passed 43 tests, its type check and its build.
 
 The tests cover memory isolation, retrieval and reflection, plan validation, private dialogue, world constraints, replay, evaluation, local adapters, and building rules. See the [reference](docs/reference.md#tests) for prompt-example maintenance.
 

@@ -75,6 +75,7 @@ export const modelFor = (mind: Mind, device: Pick<Device, "f16"> | null): string
 
 interface Engine {
   chat: { completions: { create(body: Record<string, unknown>): Promise<Completion> } };
+  interruptGenerate(): void | Promise<void>;
 }
 interface Completion {
   choices: { message: { content: string | null }; finish_reason: string }[];
@@ -89,6 +90,7 @@ export const speed = { prefill: 0, decode: 0, answers: 0, seconds: 0 };
  * with it. `onProgress` gets 0..1 and the runtime's own description of what it is doing.
  */
 export async function loadMind(model: string | null, onProgress: (fraction: number, text: string) => void): Promise<void> {
+  tabTown.interrupter = null;
   if (!model) {
     tabTown.answerer = null;
     return;
@@ -106,6 +108,7 @@ export async function loadMind(model: string | null, onProgress: (fraction: numb
   const engine = (await webllm.CreateWebWorkerMLCEngine(worker, model, {
     initProgressCallback: (p: { progress: number; text: string }) => onProgress(p.progress, p.text),
   })) as unknown as Engine;
+  tabTown.interrupter = () => void engine.interruptGenerate();
   let schemaWorks = true;
   tabTown.answerer = async (need: Need): Promise<Answer> => {
     const started = performance.now();

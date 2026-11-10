@@ -83,6 +83,19 @@ a recorded day with the offline model:
 
 The largest prompt was 1,558 tokens, inside the runtime's 4,096-token window.
 
+**Who does the thinking.** By default the model writes what a visitor reads and judges:
+conversations, replies to the player, reactions, reflections. The day's routine (plans, places,
+importance scores) comes from the scripted fixture and is answered at once, which is what lets
+a town of ten or twenty-five keep moving on one in-browser model. The ledger shows which
+answered what (`routine:mock` or `browser`). `?depth=full` in the address asks the model
+everything, as the paper does, at a much slower pace. The start menu offers 3, 10 or 25
+neighbours.
+
+**The player comes first.** What the player says or does is its own unit of work: it is
+handled ahead of the step, a resident's thought in progress steps aside for it, and the reply
+is shown as soon as its own question is answered. A reply is shown once however often the step
+behind it is repeated, and a repeated question is asked again, never answered from the record.
+
 ## What has been checked, and what has not
 
 | Checked | How |

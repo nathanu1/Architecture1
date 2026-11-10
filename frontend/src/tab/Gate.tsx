@@ -7,17 +7,19 @@ import { TitleBackdrop } from "./TitleScene";
 
 const SAVED = "hearthside-tab-town";
 
-function savedMind(): string | null {
+const SIZES = [3, 10, 25];
+
+function savedTown(): { mind: string; residents?: number } | null {
   try {
-    return (JSON.parse(window.localStorage.getItem(SAVED) ?? "null") as { mind: string } | null)?.mind ?? null;
+    return JSON.parse(window.localStorage.getItem(SAVED) ?? "null") as { mind: string; residents?: number } | null;
   } catch {
     return null;
   }
 }
 
-function remember(mind: string): void {
+function remember(mind: string, residents: number): void {
   try {
-    window.localStorage.setItem(SAVED, JSON.stringify({ mind }));
+    window.localStorage.setItem(SAVED, JSON.stringify({ mind, residents }));
   } catch {
     /* private window: the town still runs, it is just not remembered */
   }
@@ -32,7 +34,9 @@ export function Gate({ children }: { children: ReactNode }) {
   const query = new URLSearchParams(window.location.search);
   const forced = query.get("mind"); // ?mind=scripted|small|…|<model id> starts straight away (links, tests)
   const group = useId();
-  const [saved] = useState(savedMind);
+  const [savedAll] = useState(savedTown);
+  const saved = savedAll?.mind ?? null;
+  const [residents, setResidents] = useState(() => Number(query.get("residents")) || savedAll?.residents || 10);
   const [device, setDevice] = useState<Device | null>(null);
   const [choice, setChoice] = useState<string | null>(forced ?? saved);
   const [stage, setStage] = useState<"choose" | "starting" | "running">(forced ? "starting" : "choose");
@@ -60,8 +64,8 @@ export function Gate({ children }: { children: ReactNode }) {
       const model = modelFor(mind, device ?? (await lookAtDevice()));
       await loadMind(model, (fraction) => setProgress(fraction));
       setProgress(null);
-      await tabTown.start(model ?? "scripted", { fresh });
-      remember(mind.id);
+      await tabTown.start(model ?? "scripted", { fresh, residents, depth: query.get("depth") ?? "words" });
+      remember(mind.id, residents);
       setStage("running");
     } catch {
       setStage("choose");
@@ -118,6 +122,22 @@ export function Gate({ children }: { children: ReactNode }) {
                   })}
                 </div>
               </fieldset>
+              {continuing ? null : (
+                <fieldset>
+                  <legend className="sr-only">How many neighbours</legend>
+                  <div className="flex items-center gap-1 rounded-full bg-[var(--panel-2)] p-1">
+                    {SIZES.map((n) => (
+                      <label
+                        key={n}
+                        className={`cursor-pointer select-none rounded-full px-3 py-1 font-display text-sm font-semibold tabular-nums transition-[background-color,transform] duration-150 active:scale-95 has-[:focus-visible]:outline has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[var(--color-sun)] ${residents === n ? "bg-sun text-[#2a2838]" : "hover:bg-[var(--panel-hover)]"}`}
+                      >
+                        <input type="radio" name={`${group}-size`} value={n} checked={residents === n} onChange={() => setResidents(n)} className="sr-only" />
+                        {n} Neighbours
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              )}
               <p className="min-h-5 text-balance text-center text-sm font-bold text-[var(--muted)]" role={error ? "alert" : undefined}>
                 {error ?? (noMinds ? device!.why : picked.blurb)}
               </p>

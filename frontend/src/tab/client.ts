@@ -16,6 +16,10 @@ class TabTownClient {
   private startedResolve: ((v: unknown) => void) | null = null;
   /** Answers a question from the residents (set by the mind that is plugged in). */
   answerer: ((need: Need) => Promise<Answer>) | null = null;
+  /** Stops the answer in progress, if the mind can (set by the mind that is plugged in). */
+  interrupter: (() => void) | null = null;
+  private thinkingAbout: Need | null = null;
+  private setAside = false;
   onPhase: ((p: Phase) => void) | null = null;
   onNeed: ((need: Need | null) => void) | null = null;
   phase: Phase | null = null;
@@ -64,26 +68,36 @@ class TabTownClient {
   private async think(need: Need): Promise<void> {
     this.asked++;
     this.onNeed?.(need);
+    this.thinkingAbout = need;
+    this.setAside = false;
     try {
       if (!this.answerer) throw new Error("no mind is loaded");
       const answer = await this.answerer(need);
-      this.worker!.postMessage({ type: "answer", key: need.key, answer } as ToWorker);
+      if (this.setAside) this.worker!.postMessage({ type: "skip", key: need.key } as ToWorker);
+      else this.worker!.postMessage({ type: "answer", key: need.key, answer } as ToWorker);
     } catch (e) {
-      this.worker!.postMessage({ type: "fail", key: need.key, message: (e as Error).message || String(e) } as ToWorker);
+      if (this.setAside) this.worker!.postMessage({ type: "skip", key: need.key } as ToWorker);
+      else this.worker!.postMessage({ type: "fail", key: need.key, message: (e as Error).message || String(e) } as ToWorker);
     } finally {
+      this.thinkingAbout = null;
       this.onNeed?.(null);
     }
   }
 
   /** Found the town (or continue the one saved in this browser) with the given mind. */
-  async start(mind: string, opts: { fresh?: boolean; speed?: string } = {}): Promise<void> {
+  async start(mind: string, opts: { fresh?: boolean; speed?: string; residents?: number; depth?: string } = {}): Promise<void> {
     await this.boot();
-    this.started = this.send({ type: "start", mind, fresh: !!opts.fresh, speed: opts.speed ?? "normal" });
+    this.started = this.send({ type: "start", mind, fresh: !!opts.fresh, speed: opts.speed ?? "normal", residents: opts.residents ?? 10, depth: opts.depth ?? "words" });
     this.startedResolve?.(await this.started);
   }
 
   async call<T>(method: string, ...args: unknown[]): Promise<T> {
     await this.ready;
+    // the player spoke or acted: a resident's own thought in progress steps aside for it
+    if (method === "action" && this.thinkingAbout && this.thinkingAbout.task !== "player_chat" && this.interrupter) {
+      this.setAside = true;
+      this.interrupter();
+    }
     return this.send<T>({ type: "call", method, args });
   }
 

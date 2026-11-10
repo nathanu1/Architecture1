@@ -37,13 +37,44 @@ CONFIG = "configs/town_tab.yaml"
 SCRIPTED = "scripted"
 
 
-def mind_overrides(mind: str | None) -> list[str]:
+# With `depth="words"` the model writes what a visitor reads and judges (conversations, replies
+# to the player, reactions, reflections) and the day's routine (plans, places, importance) comes
+# from the scripted fixture, answered at once. One in-browser model answers one question at a
+# time, so this is what keeps a town of ten moving. `depth="full"` asks the model everything.
+ROUTINE_TASKS = (
+    "day_plan",
+    "hourly_schedule",
+    "decompose",
+    "replan",
+    "choose_location",
+    "action_grounding",
+    "importance",
+    "importance_batch",
+    "summary_aspect",
+)
+
+
+def mind_overrides(mind: str | None, depth: str = "words") -> list[str]:
     """Config overrides for the residents' mind: ``scripted`` (the offline fixture) or a model id
     that the page's in-browser model runtime will serve."""
 
     if not mind or mind == SCRIPTED:
         return ["providers.llm.kind=mock", "providers.llm.model=mock-llm-v1"]
-    return ["providers.llm.kind=browser", f"providers.llm.model={json.dumps(mind)}"]
+    sets = ["providers.llm.kind=browser", f"providers.llm.model={json.dumps(mind)}"]
+    if depth != "full":
+        sets += ["providers.llm.pools.routine.kind=mock", "providers.llm.pools.routine.model=mock-llm-v1"]
+        sets += [f"providers.llm.task_overrides.{task}.provider=routine" for task in ROUTINE_TASKS]
+    return sets
+
+
+def cast_overrides(residents: int | None) -> list[str]:
+    """Who lives in the town: the three of the small scenario, or that many of Smallville's 25."""
+
+    if not residents or residents <= 3:
+        return []
+    from ..founding import BASE, choose_cast
+
+    return [f"scenario.path={BASE}/scenario.yaml", f"scenario.population=[{', '.join(choose_cast(min(int(residents), 25)))}]"]
 
 
 class TabTown:
@@ -52,6 +83,8 @@ class TabTown:
         run_dir: str | Path,
         *,
         mind: str | None = None,
+        residents: int | None = None,
+        depth: str = "words",
         config: str = CONFIG,
         overrides: list[str] | None = None,
         speed: str = "normal",
@@ -59,11 +92,12 @@ class TabTown:
     ):
         self.run_dir = Path(run_dir)
         # one step per commit: a question from the model costs one repeated step, never thirty
-        sets = [*(overrides or []), *(mind_overrides(mind) if mind is not None else []), "output.checkpoint_every_steps=1"]
+        sets = [*(overrides or []), *(mind_overrides(mind, depth) if mind is not None else []), "output.checkpoint_every_steps=1"]
         if (self.run_dir / "state.sqlite").exists() and (self.run_dir / "config.yaml").exists():
             self.cfg: GAConfig = load_run_config(self.run_dir, sets)
             self.resumed = True
         else:
+            sets = [*cast_overrides(residents), *sets]
             self.cfg = load_config(config, overrides=[*sets, *([] if mind is not None else mind_overrides(SCRIPTED))])
             self.run_dir.mkdir(parents=True, exist_ok=True)
             self.resumed = False
@@ -78,35 +112,65 @@ class TabTown:
         self._info: dict[str, Any] | None = None
         self._map: dict[str, Any] | None = None
         self.repeats = 0  # steps run again because the model had to answer first
+        # what the last commit looked like outside the database: the ledger's occurrence counters
+        # and the feed the page has been shown; a rollback returns to exactly this
+        self._mark: tuple[dict[str, int], int] = ({}, 0)
+        self._recounted = not self.resumed
 
     # ------------------------------------------------------------------ the town's loop
     def tick(self) -> dict[str, Any]:
         """One pass. ``{"wait": seconds}``, or ``{"need": request}`` when the model must answer."""
 
+        session = self.session
         try:
-            wait = self.session.iterate()
+            if session._ready and not (session.error or session.paused or session.finished):
+                # what the player did is its own unit of work: a reply is shown as soon as its
+                # own question is answered, not when everyone else's thinking for the step is done
+                session._service_actions()
+                self._commit()
+            wait = session.iterate()
+            if session._ready and not self._recounted:
+                # a town reopened from storage: everything in its ledger has been used already
+                self.sim.rt.ledger.reset_counts(10**9)
+                self._recounted = True
+            self._commit()
         except Deferred as need:
             self._roll_back()
-            with self.session.lock:
-                self.session._thinking[need.payload.get("agent_id") or "town"] = {"task": need.payload.get("task"), "since": time.time()}
+            with session.lock:
+                session._thinking[need.payload.get("agent_id") or "town"] = {"task": need.payload.get("task"), "since": time.time()}
             return {"need": need.payload}
         except Exception as exc:  # shown to the visitor with a Retry button, as the engine thread would
             self._roll_back()
-            self.session._failed("error", f"{type(exc).__name__}: {exc}")
+            session._failed("error", f"{type(exc).__name__}: {exc}")
             return {"wait": 0.5, "status": "error"}
-        return {"wait": wait, "status": self.session.status}
+        return {"wait": wait, "status": session.status}
+
+    def _commit(self) -> None:
+        sim = self.sim
+        sim.svc.states.flush()
+        sim.spatial.flush()
+        sim.world_state.flush()
+        for hook in sim.flush_hooks:  # the game layer's own store among them
+            hook()
+        sim.db.commit()
+        self._mark = (dict(sim.rt.ledger._counts), self.session._feed_seq)
 
     def _roll_back(self) -> None:
-        """Undo the unanswered step (or start-up): back to the last commit, caches dropped."""
+        """Undo the unanswered work: back to the last commit, caches dropped, and nothing the
+        page was shown since then stays in its feed (the work will be done again)."""
 
-        sim = self.sim
+        sim, session = self.sim, self.session
         sim.db.rollback()
         sim._invalidate()
         if sim.initialized():
             sim.clock.step = int(sim.db.get_meta("next_step", 0))
-            sim.rt.ledger.reset_counts(sim.clock.step - 1)
-        else:
-            sim.rt.ledger.reset_counts(None)
+        counts, feed_seq = self._mark
+        with sim.rt.ledger._lock:
+            sim.rt.ledger._counts = dict(counts)
+        with session.lock:
+            while session._feed and session._feed[-1]["seq"] > feed_seq:
+                session._feed.pop()
+            session._feed_seq = feed_seq
         self.repeats += 1
 
     def deliver(

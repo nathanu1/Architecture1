@@ -49,7 +49,7 @@ def test_a_scripted_town_in_a_tab_is_the_same_town_a_server_would_run(tmp_path):
 def test_pausing_for_the_model_and_repeating_the_step_gives_exactly_the_blocking_run(tmp_path):
     """The heart of the tab: answers arrive later, one at a time, and nothing differs."""
 
-    waiting = TabTown(tmp_path / "waiting", mind="tiny-model", overrides=HOUR, speed="max")
+    waiting = TabTown(tmp_path / "waiting", mind="tiny-model", depth="full", overrides=HOUR, speed="max")
     assert isinstance(waiting.model, DeferredLLM) and waiting.info()["mind"] == "tiny-model"
     asked: list[str] = []
 
@@ -132,7 +132,7 @@ def test_a_town_in_a_tab_continues_after_the_tab_is_closed_and_can_change_its_mi
     drive(first)
     step = first.sim.clock.step
     first.close()
-    later = TabTown(tmp_path / "t", mind="tiny-model", overrides=["scenario.end=2023-02-13T07:20:00"], speed="max")
+    later = TabTown(tmp_path / "t", mind="tiny-model", depth="full", overrides=["scenario.end=2023-02-13T07:20:00"], speed="max")
     assert later.resumed and later.info()["resumed"] and isinstance(later.model, DeferredLLM)
     drive(later, answer=lambda need: later.deliver(need["key"], later.scripted_answer(need["key"])))
     assert later.sim.clock.step > step and later.session.finished
@@ -140,7 +140,7 @@ def test_a_town_in_a_tab_continues_after_the_tab_is_closed_and_can_change_its_mi
 
 
 def test_a_model_that_fails_or_runs_out_of_room_stops_the_town_visibly(tmp_path):
-    town = TabTown(tmp_path / "t", mind="tiny-model", overrides=HOUR, speed="max")
+    town = TabTown(tmp_path / "t", mind="tiny-model", depth="full", overrides=HOUR, speed="max")
     need = town.tick()["need"]
     assert town.poll()["thinking"]  # the interface shows who is waiting for an answer
     town.fail(need["key"], "the GPU was lost")
@@ -153,7 +153,7 @@ def test_a_model_that_fails_or_runs_out_of_room_stops_the_town_visibly(tmp_path)
     drive(town, answer=lambda n: town.deliver(n["key"], town.scripted_answer(n["key"])))
     assert town.session.finished and town.session.error is None
     # an answer cut off at its length limit is a failed task, recorded as such, and the page hears about it
-    cut = TabTown(tmp_path / "cut", mind="tiny-model", overrides=HOUR, speed="max")
+    cut = TabTown(tmp_path / "cut", mind="tiny-model", depth="full", overrides=HOUR, speed="max")
     short = cut.tick()["need"]
     cut.deliver(short["key"], '{"rating": 3', finish="length")
     assert cut.tick()["status"] == "error" and "length limit" in cut.session.error
@@ -162,3 +162,55 @@ def test_a_model_that_fails_or_runs_out_of_room_stops_the_town_visibly(tmp_path)
     with pytest.raises(ValueError, match="scripted"):
         TabTown(tmp_path / "s", mind=SCRIPTED, overrides=HOUR).deliver("k", "{}")
     assert issubclass(Deferred, BaseException) and not issubclass(Deferred, Exception) and model.describe()["local"]
+
+
+def test_by_default_the_model_writes_the_words_and_routine_comes_from_the_script(tmp_path):
+    """Plans, places and importance are answered at once; the model is asked only for what a
+    visitor reads, so a town of ten keeps moving on one in-browser model."""
+
+    town = TabTown(tmp_path / "t", mind="tiny-model", residents=10, overrides=["scenario.end=2023-02-13T09:00:00"], speed="max")
+    assert len(town.info()["residents"]) == 10
+    asked: list[str] = []
+
+    def answer(need):
+        asked.append(need["task"])
+        town.deliver(need["key"], town.scripted_answer(need["key"]))
+
+    drive(town, answer=answer)
+    rows = town.sim.rt.ledger.rows()
+    by_provider = {p: {r["task"] for r in rows if r["provider"] == p} for p in {r["provider"] for r in rows}}
+    assert by_provider["routine:mock"] >= {"day_plan", "choose_location", "importance"}
+    assert not (set(asked) & set(by_provider["routine:mock"]))  # nothing routine reached the model
+    assert set(asked) == by_provider.get("browser", set()) and len(asked) < len(rows) / 4
+    fidelity = {r["setting"]: r["class"] for r in town.cfg.fidelity_table()}
+    assert fidelity["providers.llm.pools"] == "E"
+
+
+def test_talking_to_a_resident_twice_asks_twice_and_shows_each_reply_once(tmp_path):
+    """The player's words are their own unit of work: answered ahead of the step, shown once
+    however often the step behind them is repeated, and never answered from an earlier reply."""
+
+    town = TabTown(tmp_path / "t", mind="tiny-model", depth="full", overrides=HOUR, speed="max")
+    answer = lambda need: town.deliver(need["key"], town.scripted_answer(need["key"]))  # noqa: E731
+    while not town.session._ready:
+        out = town.tick()
+        if "need" in out:
+            answer(out["need"])
+    who = town.info()["residents"][0]["id"]
+    chat_questions = 0
+    for nth in (1, 2):
+        town.action("chat", {"agent": who, "text": "how are you doing"})
+        for _ in range(400):
+            out = town.tick()
+            if "need" in out:
+                chat_questions += out["need"]["task"] == "player_chat"
+                answer(out["need"])
+            if sum(e["kind"] == "chat" for e in town.poll()["feed"]) >= nth:
+                break
+    feed = [e for e in town.poll()["feed"] if e["kind"] == "chat"]
+    assert len(feed) == 2 and chat_questions == 2  # two replies shown, both asked of the model
+    assert len(town.sim.rt.ledger.rows(task="player_chat")) == 2
+    assert sum(e["kind"] == "welcome" for e in town.poll()["feed"]) == 1  # nothing is shown twice
+    # the second question carried the first exchange, so the resident is not starting over
+    second = town.sim.rt.ledger.rows(task="player_chat")[1]
+    assert second["prompt"].count("how are you doing") >= 2

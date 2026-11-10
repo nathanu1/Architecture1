@@ -25,12 +25,13 @@ export type Phase = "runtime" | "packages" | "engine" | "storage" | "ready";
 
 export type ToWorker =
   | { id: number; type: "boot"; base: string }
-  | { id: number; type: "start"; mind: string; fresh: boolean; speed: string }
+  | { id: number; type: "start"; mind: string; fresh: boolean; speed: string; residents: number; depth: string }
   | { id: number; type: "call"; method: string; args: unknown[] }
   | { id: number; type: "save" }
   | { id: number; type: "stop" }
   | { type: "answer"; key: string; answer: Answer }
-  | { type: "fail"; key: string; message: string };
+  | { type: "fail"; key: string; message: string }
+  | { type: "skip"; key: string };
 
 export type FromWorker =
   | { id: number; ok: unknown }
