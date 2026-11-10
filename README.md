@@ -54,7 +54,13 @@ With [Ollama](https://ollama.com/download) installed and running:
 ga town --app
 ```
 
-This checks the model server, downloads the models it needs (about 7 GB, once), founds a ten-resident town or continues the one you left, and opens it in its own window. The town is built to stay on: residents keep living while it runs, and the same command picks it up after any restart.
+This picks models that fit your machine's memory, checks the model server and downloads what is missing, measures how many answers the server gives at once, founds a ten-resident town or continues the one you left, and opens it in its own window. The town is built to stay on: residents keep living while it runs, and the same command picks it up after any restart.
+
+The town does not have to be the premade one. Choose who lives there, name it, and move in residents you wrote yourself, each from a card as short as a name and a sentence:
+
+```bash
+ga town --name "Willow Creek" --residents 6 --newcomers configs/residents_example.yaml --speed live
+```
 
 ```bash
 ga bench
@@ -157,7 +163,7 @@ npm run typecheck
 npm run build
 ```
 
-For this update, **252 Python tests passed (one skipped)** and the Python lint and format checks passed; the frontend passed 39 tests, its type check and its build.
+For this update, **261 Python tests passed (one skipped)** and the Python lint and format checks passed; the frontend passed 39 tests, its type check and its build.
 
 The tests cover memory isolation, retrieval and reflection, plan validation, private dialogue, world constraints, replay, evaluation, local adapters, and building rules. See the [reference](docs/reference.md#tests) for prompt-example maintenance.
 

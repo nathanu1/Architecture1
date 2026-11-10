@@ -4,6 +4,7 @@
 #   ga town                       # this config, on this machine, opened in the browser
 #   ga town --app                 # in its own window
 #   ga town --residents 25        # all 25 residents (town_live_25.yaml)
+#   ga town --name "Willow Creek" --newcomers my_residents.yaml   # a town of your own (configs/residents_example.yaml)
 #   ga town --host 0.0.0.0        # serve other machines; set HEARTHSIDE_PASSWORD and HEARTHSIDE_SPECTATORS=1
 #   HEARTHSIDE_LLM_URL=http://gpu-box:11434 ga town    # the model server is another machine
 #   ga bench                      # measure your model server and see how fast the town will run
@@ -39,6 +40,6 @@ reaction:
   salience_gate: true
   routine_cooldown_minutes: 60
 engine:
-  parallel_calls: 4                          # match the model server's parallel slots (OLLAMA_NUM_PARALLEL)
+  parallel_calls: 4                          # a starting value: `ga town` measures the model server and sets this when the town is founded
 budget:
   max_calls: 50000000

@@ -50,7 +50,7 @@ A six-hour smoke run takes about five seconds: `ga run --config configs/offline_
 | `ga experiment --protocol FILE [--measured-run DIR] [--execute] [--yes]` | Independent runs for a protocol (conditions × seeds, named metrics, optional forks and interventions, determinism check); plans and projects usage by default; runs only with `--execute`. |
 | `ga fork --run-dir DIR --snapshot NAME --out DIR [--set k=v] [--interventions FILE] [--run]` | Counterfactual: a new run that continues from a snapshot of another run with changed settings or interventions (research platform). |
 | `ga serve --run-dir DIR [--experiment DIR]` | Local read-only viewer and inspector. |
-| `ga town [--residents 10\|25] [--app] [--model-server URL] [--parallel N] [--host H] [--run-dir DIR]` | The living town on a local model in one command: checks the model server, downloads missing models, founds the town or continues the one in its folder, opens it (in its own window with `--app`). `HEARTHSIDE_LLM_URL` names a model server on another machine. See [deploy.md](deploy.md). |
+| `ga town [--name NAME] [--residents N] [--cast WHO] [--newcomers FILE] [--app] [--speed live] [--model-server URL] [--models BIG[,SMALL]] [--parallel N] [--host H]` | The living town on a local model in one command. Founds a town or continues the one in its folder; a new town takes the cast you choose, residents you wrote (`--newcomers`, cards as in `configs/residents_example.yaml`) and a name. Picks models that fit the machine's memory, checks the model server, downloads missing models, measures how many answers the server gives at once and sets parallel deciding to match. `--list-cast` shows the 25 premade residents. See [deploy.md](deploy.md). |
 | `ga bench [--config FILE] [--model-server URL] [--parallel N] [--minutes M]` | Measures the model server on the town's real workload (per-task latency, gain from concurrent requests) and projects how long a game day takes for 10 and 25 residents. |
 | `ga play --config FILE` / `--resume DIR` / `--replay DIR` / `--watch DIR` `[--speed S] [--paused] [--open] [--port N]` | Hearthside town interface (extension): a live town in the browser at http://127.0.0.1:8080, research inspector at `/inspector`. Replays make no model calls; `--watch` opens any recorded run (headless or experiment) read-only in observe mode. |
 | `ga export-demo --run-dir DIR --out DIR` | A recorded town as static files for the front end's demo build: a page that plays the recording (and its research inspector) in any browser, with no server and no model. |
@@ -81,6 +81,7 @@ A six-hour smoke run takes about five seconds: `ga run --config configs/offline_
 | `configs/town_n25_server.yaml` | All 25 residents on two local models (a 3B for the mechanical three quarters of calls, an 8B for judgment), for a town that runs continuously; `town_llama_api.yaml` is the same town on Llama through a hosted OpenAI-compatible API; `town_ollama_docker.yaml` targets the compose file's Ollama. See [deploy.md](deploy.md). |
 | `configs/town_n5_mock.yaml` / `town_n10_mock.yaml` / `town_n25_mock.yaml` / `town_n35_mock.yaml` | The research populations as towns on the offline MOCK model: the five pilot residents, the ten of the social experiment, all 25, and the 35-resident extension. |
 | `configs/game/` | Town game content: six affinity themes, motifs and gifts, catalog, paints and templates, Town Pulse levels, the Town Square, resident looks, a demo action script. |
+| `configs/residents_example.yaml` | Resident cards for `ga town --newcomers`: three example people and every field a card may have. |
 | `configs/defaults.yaml` | Every setting with its default, for reference. |
 | `configs/pricing.yaml` | USD per million tokens from the [published pricing page](https://platform.claude.com/docs/en/about-claude/pricing), fetched 2026-10-05. Without it, cost is reported as "unpriced". |
 
@@ -226,6 +227,8 @@ providers.llm.rate_limit: {}        # requests/tokens per minute/day, for a remo
 ```
 
 All off by default (class X when on); `configs/town_live.yaml` turns the first four on.
+`game.town_name` is the name shown in the town's badge. The town's speeds are `live` (real time),
+`slow`, `normal` (a game minute per second), `fast` and `max`.
 Measurements and trade-offs: [deploy.md](deploy.md) §3 and §4. `HEARTHSIDE_LLM_URL` moves the
 model endpoints of `ga town` and `ga bench` to another machine.
 

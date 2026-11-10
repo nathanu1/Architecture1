@@ -41,20 +41,65 @@ command from any folder:
 uvx --from "generative-agents-lab[viewer] @ git+https://github.com/nathanu1/Architecture1@main/feature-social-memory" ga town --app
 ```
 
-From a checkout it is `ga town --app`. The command checks that the model server answers,
-downloads the three models the town uses if they are missing (Llama 3.1 8B, Llama 3.2 3B and an
-embedding model, about 7 GB once), founds the town in `runs/town-live/` or continues the one
-that is there, and opens it in its own window. Closing the terminal saves the town; the same
-command continues it.
+From a checkout it is `ga town --app`. The command:
+
+1. **fits the town to the machine.** When the model server is this computer and it has 12 GB of
+   memory or more (or the server is another machine), the town uses Llama 3.1 8B for
+   judgment and Llama 3.2 3B for the mechanical tasks (about 7 GB to download, once). With
+   less, the 8B model would not stay loaded next to the others, so the 3B model does everything
+   (about 2 GB). `--models BIG[,SMALL]` overrides the choice with any models your server has;
+2. checks that the model server answers and downloads what is missing;
+3. **measures the server**: one answer alone, then four together. If the server gains from
+   being asked in parallel, residents think that many at a time (§4); if it answers one at a
+   time, they think in turn. The result is kept in the town's `tuning.json`; `--retune`
+   measures again, `--parallel N` sets it by hand;
+4. founds the town in `runs/town-live/` or continues the one that is there, and opens it in its
+   own window. Closing the terminal saves the town; the same command continues it.
 
 | Option | Effect |
 | --- | --- |
-| `--residents 25` | all 25 residents instead of ten |
+| `--name "Willow Creek"` | a town of your own under that name (its own folder, its name in the town's badge); several towns can exist side by side |
+| `--residents N`, `--cast WHO` | how many of the 25 Smallville residents live there (default 10), or exactly who: names or ids, `random`, or `none`. `ga town --list-cast` shows them |
+| `--newcomers FILE` | residents you wrote yourself move in (below) |
+| `--speed live` | real time: the town's day is as long as yours. `normal` is a game minute per second, like a life-simulation game |
 | `--app` / `--no-open` | its own window (needs Chrome, Edge, Chromium or Brave) / no window |
 | `--model-server URL` or `HEARTHSIDE_LLM_URL` | the model runs on another machine |
-| `--parallel N` | model calls sent at once; match the server's parallel slots (§4) |
+| `--models BIG[,SMALL]`, `--parallel N`, `--retune`, `--no-tune` | set by hand what the command would otherwise work out |
 | `--host 0.0.0.0` | serve other machines; set `HEARTHSIDE_PASSWORD` first |
 | `--config FILE`, `--set key=value` | another town config, or single settings |
+
+The founding options (`--residents`, `--cast`, `--newcomers`) apply when a town is founded. An
+existing town keeps its residents; the command says so if you pass them again.
+
+### A town of your own
+
+The default town is ten of the paper's residents. It does not have to be. Write a card per
+person, as short as a name and a sentence:
+
+```yaml
+- name: Rosa Delgado
+  about: a baker who gets up before dawn and sells her bread at Hobbs Cafe
+  works_at: Hobbs Cafe
+  lives_with: Marco Delgado
+- name: Marco Delgado
+  age: 19
+  about: Rosa Delgado's son, a first-year student who draws maps of every place he lives
+```
+
+```bash
+ga town --name "Willow Creek" --residents 6 --newcomers my_residents.yaml
+```
+
+[`configs/residents_example.yaml`](../configs/residents_example.yaml) lists every field (age,
+traits, what is on their mind, routine, a normal day, what they know, where they work, who
+they live with). Each household gets a house in a new neighborhood in the south-east of town:
+four small houses and two family houses of up to three people, built by the same code and on
+the same plots as the 35-resident variant. The cards become an ordinary scenario inside the
+town's folder, next to a copy of the base town, so the folder still moves as one piece.
+Newcomers arrive knowing their housemates, the public places and whatever their card says, and
+nothing about the town's seeded party or election; a card that mentions those is refused with
+the reason. Residents you write are an extension: a town that has them is not compared with
+the paper's numbers.
 
 The page is also installable: in Chrome or Edge use "Install Hearthside" in the address bar, on
 a phone "Add to Home Screen". That gives the same live town an icon and a window of its own on

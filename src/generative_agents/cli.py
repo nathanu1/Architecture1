@@ -578,26 +578,37 @@ def cmd_play(args: argparse.Namespace) -> int:
 
 
 def cmd_town(args: argparse.Namespace) -> int:
-    """The living town on a local model: check the model server, fetch models, continue the town, open it."""
+    """The living town on a local model: found it or continue it, fitted to this machine, and open it."""
 
-    from . import town
+    from . import founding, town
 
+    if args.list_cast:
+        print("The 25 residents of Smallville (use the id or the name with --cast):")
+        for person in founding.premade():
+            mark = "*" if person["id"] in founding.DEFAULT_TEN else " "
+            print(f" {mark} {person['id']:<20} {person['name']}, {person['age']}. {person['about']}")
+        print(" * the ten of the default town. Your own residents: --newcomers FILE (see configs/residents_example.yaml).")
+        return 0
     url = args.model_server or os.environ.get(town.ENV_URL)
-    cfg, sets = town.load_town_config(args.config, args.residents, args.set, url)
-    if args.parallel:
-        sets.append(f"engine.parallel_calls={args.parallel}")
-    run_dir = town.town_dir(cfg, args.run_dir)
-    resuming = (run_dir / "state.sqlite").exists() and (run_dir / "config.yaml").exists()
-    if resuming:
-        from .simulation.engine import load_run_config
-
-        saved = load_run_config(run_dir)
-        sets = [*(args.set or []), *town.server_overrides(saved, url), *([f"engine.parallel_calls={args.parallel}"] if args.parallel else [])]
-        cfg = load_run_config(run_dir, sets)
-    elif sets != list(args.set or []):
-        from .config import load_config
-
-        cfg = load_config(args.config or town.TOWN_CONFIGS[args.residents], overrides=sets)
+    try:
+        plan = town.plan_town(
+            config=args.config,
+            name=args.name,
+            residents=args.residents,
+            cast=args.cast,
+            newcomers=args.newcomers,
+            run_dir=args.run_dir,
+            sets=args.set,
+            url=url,
+            models=args.models,
+            memory_gb=town.machine_memory_gb(),
+        )
+    except founding.FoundingError as exc:
+        print(f"cannot found this town: {exc}")
+        return 2
+    cfg, sets, run_dir = plan.cfg, list(plan.sets), plan.run_dir
+    for note in plan.notes:
+        print(note)
     if cfg.run_mode == "live" and not cfg.providers.llm.is_local() and not args.yes:
         print(
             f"{cfg.providers.llm.kind}:{cfg.providers.llm.model} is not a local model. `ga town` is for a model server you run; use `ga play --yes` for a paid API."
@@ -605,13 +616,38 @@ def cmd_town(args: argparse.Namespace) -> int:
         return 2
     if not town.prepare_models(cfg, pull=not args.no_pull):
         return 2
+    # How many calls to send at once: what you say, else what the server shows it can do
+    # (measured when the town is founded, or again with --retune), else the config's value.
+    tuning_file = run_dir / "tuning.json"
+    if args.parallel:
+        sets.append(f"engine.parallel_calls={args.parallel}")
+    elif cfg.run_mode == "live" and not args.no_tune and (not plan.resuming or args.retune):
+        print("measuring the model server (once; the first answer loads the model) ...")
+        probe = town.probe_parallel(cfg)
+        if probe:
+            sets.append(f"engine.parallel_calls={probe['parallel_calls']}")
+            plan.tuning["parallel"] = probe
+            print(
+                f"  one answer {probe['alone_s']:.2f}s, {probe['at_once']} together {probe['together_s']:.2f}s ({probe['gain']:.1f}x): "
+                + (
+                    f"residents will think {probe['parallel_calls']} at a time"
+                    if probe["parallel_calls"] > 1
+                    else "the server answers one at a time, so residents think in turn"
+                )
+            )
+    run_dir.mkdir(parents=True, exist_ok=True)
+    if plan.tuning.get("parallel") or (plan.tuning and not plan.resuming):
+        saved = json.loads(tuning_file.read_text()) if tuning_file.exists() else {}
+        tuning_file.write_text(
+            json.dumps({**saved, **{k: v for k, v in plan.tuning.items() if v is not None}, "at": datetime.now().isoformat(timespec="seconds")}, indent=2)
+        )
     local = args.host in ("127.0.0.1", "localhost", "::1")
     play = argparse.Namespace(
-        config=args.config or town.TOWN_CONFIGS[args.residents],
+        config=plan.config,
         set=sets,
         run_id=None,
         run_dir=str(run_dir),
-        resume=str(run_dir) if resuming else None,
+        resume=str(run_dir) if plan.resuming else None,
         replay=None,
         watch=None,
         host=args.host,
@@ -622,7 +658,8 @@ def cmd_town(args: argparse.Namespace) -> int:
         app=args.app,
         yes=True,
     )
-    print(f"{'continuing' if resuming else 'founding'} the town in {run_dir}")
+    people = len(cfg.scenario.population) if cfg.scenario.population else "all"
+    print(f"{'continuing' if plan.resuming else 'founding'} the town in {run_dir} ({people} residents)")
     return cmd_play(play)
 
 
@@ -849,7 +886,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--watch", metavar="RUN_DIR", help="open ANY recorded run (headless or experiment) in the town as a read-only replay")
     sp.add_argument("--host", default="127.0.0.1")
     sp.add_argument("--port", type=int, default=8080)
-    sp.add_argument("--speed", default="normal", choices=["slow", "normal", "fast", "max"])
+    sp.add_argument("--speed", default="normal", choices=["live", "slow", "normal", "fast", "max"])
     sp.add_argument("--paused", action="store_true", help="start paused")
     sp.add_argument("--open", action="store_true", help="open the browser")
     sp.add_argument("--yes", action="store_true", help="confirm a paid (non-local) model")
@@ -857,13 +894,20 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("town", help="the living town on a local model, in one command: checks the model server, fetches models, continues the town")
     with_config(sp)
-    sp.add_argument("--residents", type=int, choices=[10, 25], default=10, help="town size when no --config is given")
+    sp.add_argument("--name", help='found (or continue) a town of your own under this name, e.g. --name "Willow Creek"')
+    sp.add_argument("--residents", type=int, metavar="N", help="how many of the 25 Smallville residents live in a new town (default 10)")
+    sp.add_argument("--cast", metavar="WHO", help="which of them: ids or names separated by commas, `random`, or `none` (see --list-cast)")
+    sp.add_argument("--newcomers", metavar="FILE", help="residents you wrote, one card each (configs/residents_example.yaml); they get houses of their own")
+    sp.add_argument("--list-cast", action="store_true", help="list the 25 residents and exit")
+    sp.add_argument("--models", metavar="BIG[,SMALL]", help="Ollama models for judgment and for mechanical tasks (default: what fits this machine's memory)")
+    sp.add_argument("--retune", action="store_true", help="measure the model server again for an existing town")
+    sp.add_argument("--no-tune", action="store_true", help="do not measure the model server; keep the config's engine.parallel_calls")
     sp.add_argument("--model-server", metavar="URL", help="address of the model server if it is not this machine (or set HEARTHSIDE_LLM_URL)")
     sp.add_argument("--run-dir", help="where the town lives between sessions (default runs/<town name>)")
     sp.add_argument("--host", default="127.0.0.1", help="0.0.0.0 to serve other machines (set HEARTHSIDE_PASSWORD)")
     sp.add_argument("--port", type=int, default=8080)
-    sp.add_argument("--speed", default="normal", choices=["slow", "normal", "fast", "max"])
-    sp.add_argument("--parallel", type=int, metavar="N", help="model calls sent at once (engine.parallel_calls); match the server's parallel slots")
+    sp.add_argument("--speed", default="normal", choices=["live", "slow", "normal", "fast", "max"])
+    sp.add_argument("--parallel", type=int, metavar="N", help="model calls sent at once (default: measured on your model server when the town is founded)")
     sp.add_argument("--app", action="store_true", help="open the town in its own window instead of a browser tab")
     sp.add_argument("--no-open", action="store_true", help="do not open a window")
     sp.add_argument("--no-pull", action="store_true", help="do not download missing models")

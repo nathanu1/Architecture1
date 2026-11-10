@@ -28,7 +28,9 @@ from ..providers.base import BudgetExceeded, ProviderError, ReplayMiss
 from ..schemas import PlanLevel, RunStatus
 from ..simulation.engine import RunStopped, Simulation
 
-SPEEDS = {"slow": 2.0, "normal": 6.0, "fast": 30.0, "max": 0.0}  # steps per real second (0 = as fast as possible)
+# Steps per real second (0 = as fast as possible). "live" is real time: one step lasts as long as
+# the game time it covers (ten seconds by default), so the town's day is as long as yours.
+SPEEDS = {"live": -1.0, "slow": 2.0, "normal": 6.0, "fast": 30.0, "max": 0.0}
 
 
 class _ThinkingProbe:
@@ -155,8 +157,9 @@ class GameSession:
                     self._set_status("finished")
                     self.paused = True
                 rate = SPEEDS[self.speed]
-                if rate > 0:
-                    left = 1.0 / rate - (time.monotonic() - started)
+                if rate != 0:
+                    period = 1.0 / rate if rate > 0 else float(sim.cfg.scenario.seconds_per_step)
+                    left = period - (time.monotonic() - started)
                     if left > 0:
                         self._wake.wait(left)
                         self._wake.clear()

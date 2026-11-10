@@ -13,6 +13,7 @@ from __future__ import annotations
 import hashlib
 import json
 import threading
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
@@ -39,6 +40,9 @@ class FakeOllama:
         self.embedder = MockHashEmbedding(dims=embed_dims)
         self.fail_next: list[tuple[int, dict[str, Any]]] = []
         self.unknown: set[str] = set()  # names /api/pull refuses (no such model in the registry)
+        self.delay = 0.0  # seconds per /api/chat answer
+        self.serial = False  # True: answers one request at a time (no parallel slots)
+        self.busy = threading.Lock()
         outer = self
 
         class Handler(BaseHTTPRequestHandler):
@@ -100,6 +104,12 @@ class FakeOllama:
                 if self.path == "/api/chat":
                     if body.get("model") not in outer.models:
                         return self._send(404, {"error": f"model '{body.get('model')}' not found"})
+                    if outer.delay:  # a server that takes time per answer, one at a time or several at once
+                        if outer.serial:
+                            with outer.busy:
+                                time.sleep(outer.delay)
+                        else:
+                            time.sleep(outer.delay)
                     return self._send(200, outer.chat_reply(body))
                 if self.path == "/api/embed":
                     if body.get("model") not in outer.models and f"{body.get('model')}:latest" not in outer.models:

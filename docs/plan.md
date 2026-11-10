@@ -32,7 +32,8 @@ rest follows from.
 | Requirement | How it is met |
 | --- | --- |
 | Runs anywhere | The town process is Python and SQLite with no native code of its own; all model work is behind `HEARTHSIDE_LLM_URL`. Ollama, llama.cpp and vLLM are interchangeable behind it. |
-| One command | `ga town` checks the model server, downloads missing models, founds or continues the town and opens it. Configs, prompts, scenarios and the built interface ship inside the package, so it works from any folder through `uvx`. |
+| One command | `ga town` picks models that fit the machine, checks the model server, downloads missing models, measures the server's parallel capacity, founds or continues the town and opens it. Configs, prompts, scenarios and the built interface ship inside the package, so it works from any folder through `uvx`. |
+| Is yours, not a preset | The cast is a choice (`--residents`, `--cast`), the town has the name you give it, and residents you write on cards move into houses of their own (`--newcomers`). |
 | Feels like an app | `ga town --app` opens a window without browser chrome; the page carries a web-app manifest, so it installs from the browser on a desktop or a phone. One interface, no second codebase. |
 | Runs on a big server | `deploy/hearthside.service` and `docker-compose.yml`; a restart continues the same town; `engine.parallel_calls` uses a server's parallel slots. |
 | Is a site | HTTPS through Caddy or a tunnel; `HEARTHSIDE_SPECTATORS=1` lets anyone watch while a password is needed to act. |
@@ -56,6 +57,8 @@ question in its own right.
 | Model servers by name, each with its own model and limits | `providers.llm.pools`, `tests/test_cheap_town.py` |
 | `ga town`, `ga bench`, model download, remote model server | `tests/test_town.py` |
 | Package runs from any folder | wheel built and run from an unrelated directory |
+| The town fits the machine: models by memory, parallel calls by measurement | `tests/test_founding.py` (`plan_models`, `probe_parallel` against a stand-in server with one slot and with several) |
+| A town of your own: name, cast, residents from cards, real-time pace | `tests/test_founding.py`; a named town with three written residents checked in a browser |
 | Installable page, app window | manifest and icons in the built interface; checked in a browser |
 | Server units | `deploy/hearthside.service`, `docker-compose.yml`, `deploy/entrypoint.sh` |
 

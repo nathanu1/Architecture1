@@ -80,6 +80,7 @@ def town_info(session: GameSession) -> dict[str, Any]:
         "mode": "replay" if session.replay else sim.cfg.run_mode,
         "observe": session.observe,
         "label": sim.cfg.run.label,
+        "town_name": sim.cfg.game.town_name,
         "llm": {"kind": sim.cfg.providers.llm.kind, "model": sim.cfg.providers.llm.model, "local": sim.cfg.providers.llm.is_local(), "describe": manifest_llm},
         "embeddings": {"kind": sim.cfg.providers.embeddings.kind, "model": sim.cfg.providers.embeddings.model},
         "builder": game.builder,

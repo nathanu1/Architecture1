@@ -85,8 +85,8 @@ export function Hud() {
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="font-display text-lg font-bold leading-tight" translate="no">
-              Hearthside
+            <h1 className="truncate font-display text-lg font-bold leading-tight" translate="no" title={info.town_name ? `${info.town_name}, a Hearthside town` : undefined}>
+              {info.town_name || "Hearthside"}
             </h1>
             <ResidentsButton count={info.residents.length} onOpen={() => openNotebook("residents")} className="max-sm:hidden" />
           </div>
@@ -122,13 +122,14 @@ export function Hud() {
               disabled={!poll || (atEnd && !DEMO) || !!poll.error}
             />
             <div className="flex rounded-full bg-[var(--panel-2)] p-1" role="group" aria-label="Speed">
-              {(["slow", "normal", "fast"] as const).map((s) => (
+              {/* "live" is real time (a live town only): the town's day is as long as yours */}
+              {(!DEMO && info.speeds.includes("live") ? (["live", "slow", "normal", "fast"] as const) : (["slow", "normal", "fast"] as const)).map((s) => (
                 <button
                   key={s}
                   type="button"
                   aria-pressed={poll?.speed === s}
-                  aria-label={s === "fast" ? "Fast" : undefined}
-                  title={s === "fast" ? "Fast" : undefined}
+                  aria-label={s === "fast" ? "Fast" : s === "live" ? "Live: real time" : undefined}
+                  title={s === "fast" ? "Fast" : s === "live" ? "Real time: the town's day is as long as yours" : undefined}
                   onClick={() => control("speed", s)}
                   className={`rounded-full px-2.5 py-1 font-display text-xs font-semibold capitalize transition-colors ${poll?.speed === s ? "bg-sun text-[#2a2838]" : "hover:bg-[var(--panel-hover)]"}`}
                 >

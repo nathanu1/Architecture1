@@ -360,6 +360,7 @@ class GameSection(_Base):
     # exactly the paper's, so a run recorded without the game replays in the town unchanged.
     mode: Literal["play", "observe"] = "play"
     content_dir: str = "configs/game"
+    town_name: str | None = None  # shown in the town's badge instead of "Hearthside" (ga town --name)
     builder_name: str = "the town builder"
     auto_requests: bool = True  # each resident may ask for one thing per day once awake
     request_hour: int = 9  # not before this hour

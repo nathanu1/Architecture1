@@ -150,6 +150,7 @@ game:
   enabled: false
   mode: play
   content_dir: configs/game
+  town_name: null
   builder_name: the town builder
   auto_requests: true
   request_hour: 9

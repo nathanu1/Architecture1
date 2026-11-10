@@ -24,6 +24,7 @@ import tempfile
 import time
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -169,6 +170,214 @@ def town_dir(cfg: GAConfig, run_dir: str | None) -> Path:
     from .config import repo_path
 
     return Path(run_dir) if run_dir else repo_path(cfg.run.output_dir) / cfg.run.name
+
+
+# ------------------------------------------------------------------------------------ tuning
+# Below this much memory the 8B model does not fit next to the 3B and the embedding model
+# (about 8.5 GB loaded together), so one small model does everything. A rule of thumb for
+# machines whose model server shares the system's memory (laptops, Apple Silicon); a machine
+# with a large GPU can say otherwise with --models.
+SMALL_MACHINE_GB = 12.0
+MECHANICAL = ("choose_location", "importance", "importance_batch", "action_grounding")
+
+
+def machine_memory_gb() -> float | None:
+    """Physical memory of this machine in GB, or None where it cannot be read."""
+
+    try:
+        if sys.platform == "win32":
+            import ctypes
+
+            class _Status(ctypes.Structure):
+                _fields_ = [("length", ctypes.c_ulong), ("load", ctypes.c_ulong)] + [
+                    (n, ctypes.c_ulonglong) for n in ("total", "avail", "a", "b", "c", "d", "e")
+                ]
+
+            status = _Status()
+            status.length = ctypes.sizeof(_Status)
+            ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status))  # type: ignore[attr-defined]
+            return status.total / 1e9
+        return os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES") / 1e9
+    except (ValueError, OSError, AttributeError):
+        return None
+
+
+def plan_models(cfg: GAConfig, *, memory_gb: float | None, explicit: str | None = None) -> tuple[list[str], str | None]:
+    """Which models the town should use on this machine, as config overrides plus the reason.
+
+    ``explicit`` is the user's ``--models BIG[,SMALL]`` and always wins. Otherwise, when the
+    model server is this machine and the machine is small, the config's small model does every
+    task; in every other case the config stands.
+    """
+
+    from .providers.local_http import is_local_url
+    from .providers.ollama_provider import DEFAULT_URL
+
+    llm = cfg.providers.llm
+    routed = [t for t, o in llm.task_overrides.items() if o.get("model") and not o.get("provider")]
+    small = next((llm.task_overrides[t]["model"] for t in routed), None)
+    if explicit:
+        parts = [m.strip() for m in explicit.split(",") if m.strip()]
+        big, little = parts[0], (parts[1] if len(parts) > 1 else parts[0])
+        return [
+            f"providers.llm.model={big}",
+            *(f"providers.llm.task_overrides.{t}.model={little}" for t in routed),
+        ], f"models set by you: {big} for judgment, {little} for mechanical tasks"
+    if llm.kind != "ollama" or small is None or small == llm.model or memory_gb is None or not is_local_url(llm.base_url or DEFAULT_URL):
+        return [], None
+    if memory_gb < SMALL_MACHINE_GB:
+        return [f"providers.llm.model={small}"], (
+            f"this machine has {memory_gb:.0f} GB of memory, too little to keep {llm.model} loaded next to {small}: {small} does every task (override with --models)"
+        )
+    return [], f"this machine has {memory_gb:.0f} GB of memory: {llm.model} for judgment, {small} for mechanical tasks"
+
+
+def probe_parallel(cfg: GAConfig, *, at_once: int = 4, say: Callable[[str], None] = print) -> dict[str, Any] | None:
+    """Ask the model server one question alone and ``at_once`` together; how much does it gain?
+
+    Returns the timings, the gain and the ``engine.parallel_calls`` that fits it (1, 2 or 4), or
+    None when the server cannot be asked. The first, untimed call loads the model.
+    """
+
+    from .prompting import PromptRegistry
+    from .providers.base import LLMRequest, ProviderError
+    from .providers.schema import strict_json_schema
+    from .simulation.runtime import build_llm_provider
+
+    llm = cfg.providers.llm
+    model = next((o["model"] for t, o in llm.task_overrides.items() if t in MECHANICAL and o.get("model") and not o.get("provider")), llm.model)
+    tpl = PromptRegistry().get("importance")
+    provider = build_llm_provider(cfg)
+    passage = (
+        "Maria Lopez is sitting at a table in Hobbs Cafe with her physics notes, a cup of tea going cold beside her, while the morning regulars come and go. "
+        * 6
+    )
+
+    def one(i: int) -> float:
+        req = LLMRequest(
+            task="importance",
+            template_id=tpl.template_id,
+            template_hash=tpl.sha256,
+            system="You rate how poignant a memory is for a person, from 1 (mundane) to 10 (life-changing). Answer with JSON only.",
+            prompt=f'{passage}\n\nMemory {i}: Maria Lopez is drinking tea.\nReturn {{"rating": <1-10>}}.',
+            output_schema=strict_json_schema(tpl.output_model),
+            model=model,
+            max_output_tokens=32,
+            temperature=llm.temperature,
+        )
+        t = time.monotonic()
+        provider.complete(req)
+        return time.monotonic() - t
+
+    try:
+        one(0)  # loads the model; not timed
+        alone = (one(1) + one(2)) / 2
+        t = time.monotonic()
+        with ThreadPoolExecutor(max_workers=at_once) as pool:
+            list(pool.map(one, range(10, 10 + at_once)))
+        together = time.monotonic() - t
+    except ProviderError as exc:
+        say(f"could not measure the model server ({exc}); keeping engine.parallel_calls={cfg.engine.parallel_calls}")
+        return None
+    gain = at_once * alone / together if together > 0 else 1.0
+    parallel = 4 if gain >= 3 else 2 if gain >= 1.6 else 1
+    return {
+        "model": model,
+        "alone_s": round(alone, 3),
+        "together_s": round(together, 3),
+        "at_once": at_once,
+        "gain": round(gain, 2),
+        "parallel_calls": parallel,
+    }
+
+
+# ----------------------------------------------------------------------------------- founding
+@dataclass
+class Founding:
+    """Everything `ga town` decided before the town starts."""
+
+    config: str
+    sets: list[str]
+    run_dir: Path
+    resuming: bool
+    cfg: GAConfig
+    notes: list[str] = field(default_factory=list)
+    tuning: dict[str, Any] = field(default_factory=dict)
+
+
+def plan_town(
+    *,
+    config: str | None = None,
+    name: str | None = None,
+    residents: int | None = None,
+    cast: str | None = None,
+    newcomers: str | None = None,
+    run_dir: str | None = None,
+    sets: list[str] | None = None,
+    url: str | None = None,
+    models: str | None = None,
+    memory_gb: float | None = None,
+) -> Founding:
+    """Decide which town this is (a new one to found, or one to continue) and with what settings.
+
+    A new town takes its cast, its name, your own residents and a model plan that fits the
+    machine. An existing town keeps all of that: only the model-server address, explicit
+    ``--models`` and ``--set`` values apply, and the founding options are reported as ignored.
+    """
+
+    from . import founding
+    from .config import repo_path
+    from .simulation.engine import load_run_config
+
+    sets = list(sets or [])
+    path = config or (TOWN_CONFIGS[25] if residents == 25 and not (name or cast or newcomers) else TOWN_CONFIGS[10])
+    first = load_config(path, overrides=sets)
+    custom = bool(cast or newcomers or residents not in (None, 10, 25))
+    run_name = founding.folder_name(name) if name else first.run.name + (f"-{residents}" if custom and residents is not None and not config else "")
+    folder = Path(run_dir) if run_dir else repo_path(first.run.output_dir) / run_name
+    notes: list[str] = []
+    town_scenario = founding.scenario_path(folder)
+
+    if (folder / "state.sqlite").exists() and (folder / "config.yaml").exists():
+        saved = load_run_config(folder)
+        extra = [*sets, *server_overrides(saved, url)]
+        if town_scenario.exists():
+            extra.append(f"scenario.path={json.dumps(str(town_scenario))}")  # the folder may have moved
+        extra += plan_models(saved, memory_gb=memory_gb, explicit=models)[0] if models else []
+        if cast or newcomers or residents not in (None, len(saved.scenario.population or []) or 25):
+            notes.append(
+                "continuing the town that is already here: --residents, --cast and --newcomers only apply when a town is founded (use --name for another town)"
+            )
+        return Founding(path, extra, folder, True, load_run_config(folder, extra), notes)
+
+    founded: list[str] = []
+    if name:
+        founded += [f"run.name={run_name}", f"run.label={json.dumps(name)}", f"game.town_name={json.dumps(name)}"]
+    elif run_name != first.run.name:
+        founded.append(f"run.name={run_name}")
+    people: list[str] | None = None
+    if custom or (config and residents is not None):
+        people = founding.choose_cast(10 if residents is None else residents, cast, seed=first.run.seed)
+    if newcomers:
+        cards = founding.load_cards(newcomers)
+        report = founding.build_scenario(cards, folder / "scenario", name or run_name)
+        people = (people if people is not None else founding.choose_cast(10, cast, seed=first.run.seed)) + report["newcomers"]
+        founded.append(f"scenario.path={json.dumps(str(town_scenario))}")
+        notes.append(f"moved in: {', '.join(report['newcomer_names'])} ({', '.join(report['houses'])})")
+    elif people is not None and not str(first.scenario.path).startswith(founding.BASE):
+        founded.append(f"scenario.path={founding.BASE}/scenario.yaml")
+    if people is not None:
+        if not people:
+            raise founding.FoundingError("a town needs at least one resident")
+        founded.append(f"scenario.population=[{', '.join(people)}]")
+    cfg = load_config(path, overrides=[*sets, *founded])
+    extra = server_overrides(cfg, url)
+    model_sets, reason = plan_models(load_config(path, overrides=[*sets, *founded, *extra]), memory_gb=memory_gb, explicit=models)
+    if reason:
+        notes.append(reason)
+    all_sets = [*sets, *founded, *extra, *model_sets]
+    tuning = {"memory_gb": round(memory_gb, 1) if memory_gb else None, "models": reason}
+    return Founding(path, all_sets, folder, False, load_config(path, overrides=all_sets), notes, tuning)
 
 
 # ------------------------------------------------------------------------------------ window

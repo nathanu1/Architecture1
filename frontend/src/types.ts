@@ -109,6 +109,8 @@ export interface Info {
   mode: "mock" | "live" | "replay";
   observe?: boolean;
   label: string;
+  /** The name the town was founded with (`ga town --name`); the badge shows it instead of "Hearthside". */
+  town_name?: string | null;
   llm: { kind: string; model: string; local: boolean; describe: Record<string, unknown> };
   embeddings: { kind: string; model: string };
   builder: string;
