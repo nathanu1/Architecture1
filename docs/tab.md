@@ -11,16 +11,22 @@ same inspector.
 
 ## What a visitor sees
 
-A title screen in the town's own style: the name as a chunky sticker over an illustrated town,
-the three neighbours standing in front, and a small menu with one row of choices for how the
-residents think and a **Start** button. Under the row a few words say how big the one-time
-download is. While a model downloads the menu shows a progress bar. The browser keeps the
-model, so the next visit starts in seconds, and the button then reads **Continue** next to
-**New Town** (which asks once more before erasing): the town is saved in the browser every
-twenty seconds and when the tab is hidden. A browser that cannot run a model on its graphics
-chip gets the model choices greyed out and can still look around. The artwork is drawn in code
-(`frontend/src/tab/TitleScene.tsx`), follows the system's light or dark setting and stops
-moving for people who ask for reduced motion.
+A title screen that is a small 3D world at dusk: the town's name in chunky extruded letters
+standing on a paved square, with grass, blossom and autumn trees, lanterns, a cottage, a river
+and bridge behind, and the town's three residents beside the letters. The letters drop in when
+the page opens and the view drifts slightly with the pointer. Over it sits a small menu: one
+row of choices for how the residents think and a **Start** button, with a few words on how big
+the one-time download is. While a model downloads the menu shows a progress bar. The browser
+keeps the model, so the next visit starts in seconds, and the button then reads **Continue**
+next to **New Town** (which asks once more before erasing): the town is saved in the browser
+every twenty seconds and when the tab is hidden. A browser that cannot run a model on its
+graphics chip gets the model choices greyed out and can still look around.
+
+The world is built in code from simple shapes (`frontend/src/tab/TitleWorld.ts`), reuses the
+town's own resident models, and takes its letter outlines from the town's display font
+(`scripts/make-title-font.mjs`). It stays still for people who ask for reduced motion, falls
+back to plain large type where 3D drawing is unavailable, and frees its graphics memory before
+the town itself starts drawing.
 
 | Choice | Model (WebLLM id) | Download | Graphics memory |
 | --- | --- | ---: | ---: |

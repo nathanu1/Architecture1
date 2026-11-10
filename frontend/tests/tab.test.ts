@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mindById, MINDS, modelFor } from "../src/tab/mind";
+import titleFont from "../src/tab/title-font.json";
 
 describe("minds for the town in a tab", () => {
   it("offers a no-download look and models from small to large, each with a full-precision twin", () => {
@@ -26,5 +27,15 @@ describe("minds for the town in a tab", () => {
     const raw = mindById("SmolLM2-360M-Instruct-q4f32_1-MLC");
     expect(raw.model).toBe("SmolLM2-360M-Instruct-q4f32_1-MLC");
     expect(modelFor(raw, { f16: false })).toBe(raw.model);
+  });
+});
+
+describe("the 3D title", () => {
+  it("has an outline for every letter of the town's name", () => {
+    const glyphs = titleFont.glyphs as Record<string, { ha: number; o: string }>;
+    for (const ch of "HEARTHSIDE") {
+      expect(glyphs[ch].o.length).toBeGreaterThan(20);
+      expect(glyphs[ch].ha).toBeGreaterThan(0);
+    }
   });
 });

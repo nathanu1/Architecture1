@@ -3,7 +3,7 @@ import { useEffect, useId, useState, type ReactNode } from "react";
 import { Button } from "../components/ui";
 import { tabTown } from "./client";
 import { loadMind, lookAtDevice, mindById, MINDS, modelFor, type Device, type Mind } from "./mind";
-import { Neighbours, TownBackdrop, Wordmark } from "./TitleScene";
+import { TitleBackdrop } from "./TitleScene";
 
 const SAVED = "hearthside-tab-town";
 
@@ -24,8 +24,8 @@ function remember(mind: string): void {
 }
 
 /**
- * The town's title screen in the tab build: the wordmark over the town, the three neighbours,
- * and a small menu (how they think, Start). The engine begins loading the moment the page
+ * The town's title screen in the tab build: the name standing in a small 3D world at dusk with
+ * the three neighbours beside it, and a small menu (how they think, Start). The engine begins loading the moment the page
  * opens, so the button rarely waits for it.
  */
 export function Gate({ children }: { children: ReactNode }) {
@@ -82,16 +82,13 @@ export function Gate({ children }: { children: ReactNode }) {
   const continuing = !!saved && !query.has("fresh");
   const percent = progress !== null ? Math.round(progress * 100) : null;
   return (
-    <div className="relative flex h-full flex-col items-center overflow-hidden bg-[linear-gradient(180deg,var(--sky-top),var(--sky-bottom))] px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]">
-      <TownBackdrop />
-
-      <h1 className="relative mt-[clamp(0.25rem,5vh,3.5rem)] w-[min(94vw,620px)] shrink-0" translate="no">
-        <span className="sr-only">Hearthside</span>
-        <Wordmark className="h-auto w-full drop-shadow-[0_6px_0_rgba(27,79,143,0.18)]" />
+    <div className="relative flex h-full flex-col items-center overflow-hidden px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]">
+      <TitleBackdrop />
+      <h1 className="sr-only" translate="no">
+        Hearthside
       </h1>
 
       <div className="relative mt-auto flex w-full max-w-[34rem] flex-col items-center">
-        <Neighbours className="h-[clamp(84px,19vh,168px)] translate-y-2" />
         <main className="panel relative flex w-full flex-col items-center gap-3.5 px-5 pb-5 pt-5">
           {stage === "starting" ? (
             <div className="w-full py-3 text-center" aria-live="polite">
