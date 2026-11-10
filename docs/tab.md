@@ -87,9 +87,9 @@ The largest prompt was 1,558 tokens, inside the runtime's 4,096-token window.
 | The question-and-answer path between page, engine and a mind | headless Chromium with a stand-in mind |
 | A real model's files download and load in the page, and the town asks it its first question | headless Chromium with a software graphics adapter and a 207 MB test model (`?mind=SmolLM2-360M-Instruct-q4f32_1-MLC`) |
 
-Not checked: an answer from a real model. On the software graphics adapter the test model's
-first answer did not arrive within five minutes, which says nothing either way about a real
-chip. None of the five offered models has run on real graphics hardware, so there are no speed
+Not checked: an answer from a real model. On the software graphics adapter the 207 MB test
+model's first answer did not arrive within five minutes, and a second, smaller test model did
+not finish starting within eight, which says nothing either way about a real chip. None of the five offered models has run on real graphics hardware, so there are no speed
 numbers here; Safari and Firefox; phones; how long browsers
 keep a multi-gigabyte model before evicting it. The page reports the model's own speed readings
 to the console (`__tabTown`), which is where the first real numbers will come from.
