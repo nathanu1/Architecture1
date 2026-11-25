@@ -67,6 +67,11 @@ def test_adaptation_measures_find_reactions_and_mentions_after_an_intervention(t
     assert out["changed_plans"] and out["changed_share"] > 0 and out["median_latency_minutes"] is not None
     assert all(a["latency_minutes"] is None or a["latency_minutes"] >= 0 for a in out["agents"].values())
     assert out["changed_share_among_perceivers"] is not None
+    # both agents stand next to the fire when it starts: they perceive it at onset and their reaction time is their latency
+    assert out["perceived_at_onset"] == len(out["perceived"]) and out["median_reaction_minutes_after_perceiving"] is not None
+    assert all(
+        a["reaction_minutes_after_perceiving"] is None or 0 <= a["reaction_minutes_after_perceiving"] <= a["latency_minutes"] for a in out["agents"].values()
+    )
     control = beh.adaptation(sim.db, PAIR, datetime.fromisoformat("2023-02-13T08:00:00"), ["volcano"], window_minutes=30)
     assert control["changed_plans"] == [] and control["mentions_in_conversation"] == 0
 

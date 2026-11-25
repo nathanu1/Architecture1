@@ -795,6 +795,9 @@ LABELS = {
     "adaptation_changed_among_perceivers": "Changed plans among perceivers",
     "adaptation_median_latency_min": "Median adaptation latency (min)",
     "adaptation_mentions": "Conversations mentioning the event",
+    "adaptation_perceivers": "Agents who perceived the event",
+    "adaptation_perceivers_at_onset": "Agents who perceived the event in its first minute",
+    "adaptation_median_reaction_after_perceiving_min": "Median reaction time after first perceiving it (min)",
 }
 
 

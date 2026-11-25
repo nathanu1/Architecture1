@@ -323,6 +323,8 @@ def adaptation_metric(ctx: MetricContext) -> dict[str, Any]:
         "adaptation_changed_share": out["changed_share"],
         "adaptation_changed_among_perceivers": out["changed_share_among_perceivers"],
         "adaptation_median_latency_min": out["median_latency_minutes"],
+        "adaptation_median_reaction_after_perceiving_min": out["median_reaction_minutes_after_perceiving"],
+        "adaptation_perceivers_at_onset": out["perceived_at_onset"],
         "adaptation_mentions": out["mentions_in_conversation"],
         "adaptation_agents_mentioning": out["agents_mentioning"],
     }

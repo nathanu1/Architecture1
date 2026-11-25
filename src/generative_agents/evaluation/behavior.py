@@ -166,12 +166,16 @@ def adaptation(
         ]
         replans = [e for e in mine if e["type"] == "replan" and (not pat or pat.search(e.get("inserted") or ""))]
         first = min((parse_iso(e["sim_time"]) for e in reacted + replans), default=None)
+        seen = parse_iso(perceived[0]["sim_time"]) if perceived else None
         per[aid] = {
             "perceived": bool(perceived),
             "first_perceived_at": perceived[0]["sim_time"] if perceived else None,
             "reacted": bool(reacted),
             "replanned": bool(replans),
             "latency_minutes": round((first - at).total_seconds() / 60, 1) if first else None,
+            # From the agent's own first perception: an agent who walks in half an hour after
+            # the event started and reacts at once has a long latency and a zero reaction time.
+            "reaction_minutes_after_perceiving": round(max(0.0, (first - seen).total_seconds()) / 60, 1) if first and seen else None,
             "reactions_in_window": len([e for e in mine if e["type"] == "reaction"]),
             "replans_in_window": len([e for e in mine if e["type"] == "replan"]),
         }
@@ -189,6 +193,7 @@ def adaptation(
     changed = [a for a in denom if per[a]["reacted"] or per[a]["replanned"]]
     perceivers = [a for a in agents if per[a]["perceived"]]
     lat = [per[a]["latency_minutes"] for a in agents if per[a]["latency_minutes"] is not None]
+    after = sorted(per[a]["reaction_minutes_after_perceiving"] for a in agents if per[a]["reaction_minutes_after_perceiving"] is not None)
     return {
         "at": at.isoformat(),
         "window_minutes": window_minutes,
@@ -199,6 +204,8 @@ def adaptation(
         "changed_share": round(len(changed) / len(denom), 3) if denom else None,
         "changed_share_among_perceivers": round(len([a for a in perceivers if a in changed]) / len(perceivers), 3) if perceivers else None,
         "median_latency_minutes": sorted(lat)[len(lat) // 2] if lat else None,
+        "median_reaction_minutes_after_perceiving": after[len(after) // 2] if after else None,
+        "perceived_at_onset": sum(1 for a in perceivers if parse_iso(per[a]["first_perceived_at"]) <= at + timedelta(minutes=1)),
         "mentions_in_conversation": len(mentions),
         "first_mention": mentions[0] if mentions else None,
         "agents_mentioning": len({m["speaker"] for m in mentions}),

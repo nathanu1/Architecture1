@@ -149,6 +149,8 @@ def test_per_seed_fork_sources_are_created_and_each_seed_forks_its_own_past(tmp_
     by = {r["run_id"]: r for r in res["rows"]}
     assert all(r["status"] == "completed" for r in by.values()), res["rows"]
     assert by["control-s5"]["forked_from"] == "s5@2023-02-13T09-10-00" and by["fire-s6"]["forked_from"] == "s6@2023-02-13T09-10-00"
+    # reaction time is counted from each agent's own first perception, apart from the latency from the event's start
+    assert "adaptation_median_reaction_after_perceiving_min" in by["fire-s5"] and by["control-s5"]["adaptation_perceivers_at_onset"] == 0
     assert "each seed has its own recorded past" in (tmp_path / "experiments" / "perseed" / "report.md").read_text()
     again = execute(proto)  # sources and runs exist: nothing is recomputed
     assert [s["status"] for s in again["summary"]["fork_sources"]] == ["exists", "exists"]

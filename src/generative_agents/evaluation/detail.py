@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import statistics
 from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -340,6 +341,16 @@ def adaptation_sections(rows: list[dict[str, Any]], conditions: list[str]) -> li
         if not d:
             continue
         lat = sorted(a["latency_minutes"] for a in d["agents"].values() if a["latency_minutes"] is not None)
+        # reaction time from each agent's own first perception (computed here for metric files written before the field existed)
+        onset = datetime.fromisoformat(d["at"])
+        after = sorted(
+            max(0.0, round(a["latency_minutes"] - (datetime.fromisoformat(a["first_perceived_at"]) - onset).total_seconds() / 60, 1))
+            for a in d["agents"].values()
+            if a["latency_minutes"] is not None and a.get("first_perceived_at")
+        )
+        late = sum(
+            1 for a in d["agents"].values() if a.get("first_perceived_at") and (datetime.fromisoformat(a["first_perceived_at"]) - onset).total_seconds() > 60
+        )
         first = d.get("first_mention") or {}
         table.append(
             [
@@ -348,6 +359,8 @@ def adaptation_sections(rows: list[dict[str, Any]], conditions: list[str]) -> li
                 ", ".join(a.split("_")[0] for a in d["perceived"]) or "none",
                 str(len(d["changed_plans"])),
                 ", ".join(f"{x:g}" for x in lat) or "n/a",
+                ", ".join(f"{x:g}" for x in after) or "n/a",
+                str(late),
                 str(d["mentions_in_conversation"]),
                 (first.get("text") or "")[:90].replace("|", "/"),
             ]
@@ -355,7 +368,24 @@ def adaptation_sections(rows: list[dict[str, Any]], conditions: list[str]) -> li
     if not table:
         return []
     lines = ["", "## Detail: who perceived the event and who changed course", ""]
-    lines += _table(["Run", "Perceivers", "Who", "Changed plans", "Latencies (min)", "Conversations mentioning it", "First mention"], table)
+    lines += _table(
+        [
+            "Run",
+            "Perceivers",
+            "Who",
+            "Changed plans",
+            "Latencies from the event's start (min)",
+            "Reaction times from first perceiving it (min)",
+            "Perceived it later than the first minute",
+            "Conversations mentioning it",
+            "First mention",
+        ],
+        table,
+    )
+    lines += [
+        "",
+        "A latency counts from the start of the event, so it includes the time an agent took to arrive; the reaction time counts from that agent's own first perception.",
+    ]
     return lines
 
 
