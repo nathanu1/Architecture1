@@ -10,8 +10,9 @@
 #
 # llama-cpp-python's server takes the output schema as {"type": "json_object", "schema": ...},
 # hence schema_format. llama.cpp's own llama-server and LM Studio use the default json_schema.
-# Measured on four Xeon cores (docs/experiments/round2.md): about 45 prompt tokens and 7 output
-# tokens per second.
+# Measured on four Xeon cores with nothing else running (docs/experiments/round2.md): about 5
+# output tokens and 80 to 150 prompt tokens per second; a typical call takes 5 to 10 seconds, a
+# day plan about 40. Do not share the cores with other jobs: calls became three times slower.
 run:
   name: pilot3-llamacpp
   label: "llama.cpp pilot (Llama 3.2 3B, local)"

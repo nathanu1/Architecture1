@@ -81,18 +81,22 @@ them are off by default or purely observational, so a default run still follows 
 | Beliefs and Theory of Mind | A ledger of what each agent has grounds to believe about seeded events and about what others know, kept apart from world truth; an interview probe scores over- and under-attribution. |
 | Memory and planning ablations | Activation-based forgetting (auditable, nothing deleted) and an hourly-only planner, next to the existing reflection and retrieval settings. |
 | Measures from records | Plan adherence, scheduled share, idle share, reactions, adaptation latency after an intervention, planted-fact recall, network density, reciprocity, components. |
-| Counterfactual forks | `ga fork` continues a recorded run from a snapshot with changed settings or interventions; protocols can fork every run from the same past. |
-| Experiment protocols | Named metrics, per-condition interventions, a hypothesis recorded before running, pairwise comparisons, a determinism check and generic reports. |
+| Counterfactual forks | `ga fork` continues a recorded run from a snapshot with changed settings or interventions; protocols can fork every run from the same past, or every seed from its own. |
+| Experiment protocols | Named metrics, per-condition interventions, hypotheses and planned contrasts recorded before running, paired and unpaired comparisons with effect sizes, a determinism check, parallel runs and reports with pooled detail and charts. |
+| Retrieval probes | Planted facts on a grid of ages and importance levels, each with a lexical and a paraphrase query; recall curves; scoring variants re-scored on the same snapshot. |
 | Dashboard | Decisions (recorded evidence only), Network, Behavior and Beliefs tabs in the viewer. |
 
 ```bash
 ga experiment --protocol configs/experiments/memory_consistency_mock.yaml --execute
+ga experiment --protocol configs/experiments/memory_retrieval_v2.yaml --execute --jobs 3
 ga serve --run-dir runs/experiments/memory_consistency_mock/full-s101 --experiment runs/experiments/memory_consistency_mock
 ```
 
 Guide: [`docs/research_platform.md`](docs/research_platform.md). Literature and prioritization:
-[`docs/research_review.md`](docs/research_review.md). Executed demonstration experiments (MOCK):
-[`docs/experiments/README.md`](docs/experiments/README.md). Assessment of the system before
+[`docs/research_review.md`](docs/research_review.md). Executed experiments: round one (MOCK,
+five to ten residents) in [`docs/experiments/README.md`](docs/experiments/README.md); round
+two (a critique of round one, 25 residents, real sentence embeddings, and a first experiment
+on a real local model) in [`docs/experiments/round2.md`](docs/experiments/round2.md). Assessment of the system before
 this work: [`docs/system_assessment.md`](docs/system_assessment.md).
 
 ## How it works
@@ -163,7 +167,7 @@ The tests cover memory isolation, retrieval and reflection, plan validation, pri
 | Interviews and reflection experiments | [Experiment protocol](docs/experiment_protocol.md) |
 | Research extensions, metrics, forks, dashboards | [Research platform](docs/research_platform.md) |
 | Literature review, prioritization, proposals | [Research review](docs/research_review.md) |
-| Executed demonstration experiments | [Experiments](docs/experiments/README.md) |
+| Executed demonstration experiments | [Round one](docs/experiments/README.md) · [Round two](docs/experiments/round2.md) |
 | Demo walkthrough and portfolio copy | [Showcase guide](docs/showcase.md) |
 
 ## Credits

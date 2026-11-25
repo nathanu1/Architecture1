@@ -275,7 +275,11 @@ The manifest of every run now carries a `randomness` section:
   same seed and configuration are identical (the determinism check confirms it);
 * **Ollama / OpenAI / OpenAI-compatible** servers receive `seed` where supported; this does not
   make sampling bit-reproducible across servers, versions or batch conditions (He 2025;
-  Atil et al. 2024);
+  Atil et al. 2024). The seed sent is the run seed plus the request's *occurrence* (how often
+  this exact request was already issued in the run): with one fixed seed a server repeats
+  its answer to a repeated request, so a plan that failed validation failed identically at
+  every later retry (observed with Llama 3.2 3B, `experiments/round2.md` §6). The occurrence
+  is part of the ledger key, so the run stays reproducible and replays unchanged;
 * the **Anthropic** API accepts no seed, so matched seeds match the initial world only;
 * embeddings are a deterministic hash fixture or model embeddings cached by text and model;
 * `ga replay` re-executes any run from its ledger and checks the state hash.

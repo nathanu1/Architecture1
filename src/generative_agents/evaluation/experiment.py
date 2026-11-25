@@ -886,7 +886,8 @@ def render(protocol: Protocol, rows: list[dict[str, Any]], summary: dict[str, An
             pr = c.get("paired") or {}
             verdict = "n/a" if c["supported"] is None else ("yes" if c["supported"] else "**no**")
             band = f" (within ±{c['tolerance']:g})" if c["expect"] == "=" else f" (margin {c['tolerance']:g})" if c["tolerance"] else ""
-            agree = f"{pr['same_sign']} of {pr['n_pairs']}" if pr else "n/a"
+            # for an expected equality "seeds agreeing" has no meaning: there is no direction to agree with
+            agree = f"{pr['same_sign']} of {pr['n_pairs']}" if pr and c["expect"] != "=" else "n/a"
             dz = "n/a" if not pr else ("same on every seed" if pr["effect_size_dz"] is None else _fmt(pr["effect_size_dz"]))
             lines.append(
                 f"| {c['label']}{band} | {_fmt(c['mean_a'])} | {_fmt(c['mean_b'])} | {_fmt(c['mean_difference'])} | {verdict} | {agree} | {dz} | "
