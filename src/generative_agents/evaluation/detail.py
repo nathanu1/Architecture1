@@ -275,6 +275,17 @@ def network_sections(detail: dict[str, Any], root: Path) -> list[str]:
             ["Condition", *[f"≥ {t}" for t in ts]],
             [[c, *[f"{_f(by[c]['sweep'][t]['largest_component'], 1)} / {_f(by[c]['sweep'][t]['components'], 1)}" for t in ts]] for c in conds],
         )
+        lines += [
+            "",
+            "**Clustering against a random graph of the same density** (average local clustering / density; in a random graph the two are equal in expectation, so a ratio above 1 means more closed triangles than chance)",
+            "",
+        ]
+
+        def ratio(c: str, t: str) -> str:
+            cl, de = by[c]["sweep"][t]["clustering"], by[c]["sweep"][t]["density"]
+            return "n/a" if cl is None or not de else f"{_f(cl)} / {_f(de)} = {cl / de:.1f}×"
+
+        lines += _table(["Condition", *[f"≥ {t}" for t in ts]], [[c, *[ratio(c, t) for t in ts]] for c in conds])
         (root / "detail_density_by_threshold.svg").write_text(
             line_chart(
                 "Network density by tie threshold",

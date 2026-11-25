@@ -10,7 +10,7 @@ from __future__ import annotations
 import time
 from typing import Any
 
-from .base import LLMRequest, LLMResponse, ProviderError, ProviderRefusal, ProviderTruncated
+from .base import LLMRequest, LLMResponse, ProviderError, ProviderRefusal, ProviderTruncated, call_seed
 
 
 class OpenAIProvider:
@@ -44,7 +44,7 @@ class OpenAIProvider:
         if request.temperature is not None:
             kwargs["temperature"] = request.temperature
         if self.seed is not None:
-            kwargs["seed"] = self.seed
+            kwargs["seed"] = call_seed(self.seed, request)
         started = time.monotonic()
         try:
             resp = self.client.chat.completions.create(**kwargs)

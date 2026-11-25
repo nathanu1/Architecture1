@@ -28,7 +28,7 @@ from typing import Any
 
 import numpy as np
 
-from .base import LLMRequest, LLMResponse, ProviderError, ProviderTruncated, estimate_tokens
+from .base import LLMRequest, LLMResponse, ProviderError, ProviderTruncated, call_seed, estimate_tokens
 from .local_http import JSONClient, inline_refs
 
 DEFAULT_URL = "http://localhost:11434"
@@ -108,7 +108,7 @@ class OllamaProvider:
         if request.temperature is not None:
             options["temperature"] = request.temperature
         if self.seed is not None:
-            options["seed"] = self.seed
+            options["seed"] = call_seed(self.seed, request)
         body: dict[str, Any] = {
             "model": request.model,
             "messages": [
@@ -142,7 +142,7 @@ class OllamaProvider:
             "total_duration_ns": data.get("total_duration"),
             "load_duration_ns": data.get("load_duration"),
             "num_ctx": self.num_ctx,
-            "seed": self.seed,
+            "seed": call_seed(self.seed, request),
         }
         if request.decoding_schema is not None:
             metadata["decoding_schema"] = request.decoding_schema

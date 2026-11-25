@@ -37,6 +37,23 @@ class LLMRequest:
     # checks anyway. Other providers send output_schema. Built from the rendered prompt's own
     # inputs, so it is not part of the cache key (recorded runs replay unchanged).
     decoding_schema: dict[str, Any] | None = None
+    # How many times this exact request (same hash) was already issued in this run; set by the
+    # gateway. Seeded providers add it to the seed, see ``call_seed``.
+    occurrence: int = 0
+
+
+def call_seed(seed: int | None, request: LLMRequest) -> int | None:
+    """The sampling seed for one call: the run seed plus the request's occurrence.
+
+    With a fixed seed, a server answers an identical request identically. A plan that failed
+    validation and is asked for again half an hour later with the same prompt would then
+    fail the same way every time (observed with Llama 3.2 3B: one resident never got a day
+    plan). Counting occurrences keeps a run reproducible, because the count is part of the
+    recorded ledger key, and lets a repeated request draw a new sample. The first occurrence
+    uses the run seed unchanged.
+    """
+
+    return None if seed is None else seed + request.occurrence
 
 
 @dataclass

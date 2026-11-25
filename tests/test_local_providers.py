@@ -262,3 +262,32 @@ def test_openai_compatible_can_send_the_schema_as_a_json_object_for_llama_cpp_py
         srv.server_close()
     with pytest.raises(ValueError):
         OpenAICompatibleProvider("m", schema_format="yaml")
+
+
+def test_a_repeated_identical_request_draws_a_new_sample_on_a_seeded_server():
+    """With a fixed seed an identical request gets an identical answer, so a failed plan that is
+    asked for again later would fail the same way forever. The seed moves with the occurrence."""
+
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), _OpenAIish)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{srv.server_address[1]}/v1"
+    _OpenAIish.seen.clear()
+    try:
+        gw = gateway(OpenAICompatibleProvider("m", base_url=base, seed=11))
+        for _ in range(3):
+            gw.run("importance", variables("importance"), agent_id="a")
+        gw.run("importance", variables("importance", memory="something else"), agent_id="a")
+        seeds = [body["seed"] for path, body, _ in _OpenAIish.seen if path.endswith("/chat/completions")]
+        assert seeds == [11, 12, 13, 11]  # same request three times, then a different request at its first occurrence
+        rows = gw.ledger.rows()
+        assert [r["occurrence"] for r in rows] == [0, 1, 2, 0]
+        assert [json.loads(r["metadata_json"])["seed"] for r in rows] == [11, 12, 13, 11]
+    finally:
+        srv.shutdown()
+        srv.server_close()
+    with FakeOllama() as fake:
+        fake.script = [{"content": '{"rating": 4}'}, {"content": '{"rating": 4}'}]
+        gw = gateway(OllamaProvider("llama3.1:8b", base_url=fake.url, num_ctx=4096, seed=7))
+        gw.run("importance", variables("importance"), agent_id="a")
+        gw.run("importance", variables("importance"), agent_id="a")
+        assert [c["options"]["seed"] for c in fake.chats()] == [7, 8]

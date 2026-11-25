@@ -215,6 +215,7 @@ class LLMGateway:
             est_in = estimate_tokens(request.system + request.prompt)
             self.budget.check(est_in, request.max_output_tokens)
             started = time.monotonic()
+            request.occurrence = occurrence
             try:
                 response = self.provider.complete(request)
             except ProviderError as exc:

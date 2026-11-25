@@ -494,12 +494,15 @@ async function renderExperiment() {
   const outcomes = summ.outcomes || prim;
   const cell = (st) => (!st || !st.n ? "n/a" : `${st.mean}${st.sd != null ? ` ± ${st.sd}` : ""} <span class="where">(n=${st.n})</span>`);
   const byCond = `<table><thead><tr><th>outcome</th>${conds.map((c) => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${outcomes.map((k) => `<tr><td>${prim.includes(k) ? `<b>${esc(k)}</b>` : esc(k)}</td>${conds.map((c) => `<td class="num">${cell(summ.conditions[c].outcomes[k])}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
-  const comps = Object.entries(summ.comparisons || {}).map(([k, v]) => `<li><b>${esc(k)}</b>: ${esc(v.difference)} = ${v.mean_difference} (bootstrap 95% CI ${esc(JSON.stringify(v.bootstrap_95ci))}, permutation p = ${v.permutation_p}, n = ${esc(JSON.stringify(v.n))}) — ${esc(v.note)}</li>`).join("");
+  const paired = (pr) => (pr ? `; paired by seed: ${pr.mean_difference} over ${pr.n_pairs} seeds (${pr.same_sign} in the direction of the mean), p = ${pr.p} (smallest possible ${pr.min_p})` : "");
+  const comps = Object.entries(summ.comparisons || {}).map(([k, v]) => `<li><b>${esc(k)}</b>: ${esc(v.difference)} = ${v.mean_difference} (bootstrap 95% CI ${esc(JSON.stringify(v.bootstrap_95ci))}, permutation p = ${v.permutation_p}, n = ${esc(JSON.stringify(v.n))})${esc(paired(v.paired))}${v.no_between_seed_variation ? " — <b>no between-seed variation: the seeds are copies here</b>" : ""} — ${esc(v.note)}</li>`).join("");
+  const verdict = (c) => (c.supported == null ? "n/a" : c.supported ? "yes" : "<b>no</b>");
+  const contrasts = (summ.contrasts || []).length ? `<h3 style="margin-top:12px">Planned contrasts (registered with the hypothesis)</h3><table><thead><tr><th>contrast</th><th>mean a</th><th>mean b</th><th>a − b</th><th>as predicted</th><th>seeds agreeing</th><th>paired p</th><th>Holm p</th></tr></thead><tbody>${summ.contrasts.map((c) => `<tr><td>${esc(c.label)}</td><td class="num">${esc(c.mean_a)}</td><td class="num">${esc(c.mean_b)}</td><td class="num">${esc(c.mean_difference)}</td><td>${verdict(c)}</td><td class="num">${c.paired ? `${c.paired.same_sign} of ${c.paired.n_pairs}` : "n/a"}</td><td class="num">${c.paired ? c.paired.p : "n/a"}</td><td class="num">${c.paired ? c.paired.p_holm : "n/a"}</td></tr>`).join("")}</tbody></table>` : "";
   const det = summ.determinism ? `<p class="callout">Determinism check: the first configuration run twice gave <b>${summ.determinism.identical ? "identical" : "different"}</b> state tables.</p>` : "";
   const proto = ex.protocol || {};
   el.innerHTML = `<h2>Experiment: ${esc(summ.protocol || ex.dir)}</h2>${proto.question ? `<p>${esc(proto.question)}</p>` : ""}${proto.hypothesis ? `<p><b>Hypothesis:</b> ${esc(proto.hypothesis)}</p>` : ""}<p class="note">Unit of analysis: the run. A handful of runs per condition is exploratory. Metrics: ${esc((proto.metrics || []).join(", "))}.</p>${det}
     <table><thead><tr>${cols.map((c) => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${ex.runs.map((r) => `<tr>${cols.map((c) => `<td>${esc(r[c])}</td>`).join("")}</tr>`).join("")}</tbody></table>
-    <h3 style="margin-top:12px">By condition</h3>${byCond}<h3 style="margin-top:12px">Comparisons (exploratory)</h3><ul>${comps || "<li>none</li>"}</ul>`;
+    <h3 style="margin-top:12px">By condition</h3>${byCond}${contrasts}<h3 style="margin-top:12px">Comparisons (exploratory)</h3><ul>${comps || "<li>none</li>"}</ul>`;
 }
 
 // ------------------------------------------------------------------ wiring

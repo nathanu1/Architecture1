@@ -101,12 +101,27 @@ unchanged.
 ### Retrieval probes (`evaluation/memory_probe.py`)
 
 Run on an in-memory clone of a snapshot, so the run is never touched. *Planted facts*
-(`configs/probes/memory_facts.yaml`) are inserted for every agent at chosen ages and
-importance levels and queried with paraphrases; the report gives recall@k, mean reciprocal
-rank, recall by age bucket and by importance, and how many facts the forgetting filter
+(`configs/probes/memory_facts.yaml`, or the second set `memory_facts_v2.yaml`) are inserted
+for every agent at chosen ages and importance levels and queried; the report gives recall@k,
+recall@30, a recall curve (k = 1 … 100), the median rank and mean rank percentile, mean
+reciprocal rank, recall by age and by importance, and how many facts the forgetting filter
 excluded. *Own experiences* queries each conversation's summary and checks whether a memory
 of that conversation is delivered. With the hash-embedding fixture relevance is lexical;
 the report names the embedding model.
+
+Three options were added after the first experiments (see
+[`experiments/round2.md`](experiments/round2.md)):
+
+* **Query styles.** A fact may carry `queries: {lexical: ..., paraphrase: ...}`. The lexical
+  query shares content words with the statement; the paraphrase shares none (a test checks
+  this). Their gap separates word matching from semantic retrieval.
+* **Scoring variants.** `metric_params.memory_probe.variants` maps a name to overrides of the
+  run's retrieval settings (`{"weights.recency": 0}`, `{"forgetting.enabled": true, ...}`).
+  The same planted facts in the same snapshot are re-scored under each variant, so a
+  variant comparison is exact: nothing but the scoring differs. Outcomes are named
+  `memory_recall_at_30__<variant>` and so on.
+* **Anchors.** A fact with `anchor: true` is planted and never queried; it changes the
+  stream, for example its age range (`examples/round2_horizon.py`).
 
 ### Behavior (`evaluation/behavior.py`)
 
@@ -124,6 +139,14 @@ convention for relationship density). Density `2|E|/(n(n−1))`, mean degree, de
 distribution, reciprocity, average local clustering, components, mean familiarity and
 valence. `reconstruct(db, at)` replays `relationship_events`, so a time series needs no extra
 bookkeeping.
+
+One conversation already lifts familiarity above the default threshold of 0.2, so the
+thresholded density saturates quickly. Three additions avoid resting a conclusion on that
+one number: `threshold_sweep` (the thresholded measures at 0.2, 0.35, 0.5 and 0.75, or the
+values in `metric_params.network.thresholds`), `weighted_density` (the mean over all pairs
+of the weaker direction's familiarity; no threshold) and `conversation_density` (the share
+of pairs who talked). Reciprocity is close to 1 by construction, because a conversation
+updates both records by the same rule; it is reported, not interpreted.
 
 ### Beliefs and Theory of Mind (`cognition/beliefs.py`, `evaluation/tom.py`)
 
@@ -172,16 +195,72 @@ output_dir: runs/experiments
 ```
 
 `ga experiment --protocol FILE` plans and estimates; `--execute` runs every condition × seed,
-computes the metrics, writes `runs.csv`, `summary.json`, `report.md`, `protocol.json` and one
-strip chart per primary outcome. Comparisons (mean difference, bootstrap interval, exact
-permutation p) are computed for every pair of conditions; with more than six conditions they
-are omitted. Every number in the tables can be traced to `<run>/exports/metrics/<metric>.json`.
+computes the metrics, writes `runs.csv`, `rows.json`, `summary.json`, `report.md`,
+`protocol.json` and one strip chart per primary outcome. Every number in the tables can be
+traced to `<run>/exports/metrics/<metric>.json`.
+
+**Statistics.** Every pair of conditions is compared on every primary outcome (omitted above
+six conditions), two ways:
+
+* *unpaired*: mean difference, bootstrap interval, and a permutation test over run labels
+  (exact up to 16 pooled runs, Monte Carlo beyond);
+* *paired by seed*: the conditions of a protocol run on the same seeds, so the report also
+  gives the mean within-seed difference, how many seeds moved in its direction, the effect
+  size d_z, and an exact sign-flip permutation test.
+
+Each test is printed with the smallest p-value its design can produce (0.1 for three runs a
+side; 2/2ⁿ for n paired seeds), so a p-value at the floor is recognizable as such. When
+neither condition varies between seeds, the report says that the seeds are copies and the
+p-value describes determinism.
+
+**Planned contrasts.** A protocol can register the comparisons its hypothesis is about:
+
+```yaml
+contrasts:
+  - {label: "H1 paraphrase recall: semantic > hash", outcome: memory_recall_paraphrase_at_30, a: full, b: hash_embeddings, expect: ">"}
+  - {label: "H4 no reflection = full", outcome: memory_recall_at_30, a: no_reflection, b: full, expect: "=", tolerance: 0.05}
+  - {outcome: memory_recall_old_at_30__no_recency, outcome_b: memory_recall_old_at_30, a: full, b: full, expect: ">"}
+```
+
+`expect` is `>`, `<`, `>=`, `<=` or `=` (with `tolerance`); `outcome_b` compares two outcomes
+of the same runs, for example a probe variant against the paper weights. The report lists
+each contrast with its direction verdict, the number of seeds agreeing, d_z, the paired p and
+the Holm-adjusted p **within the planned family only**. All other pairwise comparisons stay
+in the report as exploration.
+
+**Parallel runs and re-analysis.** `--jobs N` runs N simulations at a time in worker
+processes; rows keep the protocol's order. `GA_SQLITE_SYNCHRONOUS=OFF` skips the disk sync
+of every commit, which made 25-resident mock runs about 40% faster with bit-identical
+results; a crash can then corrupt the run being written, so use it for batches you can
+re-run. `ga experiment --protocol FILE --rebuild` re-analyses an executed experiment from
+`rows.json` without running anything.
+
+**Report detail.** Below the run-level tables the report pools the per-run metric files by
+condition (`evaluation/detail.py`): planted-fact recall by age, importance and query style
+with the recall curve and the scoring variants; network density at every threshold, the
+clustering-to-density ratio and density over time; and who perceived an intervention.
 
 **Forks.** `ga fork --run-dir R --snapshot NAME --out DIR [--set k=v] [--interventions FILE] [--run]`
 creates a run that continues from a committed snapshot of another run with a fresh ledger;
 `fork_from` in a protocol does the same for every run. A fork that changes nothing reproduces
 the source's own continuation with the mock model (tested), which is the baseline every
 counterfactual is compared against.
+
+With the mock, a fork's seed changes nothing after the fork point, so forks of one source
+are copies, not replicates. `fork_from.run_dir` may therefore contain `{seed}`: each seed
+then forks from its own recorded past, and `fork_from.create` names the config and overrides
+that produce a missing source:
+
+```yaml
+fork_from:
+  run_dir: "runs/experiments/adaptation_fork_v2_sources/s{seed}"
+  snapshot: "2023-02-13T12-30-00"
+  create: {config: configs/research_n25_2day.yaml, overrides: ["output.snapshots=[initial, '2023-02-13T12:30:00', final]", "scenario.end=2023-02-13T12:30:10"]}
+```
+
+With a sampled model the opposite design is informative as well: one shared past and
+several seeds show how much the future varies from the model's sampling alone
+(`configs/experiments/fire_llama32.yaml`).
 
 **Interventions** are the engine's existing kinds: `object_state`, `ambient`, `end_ambient`,
 `inner_voice`. Agents perceive them like anything else; nothing scripts their reaction.
@@ -229,6 +308,9 @@ every comparison.
 ga run --config configs/offline_pilot_2day.yaml --run-id base --set "output.snapshots=[initial, '2023-02-13T10:00:00', final]"
 ga fork --run-dir runs/base --snapshot 2023-02-13T10-00-00 --out runs/base-fire --interventions my_fire.yaml --run
 ga experiment --protocol configs/experiments/memory_consistency_mock.yaml --execute
+GA_SQLITE_SYNCHRONOUS=OFF ga experiment --protocol configs/experiments/memory_retrieval_v2.yaml --execute --jobs 3
+ga experiment --protocol configs/experiments/memory_retrieval_v2.yaml --rebuild   # re-analyse saved rows
+python examples/round2_horizon.py runs/experiments/memory_retrieval_v2 --condition full
 ga serve --run-dir runs/experiments/memory_consistency_mock/full-s101 --experiment runs/experiments/memory_consistency_mock
 ga export --run-dir runs/base          # adds relationships.csv and relationship_events.jsonl
 ```
@@ -267,3 +349,8 @@ values, failures = run_metrics(ctx, ["network", "behavior", "beliefs"])
   calibrated against human relationship data.
 * Forgetting uses two traces (creation, last access) rather than the full access history.
 * The engine is synchronous; wall time with real models is model latency.
+* The recency term of the paper's score is min-max normalized over an agent's stream, so it
+  depends on the oldest memory present: probe results about "old" facts hold for the run
+  length they were measured on (see the horizon analysis in `experiments/round2.md`).
+* Exact permutation tests on a handful of seeds have a floor (2/2ⁿ paired); with many
+  comparisons only planned contrasts can survive a multiplicity adjustment.

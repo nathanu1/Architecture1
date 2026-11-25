@@ -27,7 +27,9 @@ Round two of the research platform (docs/experiments/round2.md) added three thin
   floor wherever facts rank just below it;
 * **variants** re-score the same planted facts in the same snapshot under changed retrieval
   settings (weights, decay, forgetting). Nothing but the scoring differs between variants,
-  so their comparison is exact, not a comparison of two noisy runs.
+  so their comparison is exact, not a comparison of two noisy runs;
+* a fact marked ``anchor: true`` is planted but never queried. One anchor far older than the
+  run shows how the min-max normalization of recency depends on the single oldest memory.
 """
 
 from __future__ import annotations
@@ -68,6 +70,35 @@ def _open_clone(snapshot: Path) -> Database:
 def _embeddings(cfg: GAConfig, store: MemoryStore, embedding_provider: Any) -> EmbeddingService:
     prov = embedding_provider or build_embedding_provider(cfg.providers.embeddings)
     return EmbeddingService(prov, store=store, cache=None)
+
+
+class _FrozenStore:
+    """Read-through cache over a store whose stream no longer changes.
+
+    Every retrieval re-reads and re-parses the agent's whole stream. During the query phase of
+    a probe nothing is written (``commit_access=False``), so the parsed memories and their
+    vectors can be reused across queries and scoring variants; results are identical.
+    """
+
+    def __init__(self, store: MemoryStore):
+        self._store = store
+        self._memories: dict[tuple, list[Any]] = {}
+        self._vectors: dict[tuple, Any] = {}
+
+    def for_agent(self, agent_id: str, kinds: Any = None) -> list[Any]:
+        key = (agent_id, tuple(sorted(k.value for k in kinds)) if kinds else None)
+        if key not in self._memories:
+            self._memories[key] = self._store.for_agent(agent_id, kinds=kinds)
+        return list(self._memories[key])
+
+    def vectors_for(self, memories: list[Any]) -> Any:
+        key = tuple(m.id for m in memories)
+        if key not in self._vectors:
+            self._vectors[key] = self._store.vectors_for(memories)
+        return self._vectors[key]
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._store, name)
 
 
 def fact_queries(fact: dict[str, Any]) -> dict[str, str]:
@@ -113,12 +144,11 @@ def planted_facts(
         now = parse_iso(db.get_meta("sim_time")) or datetime.now()
         store = MemoryStore(db)
         emb = _embeddings(cfg, store, embedding_provider)
-        base = settings or RetrievalSettings.from_config(cfg.retrieval)
-        retrievers = {"": Retriever(store, emb, base)}
+        scoring = {"": settings or RetrievalSettings.from_config(cfg.retrieval)}
         for vname, overrides in (variants or {}).items():
-            retrievers[str(vname)] = Retriever(store, emb, variant_settings(cfg, overrides))
+            scoring[str(vname)] = variant_settings(cfg, overrides)
         identities = {r["id"]: AgentIdentity.model_validate_json(r["identity_json"]) for r in db.query("SELECT id, identity_json FROM agents")}
-        rows: dict[str, list[dict[str, Any]]] = {v: [] for v in retrievers}
+        rows: dict[str, list[dict[str, Any]]] = {v: [] for v in scoring}
         stream_sizes: dict[str, int] = {}
         for aid in agents:
             if aid not in identities:
@@ -141,7 +171,11 @@ def planted_facts(
                     metadata={"probe": True, "fact": f["id"]},
                 )
                 planted.append((f, mem))
+            frozen = _FrozenStore(store)  # this agent's stream is complete: parse it once for all queries
+            retrievers = {v: Retriever(frozen, emb, st) for v, st in scoring.items()}
             for f, mem in planted:
+                if f.get("anchor"):
+                    continue  # planted to change the stream (for example its age range), never queried
                 for style, template in fact_queries(f).items():
                     query = template.replace("{name}", name)
                     for vname, retriever in retrievers.items():
@@ -259,7 +293,7 @@ def own_experiences(
         now = parse_iso(db.get_meta("sim_time")) or datetime.now()
         store = MemoryStore(db)
         emb = _embeddings(cfg, store, embedding_provider)
-        retriever = Retriever(store, emb, settings or RetrievalSettings.from_config(cfg.retrieval))
+        retriever = Retriever(_FrozenStore(store), emb, settings or RetrievalSettings.from_config(cfg.retrieval))
         rows = []
         for r in db.query("SELECT json FROM conversations ORDER BY started_at, id"):
             c = json.loads(r["json"])

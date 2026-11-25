@@ -23,7 +23,7 @@ from typing import Any
 
 import numpy as np
 
-from .base import LLMRequest, LLMResponse, ProviderError, ProviderRefusal, ProviderTruncated, estimate_tokens
+from .base import LLMRequest, LLMResponse, ProviderError, ProviderRefusal, ProviderTruncated, call_seed, estimate_tokens
 from .local_http import JSONClient, inline_refs, is_local_url
 
 DEFAULT_URL = "http://localhost:1234/v1"
@@ -86,7 +86,7 @@ class OpenAICompatibleProvider:
         if request.temperature is not None:
             body["temperature"] = request.temperature
         if self.seed is not None:
-            body["seed"] = self.seed
+            body["seed"] = call_seed(self.seed, request)
         started = time.monotonic()
         data = self.client.request("POST", "/chat/completions", body)
         latency = (time.monotonic() - started) * 1000
@@ -96,7 +96,7 @@ class OpenAICompatibleProvider:
         choice = choices[0]
         message = choice.get("message") or {}
         finish = choice.get("finish_reason") or "stop"
-        metadata = {"finish_reason": finish, "system_fingerprint": data.get("system_fingerprint")}
+        metadata = {"finish_reason": finish, "system_fingerprint": data.get("system_fingerprint"), "seed": body.get("seed")}
         if request.decoding_schema is not None:
             metadata["decoding_schema"] = request.decoding_schema
         if message.get("refusal") or finish == "content_filter":

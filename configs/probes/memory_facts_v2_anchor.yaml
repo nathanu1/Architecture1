@@ -1,0 +1,101 @@
+# The second fact set plus ONE anchor: an unrelated memory dated 30 days before the probe, which
+# is planted and never queried. The paper's score min-max normalizes recency over the agent's
+# whole stream, so a single old memory stretches the scale and lifts the normalized recency of
+# everything else (docs/experiments/round2.md, "the recency term is relative to the oldest
+# memory"). Compare the probe on this file with the probe on memory_facts_v2.yaml.
+facts:
+  - id: bicycle
+    statement: "{name} noticed a red bicycle leaning against the lamppost outside the pharmacy"
+    queries: {lexical: "the red bicycle by the pharmacy lamppost", paraphrase: "a bike someone propped near the drugstore streetlight"}
+    age_hours: 0.5
+    importance: 2
+  - id: kitten
+    statement: "{name} found a grey kitten hiding under the porch steps and gave it some milk"
+    queries: {lexical: "the grey kitten under the porch steps", paraphrase: "a small stray cat discovered beneath the front stairs"}
+    age_hours: 0.5
+    importance: 5
+  - id: umbrella
+    statement: "{name} promised to return a borrowed umbrella to the bakery owner on Thursday"
+    queries: {lexical: "the borrowed umbrella to return on Thursday", paraphrase: "giving back the rain cover lent by the baker later this week"}
+    age_hours: 0.5
+    importance: 8
+  - id: violin
+    statement: "{name} heard a street musician playing the violin near the train station at dusk"
+    queries: {lexical: "the violin player near the train station", paraphrase: "someone busking with a stringed instrument by the railway stop at sunset"}
+    age_hours: 3
+    importance: 2
+  - id: recipe
+    statement: "{name} wrote down a grandmother's recipe for almond cake with orange zest"
+    queries: {lexical: "the grandmother's almond cake recipe", paraphrase: "handwritten instructions for a nutty citrus dessert kept in the family"}
+    age_hours: 3
+    importance: 5
+  - id: dentist
+    statement: "{name} booked a dentist appointment for a chipped tooth on the ninth of March"
+    queries: {lexical: "the dentist appointment for the chipped tooth", paraphrase: "a scheduled visit to get a broken molar fixed"}
+    age_hours: 3
+    importance: 8
+  - id: library
+    statement: "{name} learned that the town library closes early on the first Friday of each month"
+    queries: {lexical: "when the library closes early each month", paraphrase: "the reading room shutting ahead of schedule once every four weeks"}
+    age_hours: 8
+    importance: 2
+  - id: chess
+    statement: "{name} lost a chess game to a retired sailor at the harbor tavern"
+    queries: {lexical: "the chess game against the retired sailor", paraphrase: "being beaten at a board contest by an old seaman in the dockside pub"}
+    age_hours: 8
+    importance: 5
+  - id: passport
+    statement: "{name} realized the passport expires in June and must be renewed before the trip to Kyoto"
+    queries: {lexical: "the passport that expires in June", paraphrase: "travel documents running out soon ahead of the journey to Japan"}
+    age_hours: 8
+    importance: 8
+  - id: bees
+    statement: "{name} saw a swarm of bees settle on the mailbox in front of the bank"
+    queries: {lexical: "the swarm of bees on the mailbox", paraphrase: "a cluster of stinging insects gathered on the letter box by the savings office"}
+    age_hours: 20
+    importance: 2
+  - id: telescope
+    statement: "{name} borrowed a telescope to watch the lunar eclipse from the rooftop"
+    queries: {lexical: "the telescope for the lunar eclipse", paraphrase: "stargazing equipment for seeing the moon go dark atop the building"}
+    age_hours: 20
+    importance: 5
+  - id: keys
+    statement: "{name} left a spare set of house keys with the florist across the street"
+    queries: {lexical: "the spare house keys left with the florist", paraphrase: "a backup way into the home entrusted to the flower seller opposite"}
+    age_hours: 20
+    importance: 8
+  - id: fountain
+    statement: "{name} heard that the park fountain will be repainted green next spring"
+    queries: {lexical: "the fountain repainted green in spring", paraphrase: "plans to give the water feature a fresh coat of color after winter"}
+    age_hours: 32
+    importance: 2
+  - id: scarf
+    statement: "{name} knitted a yellow scarf as a birthday present for a niece"
+    queries: {lexical: "the yellow scarf knitted for the niece", paraphrase: "a handmade woolen gift for a young relative's celebration"}
+    age_hours: 32
+    importance: 5
+  - id: postcard
+    statement: "{name} read a postcard from a cousin in Lisbon who is moving to a new flat"
+    queries: {lexical: "the postcard from the cousin in Lisbon", paraphrase: "mail sent by a family member in Portugal about changing apartments"}
+    age_hours: 32
+    importance: 8
+  - id: ladder
+    statement: "{name} lent a ladder to the mechanic who is fixing the roof of the garage"
+    queries: {lexical: "the ladder lent to the mechanic", paraphrase: "climbing equipment loaned to the car repairman for the workshop ceiling"}
+    age_hours: 44
+    importance: 2
+  - id: marathon
+    statement: "{name} signed up to volunteer at the water table for the city marathon in April"
+    queries: {lexical: "volunteering at the marathon water table", paraphrase: "helping hand out drinks to runners during the long-distance race"}
+    age_hours: 44
+    importance: 5
+  - id: tomato
+    statement: "{name} agreed to water a neighbor's tomato plants while they travel to Denver"
+    queries: {lexical: "watering the neighbor's tomato plants during the Denver trip", paraphrase: "looking after someone's vegetable garden when its owners are away in Colorado"}
+    age_hours: 44
+    importance: 8
+  - id: anchor_30_days
+    anchor: true
+    statement: "{name} renewed a magazine subscription at the newsstand"
+    age_hours: 720
+    importance: 1

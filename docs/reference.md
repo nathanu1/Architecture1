@@ -47,7 +47,7 @@ A six-hour smoke run takes about five seconds: `ga run --config configs/offline_
 | `ga analyze-ratings --run-dir DIR --name N --ratings CSV` | TrueSkill, Kruskal–Wallis, Dunn, Holm (the authors' analysis) plus a labeled Friedman/Wilcoxon addition, on genuine rankings only. |
 | `ga judge --run-dir DIR --name N` | Exploratory LLM judge, written to its own file; never reported as believability. |
 | `ga evaluate --run-dir DIR` | §7 measures with memory-validated evidence and a Markdown report. |
-| `ga experiment --protocol FILE [--measured-run DIR] [--execute] [--yes]` | Independent runs for a protocol (conditions × seeds, named metrics, optional forks and interventions, determinism check); plans and projects usage by default; runs only with `--execute`. |
+| `ga experiment --protocol FILE [--measured-run DIR] [--execute] [--jobs N] [--rebuild] [--yes]` | Independent runs for a protocol (conditions × seeds, named metrics, optional forks and interventions, planned contrasts, determinism check); plans and projects usage by default; runs only with `--execute`. `--jobs N` runs N simulations in parallel worker processes (keep 1 for a single local model server). `--rebuild` re-analyses an executed experiment from its saved rows and runs nothing. |
 | `ga fork --run-dir DIR --snapshot NAME --out DIR [--set k=v] [--interventions FILE] [--run]` | Counterfactual: a new run that continues from a snapshot of another run with changed settings or interventions (research platform). |
 | `ga serve --run-dir DIR [--experiment DIR]` | Local read-only viewer and inspector. |
 | `ga play --config FILE` / `--resume DIR` / `--replay DIR` `[--speed S] [--paused] [--open] [--port N]` | Hearthside town interface (extension): a live town in the browser at http://127.0.0.1:8080, research inspector at `/inspector`. Replays make no model calls. |
@@ -72,6 +72,11 @@ A six-hour smoke run takes about five seconds: `ga run --config configs/offline_
 | `configs/experiments/social_network_mock.yaml` | Experiment B: ten residents, one day; contact opportunity and social-memory conditions; network measures. MOCK. |
 | `configs/experiments/adaptation_fork_mock.yaml` | Experiment C: forks of one recorded morning with and without a fire in Hobbs Cafe; adaptation measures. MOCK. |
 | `configs/offline_social_day.yaml` | Ten residents for one day (base of experiment B). |
+| `configs/research_n25_2day.yaml` | All 25 residents for two days with the MOCK model and real sentence embeddings (all-MiniLM-L6-v2); base of the round-two experiments. |
+| `configs/experiments/memory_retrieval_v2.yaml` | Experiment A2: retrieval at the paper's scale with semantic embeddings, paraphrase queries, an age grid and scoring variants re-scored on the same snapshots. MOCK model, real embeddings. |
+| `configs/experiments/social_network_v2.yaml` | Experiment B2: four levels of contact opportunity, 25 residents, two days, threshold-free network measures. MOCK. |
+| `configs/experiments/adaptation_fork_v2.yaml` | Experiment C2: a fire at lunch in a busy cafe, 25 residents, every seed forked from its own recorded morning. MOCK. |
+| `configs/llamacpp_pilot.yaml` / `configs/experiments/fire_llama32.yaml` | Three residents on Llama 3.2 3B served by llama-cpp-python, and experiment D: forks of that recorded morning with and without a fire. A real local model; no API cost. |
 | `configs/probes/memory_facts.yaml` | Planted facts for the retrieval probe. |
 | `configs/town_mock.yaml` / `town_ollama.yaml` / `town_n25_ollama.yaml` / `town_n35_ollama.yaml` | The town game: offline MOCK; three residents on Ollama (start here); all 25 residents on Ollama; 35 residents, with ten original newcomers in a new neighborhood (an extension). |
 | `configs/game/` | Town game content: six affinity themes, motifs and gifts, catalog, paints and templates, Town Pulse levels, the Town Square, resident looks, a demo action script. |
@@ -120,7 +125,9 @@ Without a GPU, use the smaller `llama3.2:3b` (about 2.0 GB; add
 This is the three-resident vertical slice (Isabella, Maria, Klaus); `configs/town_n25_ollama.yaml`
 runs all 25 once the slice works well on your machine. LM Studio and llama.cpp work through the
 OpenAI-compatible adapter (`providers.llm.kind: openai_compatible`, `base_url:
-http://localhost:1234/v1`). `ga play --resume runs/<id>` continues a town and
+http://localhost:1234/v1`). llama-cpp-python's server (`python -m llama_cpp.server`) takes the
+output schema in a different field: add `providers.llm.schema_format: json_object` for it, as
+`configs/llamacpp_pilot.yaml` does. `ga play --resume runs/<id>` continues a town and
 `ga play --replay runs/<id>` replays it with no model calls.
 
 In the town you can watch residents follow their own schedules and talk to each other, chat with
