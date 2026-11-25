@@ -1,0 +1,44 @@
+# Experiment D (docs/experiments/round2.md): the fire, with a real model. Three residents
+# (Isabella, Maria, Klaus) on Llama 3.2 3B (Q4_K_M) served by llama-cpp-python on four CPU
+# cores, real sentence embeddings. One recorded morning (07:00 to shortly after 09:00, run
+# `llama_fire_source`) is forked six times: three sampled futures without a fire and three
+# with a fire in Hobbs Cafe from 09:10 to 09:50. The seed is sent to the server, so the
+# three seeds are three different samples of the same model on the same past. This is the
+# opposite design to experiment C2 (own past per seed): it isolates the model's sampling.
+#
+# The mock reacts to "burning" by rule and never retells an observed event. Nothing here is
+# scripted: whether the resident reacts, what she does and what she later says is the model's.
+#
+#   python -m llama_cpp.server --model Llama-3.2-3B-Instruct-Q4_K_M.gguf --model_alias llama3.2-3b-q4 --n_ctx 8192 --n_threads 4 --port 8088
+#   ga run --config configs/llamacpp_pilot.yaml --run-id llama_fire_source      # stop it after 09:00 and snapshot as "fork"
+#   ga experiment --protocol configs/experiments/fire_llama32.yaml --execute
+name: fire_llama32
+base_config: configs/llamacpp_pilot.yaml
+fork_from: {run_dir: runs/llama_fire_source, snapshot: "fork"}
+question: "With a real local model, does a resident who sees a fire in her cafe change course, how fast, does the change last while the fire burns, and does she report it afterwards? How much do three sampled futures of one recorded morning differ?"
+hypothesis: >-
+  H1 (manipulation check): Isabella, who is behind the cafe counter at the fork point, perceives
+  the fire in every fire fork; nobody perceives one in control. H2: more residents change plans
+  in `fire` than in `control`. H3: unlike the mock, the model's reaction is not guaranteed; we
+  predict a reaction that names the fire in at least two of the three fire forks, within ten
+  minutes of the fire's start. H4 (report): asked at the end of each fork what happened at the
+  cafe that morning, Isabella mentions the fire in the fire forks and in no control fork.
+  Conversations mentioning the fire are counted without a prediction: with three residents and
+  fifty minutes, conversations are rare.
+conditions:
+  control: ["scenario.end=2023-02-13T10:00:00"]
+  fire: ["scenario.end=2023-02-13T10:00:00"]
+interventions:
+  fire:
+    - {kind: ambient, at: "2023-02-13T09:10:00", id: cafe_fire, tile: [78, 19], subject: fire, predicate: is, object: burning, description: "a fire is burning in Hobbs Cafe", until: "2023-02-13T09:50:00"}
+    - {kind: object_state, at: "2023-02-13T09:10:00", address: "the Ville:Hobbs Cafe:cafe:cooking area", state: burning}
+seeds: [1, 2, 3]
+metrics: [adaptation, behavior, beliefs, network]
+metric_params:
+  adaptation: {at: "2023-02-13T09:10:00", keywords: ["fire", "burning", "smoke", "flame"], window_minutes: 50}
+primary_outcomes: [adaptation_perceivers, adaptation_changed_share, adaptation_median_latency_min, adaptation_mentions, replans_per_agent]
+contrasts:
+  - {label: "H1 perceivers: fire > control", outcome: adaptation_perceivers, a: fire, b: control, expect: ">"}
+  - {label: "H2 share who changed plans: fire > control", outcome: adaptation_changed_share, a: fire, b: control, expect: ">"}
+determinism_check: false
+output_dir: runs/experiments
