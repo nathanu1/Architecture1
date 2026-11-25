@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="300" font-family="IBM Plex Mono, monospace" font-size="11">
+<text x="48" y="20" fill="#16211B" font-size="13">Recall@30 by fact age under scoring variants (full)</text>
+<line x1="48" y1="208.0" x2="544" y2="208.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="212.0" text-anchor="end" fill="#5B6B61">0</text>
+<line x1="48" y1="122.0" x2="544" y2="122.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="126.0" text-anchor="end" fill="#5B6B61">0.5</text>
+<line x1="48" y1="36.0" x2="544" y2="36.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="40.0" text-anchor="end" fill="#5B6B61">1</text>
+<text x="48.0" y="224" text-anchor="middle" fill="#16211B">0.5</text>
+<text x="147.2" y="224" text-anchor="middle" fill="#16211B">3</text>
+<text x="246.4" y="224" text-anchor="middle" fill="#16211B">8</text>
+<text x="345.6" y="224" text-anchor="middle" fill="#16211B">20</text>
+<text x="444.8" y="224" text-anchor="middle" fill="#16211B">32</text>
+<text x="544.0" y="224" text-anchor="middle" fill="#16211B">44</text>
+<text x="296.0" y="240" text-anchor="middle" fill="#5B6B61">age of the planted fact (hours)</text>
+<circle cx="48.0" cy="45.0" r="3.2" fill="#2353AC"><title>paper weights at 0.5: 0.9475</title></circle>
+<circle cx="147.2" cy="60.2" r="3.2" fill="#2353AC"><title>paper weights at 3: 0.859167</title></circle>
+<circle cx="246.4" cy="80.7" r="3.2" fill="#2353AC"><title>paper weights at 8: 0.74</title></circle>
+<circle cx="345.6" cy="101.1" r="3.2" fill="#2353AC"><title>paper weights at 20: 0.621667</title></circle>
+<circle cx="444.8" cy="148.8" r="3.2" fill="#2353AC"><title>paper weights at 32: 0.344167</title></circle>
+<circle cx="544.0" cy="186.6" r="3.2" fill="#2353AC"><title>paper weights at 44: 0.124167</title></circle>
+<polyline points="48.0,45.0 147.2,60.2 246.4,80.7 345.6,101.1 444.8,148.8 544.0,186.6" fill="none" stroke="#2353AC" stroke-width="2" stroke-dasharray=""/>
+<line x1="48.0" y1="252" x2="66.0" y2="252" stroke="#2353AC" stroke-width="2" stroke-dasharray=""/>
+<text x="70.0" y="256" fill="#16211B">paper weights</text>
+<circle cx="48.0" cy="59.2" r="3.2" fill="#B4461C"><title>no_recency at 0.5: 0.865</title></circle>
+<circle cx="147.2" cy="58.9" r="3.2" fill="#B4461C"><title>no_recency at 3: 0.866667</title></circle>
+<circle cx="246.4" cy="70.3" r="3.2" fill="#B4461C"><title>no_recency at 8: 0.800833</title></circle>
+<circle cx="345.6" cy="63.2" r="3.2" fill="#B4461C"><title>no_recency at 20: 0.841667</title></circle>
+<circle cx="444.8" cy="49.9" r="3.2" fill="#B4461C"><title>no_recency at 32: 0.919167</title></circle>
+<circle cx="544.0" cy="53.1" r="3.2" fill="#B4461C"><title>no_recency at 44: 0.900833</title></circle>
+<polyline points="48.0,59.2 147.2,58.9 246.4,70.3 345.6,63.2 444.8,49.9 544.0,53.1" fill="none" stroke="#B4461C" stroke-width="2" stroke-dasharray="6 3"/>
+<line x1="213.3" y1="252" x2="231.3" y2="252" stroke="#B4461C" stroke-width="2" stroke-dasharray="6 3"/>
+<text x="235.3" y="256" fill="#16211B">no_recency</text>
+<circle cx="48.0" cy="48.5" r="3.2" fill="#6B3E9B"><title>half_recency at 0.5: 0.9275</title></circle>
+<circle cx="147.2" cy="59.1" r="3.2" fill="#6B3E9B"><title>half_recency at 3: 0.865833</title></circle>
+<circle cx="246.4" cy="75.0" r="3.2" fill="#6B3E9B"><title>half_recency at 8: 0.773333</title></circle>
+<circle cx="345.6" cy="78.4" r="3.2" fill="#6B3E9B"><title>half_recency at 20: 0.753333</title></circle>
+<circle cx="444.8" cy="94.5" r="3.2" fill="#6B3E9B"><title>half_recency at 32: 0.66</title></circle>
+<circle cx="544.0" cy="120.3" r="3.2" fill="#6B3E9B"><title>half_recency at 44: 0.51</title></circle>
+<polyline points="48.0,48.5 147.2,59.1 246.4,75.0 345.6,78.4 444.8,94.5 544.0,120.3" fill="none" stroke="#6B3E9B" stroke-width="2" stroke-dasharray="2 3"/>
+<line x1="378.7" y1="252" x2="396.7" y2="252" stroke="#6B3E9B" stroke-width="2" stroke-dasharray="2 3"/>
+<text x="400.7" y="256" fill="#16211B">half_recency</text>
+<circle cx="48.0" cy="36.0" r="3.2" fill="#1E6E62"><title>relevance_only at 0.5: 1</title></circle>
+<circle cx="147.2" cy="36.0" r="3.2" fill="#1E6E62"><title>relevance_only at 3: 1</title></circle>
+<circle cx="246.4" cy="36.0" r="3.2" fill="#1E6E62"><title>relevance_only at 8: 1</title></circle>
+<circle cx="345.6" cy="36.0" r="3.2" fill="#1E6E62"><title>relevance_only at 20: 1</title></circle>
+<circle cx="444.8" cy="36.0" r="3.2" fill="#1E6E62"><title>relevance_only at 32: 1</title></circle>
+<circle cx="544.0" cy="36.0" r="3.2" fill="#1E6E62"><title>relevance_only at 44: 1</title></circle>
+<polyline points="48.0,36.0 147.2,36.0 246.4,36.0 345.6,36.0 444.8,36.0 544.0,36.0" fill="none" stroke="#1E6E62" stroke-width="2" stroke-dasharray="8 3 2 3"/>
+<line x1="48.0" y1="268" x2="66.0" y2="268" stroke="#1E6E62" stroke-width="2" stroke-dasharray="8 3 2 3"/>
+<text x="70.0" y="272" fill="#16211B">relevance_only</text>
+<circle cx="48.0" cy="36.0" r="3.2" fill="#6E5A1E"><title>double_relevance at 0.5: 1</title></circle>
+<circle cx="147.2" cy="36.0" r="3.2" fill="#6E5A1E"><title>double_relevance at 3: 1</title></circle>
+<circle cx="246.4" cy="36.0" r="3.2" fill="#6E5A1E"><title>double_relevance at 8: 1</title></circle>
+<circle cx="345.6" cy="37.1" r="3.2" fill="#6E5A1E"><title>double_relevance at 20: 0.993333</title></circle>
+<circle cx="444.8" cy="37.3" r="3.2" fill="#6E5A1E"><title>double_relevance at 32: 0.9925</title></circle>
+<circle cx="544.0" cy="68.7" r="3.2" fill="#6E5A1E"><title>double_relevance at 44: 0.81</title></circle>
+<polyline points="48.0,36.0 147.2,36.0 246.4,36.0 345.6,37.1 444.8,37.3 544.0,68.7" fill="none" stroke="#6E5A1E" stroke-width="2" stroke-dasharray="1 4"/>
+<line x1="213.3" y1="268" x2="231.3" y2="268" stroke="#6E5A1E" stroke-width="2" stroke-dasharray="1 4"/>
+<text x="235.3" y="272" fill="#16211B">double_relevance</text>
+<circle cx="48.0" cy="93.3" r="3.2" fill="#2353AC"><title>recency_only at 0.5: 0.666667</title></circle>
+<circle cx="147.2" cy="207.7" r="3.2" fill="#2353AC"><title>recency_only at 3: 0.00166667</title></circle>
+<circle cx="246.4" cy="208.0" r="3.2" fill="#2353AC"><title>recency_only at 8: 0</title></circle>
+<circle cx="345.6" cy="208.0" r="3.2" fill="#2353AC"><title>recency_only at 20: 0</title></circle>
+<circle cx="444.8" cy="208.0" r="3.2" fill="#2353AC"><title>recency_only at 32: 0</title></circle>
+<circle cx="544.0" cy="208.0" r="3.2" fill="#2353AC"><title>recency_only at 44: 0</title></circle>
+<polyline points="48.0,93.3 147.2,207.7 246.4,208.0 345.6,208.0 444.8,208.0 544.0,208.0" fill="none" stroke="#2353AC" stroke-width="2" stroke-dasharray="6 3"/>
+<line x1="378.7" y1="268" x2="396.7" y2="268" stroke="#2353AC" stroke-width="2" stroke-dasharray="6 3"/>
+<text x="400.7" y="272" fill="#16211B">recency_only</text>
+<circle cx="48.0" cy="42.2" r="3.2" fill="#B4461C"><title>forgetting at 0.5: 0.964167</title></circle>
+<circle cx="147.2" cy="58.8" r="3.2" fill="#B4461C"><title>forgetting at 3: 0.8675</title></circle>
+<circle cx="246.4" cy="80.3" r="3.2" fill="#B4461C"><title>forgetting at 8: 0.7425</title></circle>
+<circle cx="345.6" cy="113.3" r="3.2" fill="#B4461C"><title>forgetting at 20: 0.550833</title></circle>
+<circle cx="444.8" cy="171.7" r="3.2" fill="#B4461C"><title>forgetting at 32: 0.210833</title></circle>
+<circle cx="544.0" cy="192.8" r="3.2" fill="#B4461C"><title>forgetting at 44: 0.0883333</title></circle>
+<polyline points="48.0,42.2 147.2,58.8 246.4,80.3 345.6,113.3 444.8,171.7 544.0,192.8" fill="none" stroke="#B4461C" stroke-width="2" stroke-dasharray="2 3"/>
+<line x1="48.0" y1="284" x2="66.0" y2="284" stroke="#B4461C" stroke-width="2" stroke-dasharray="2 3"/>
+<text x="70.0" y="288" fill="#16211B">forgetting</text>
+</svg>

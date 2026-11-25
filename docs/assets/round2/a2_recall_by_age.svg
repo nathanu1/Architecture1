@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="280" font-family="IBM Plex Mono, monospace" font-size="11">
+<text x="48" y="20" fill="#16211B" font-size="13">Recall@30 by fact age, paper weights</text>
+<line x1="48" y1="204.0" x2="544" y2="204.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="208.0" text-anchor="end" fill="#5B6B61">0</text>
+<line x1="48" y1="120.0" x2="544" y2="120.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="124.0" text-anchor="end" fill="#5B6B61">0.5</text>
+<line x1="48" y1="36.0" x2="544" y2="36.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="40.0" text-anchor="end" fill="#5B6B61">1</text>
+<text x="48.0" y="220" text-anchor="middle" fill="#16211B">0.5</text>
+<text x="147.2" y="220" text-anchor="middle" fill="#16211B">3</text>
+<text x="246.4" y="220" text-anchor="middle" fill="#16211B">8</text>
+<text x="345.6" y="220" text-anchor="middle" fill="#16211B">20</text>
+<text x="444.8" y="220" text-anchor="middle" fill="#16211B">32</text>
+<text x="544.0" y="220" text-anchor="middle" fill="#16211B">44</text>
+<text x="296.0" y="236" text-anchor="middle" fill="#5B6B61">age of the planted fact (hours)</text>
+<circle cx="48.0" cy="44.8" r="3.2" fill="#2353AC"><title>full at 0.5: 0.9475</title></circle>
+<circle cx="147.2" cy="59.7" r="3.2" fill="#2353AC"><title>full at 3: 0.859167</title></circle>
+<circle cx="246.4" cy="79.7" r="3.2" fill="#2353AC"><title>full at 8: 0.74</title></circle>
+<circle cx="345.6" cy="99.6" r="3.2" fill="#2353AC"><title>full at 20: 0.621667</title></circle>
+<circle cx="444.8" cy="146.2" r="3.2" fill="#2353AC"><title>full at 32: 0.344167</title></circle>
+<circle cx="544.0" cy="183.1" r="3.2" fill="#2353AC"><title>full at 44: 0.124167</title></circle>
+<polyline points="48.0,44.8 147.2,59.7 246.4,79.7 345.6,99.6 444.8,146.2 544.0,183.1" fill="none" stroke="#2353AC" stroke-width="2" stroke-dasharray=""/>
+<line x1="48.0" y1="248" x2="66.0" y2="248" stroke="#2353AC" stroke-width="2" stroke-dasharray=""/>
+<text x="70.0" y="252" fill="#16211B">full</text>
+<circle cx="48.0" cy="117.9" r="3.2" fill="#B4461C"><title>hash_embeddings at 0.5: 0.5125</title></circle>
+<circle cx="147.2" cy="128.1" r="3.2" fill="#B4461C"><title>hash_embeddings at 3: 0.451667</title></circle>
+<circle cx="246.4" cy="129.2" r="3.2" fill="#B4461C"><title>hash_embeddings at 8: 0.445</title></circle>
+<circle cx="345.6" cy="163.7" r="3.2" fill="#B4461C"><title>hash_embeddings at 20: 0.24</title></circle>
+<circle cx="444.8" cy="171.5" r="3.2" fill="#B4461C"><title>hash_embeddings at 32: 0.193333</title></circle>
+<circle cx="544.0" cy="195.0" r="3.2" fill="#B4461C"><title>hash_embeddings at 44: 0.0533333</title></circle>
+<polyline points="48.0,117.9 147.2,128.1 246.4,129.2 345.6,163.7 444.8,171.5 544.0,195.0" fill="none" stroke="#B4461C" stroke-width="2" stroke-dasharray="6 3"/>
+<line x1="213.3" y1="248" x2="231.3" y2="248" stroke="#B4461C" stroke-width="2" stroke-dasharray="6 3"/>
+<text x="235.3" y="252" fill="#16211B">hash_embeddings</text>
+<circle cx="48.0" cy="43.0" r="3.2" fill="#6B3E9B"><title>no_reflection at 0.5: 0.958333</title></circle>
+<circle cx="147.2" cy="56.2" r="3.2" fill="#6B3E9B"><title>no_reflection at 3: 0.88</title></circle>
+<circle cx="246.4" cy="75.9" r="3.2" fill="#6B3E9B"><title>no_reflection at 8: 0.7625</title></circle>
+<circle cx="345.6" cy="92.0" r="3.2" fill="#6B3E9B"><title>no_reflection at 20: 0.666667</title></circle>
+<circle cx="444.8" cy="138.9" r="3.2" fill="#6B3E9B"><title>no_reflection at 32: 0.3875</title></circle>
+<circle cx="544.0" cy="179.1" r="3.2" fill="#6B3E9B"><title>no_reflection at 44: 0.148333</title></circle>
+<polyline points="48.0,43.0 147.2,56.2 246.4,75.9 345.6,92.0 444.8,138.9 544.0,179.1" fill="none" stroke="#6B3E9B" stroke-width="2" stroke-dasharray="2 3"/>
+<line x1="378.7" y1="248" x2="396.7" y2="248" stroke="#6B3E9B" stroke-width="2" stroke-dasharray="2 3"/>
+<text x="400.7" y="252" fill="#16211B">no_reflection</text>
+<circle cx="48.0" cy="36.0" r="3.2" fill="#1E6E62"><title>recency_only at 0.5: 1</title></circle>
+<circle cx="147.2" cy="192.0" r="3.2" fill="#1E6E62"><title>recency_only at 3: 0.0716667</title></circle>
+<circle cx="246.4" cy="204.0" r="3.2" fill="#1E6E62"><title>recency_only at 8: 0</title></circle>
+<circle cx="345.6" cy="204.0" r="3.2" fill="#1E6E62"><title>recency_only at 20: 0</title></circle>
+<circle cx="444.8" cy="204.0" r="3.2" fill="#1E6E62"><title>recency_only at 32: 0</title></circle>
+<circle cx="544.0" cy="204.0" r="3.2" fill="#1E6E62"><title>recency_only at 44: 0</title></circle>
+<polyline points="48.0,36.0 147.2,192.0 246.4,204.0 345.6,204.0 444.8,204.0 544.0,204.0" fill="none" stroke="#1E6E62" stroke-width="2" stroke-dasharray="8 3 2 3"/>
+<line x1="48.0" y1="264" x2="66.0" y2="264" stroke="#1E6E62" stroke-width="2" stroke-dasharray="8 3 2 3"/>
+<text x="70.0" y="268" fill="#16211B">recency_only</text>
+</svg>
