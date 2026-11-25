@@ -1,5 +1,11 @@
 # Demonstration experiments (executed with the offline MOCK model)
 
+> **Round two.** [`round2.md`](round2.md) re-reads the results below critically, lists what was
+> built in response (paired statistics, planned contrasts, rank-based probes with paraphrase
+> queries, threshold-free network measures, per-seed forks, parallel runs), and reports four
+> larger experiments: three with all 25 residents and real sentence embeddings, and one on a
+> real local model. Where the two documents disagree, round two is the later reading.
+
 Three experiments exercise the research platform end to end. **They were run with the
 deterministic mock model and hash embeddings**, so their numbers show that the conditions are
 wired, that the measures move in the direction the mechanisms imply, and that the reports and
