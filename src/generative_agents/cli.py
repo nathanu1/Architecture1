@@ -503,6 +503,12 @@ def cmd_experiment(args: argparse.Namespace) -> int:
     est = estimate(proto, args.measured_run)
     print(f"protocol {proto.name}: {len(proto.runs())} independent runs ({', '.join(proto.conditions)}) × seeds {proto.seeds}")
     _print(est)
+    if args.rebuild:
+        from .evaluation.experiment import rebuild
+
+        res = rebuild(proto)
+        print(f"re-analysed {len(res['rows'])} saved runs (nothing was re-run): {res['dir']}/report.md")
+        return 0
     if not args.execute:
         print("Planned only. Add --execute to run the batch (live protocols spend real API calls).")
         return 0
@@ -510,7 +516,7 @@ def cmd_experiment(args: argparse.Namespace) -> int:
     if est["mode"] == "live" and not args.yes and not local:
         print("This protocol is live. Add --yes as well to confirm.")
         return 2
-    res = execute(proto, progress=lambda r: print(f"  {r['run_id']}: {r.get('status')} {r.get('stop_detail') or ''}", flush=True))
+    res = execute(proto, jobs=max(1, args.jobs), progress=lambda r: print(f"  {r['run_id']}: {r.get('status')} {r.get('stop_detail') or ''}", flush=True))
     print(f"report: {res['dir']}/report.md")
     return 0
 
@@ -748,6 +754,8 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--measured-run", help="a pilot run directory to project usage from")
     sp.add_argument("--execute", action="store_true")
     sp.add_argument("--yes", action="store_true")
+    sp.add_argument("--rebuild", action="store_true", help="re-analyse an executed experiment from its saved rows; runs nothing")
+    sp.add_argument("--jobs", type=int, default=1, help="simulations to run in parallel (worker processes); keep 1 for a single local model server")
     sp.set_defaults(func=cmd_experiment)
 
     sp = sub.add_parser("play", help="the town game: live simulation with the storybook interface")

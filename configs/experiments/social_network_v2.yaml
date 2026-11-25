@@ -1,0 +1,39 @@
+# Experiment B2 (docs/experiments/round2.md): social network emergence at the paper's scale.
+# Round one found that the thresholded density (tie = familiarity >= 0.2) did not respond to
+# contact opportunity, because one conversation already crosses that threshold, and it had ten
+# residents, one day and three seeds. Here: all 25 residents, two days, eight seeds, four
+# levels of contact opportunity (a dose-response instead of two extremes), and primary outcomes
+# fixed before running that do not hang on one threshold: the weighted density (mean mutual
+# familiarity over all pairs), the share of pairs who talked, and the density at threshold 0.5
+# (the value round one's post-hoc check pointed to). The `informed` condition of round one is
+# dropped: the mock does not read relationship lines, so it can only repeat a no-op.
+# MOCK model with semantic embeddings: structure and contact effects only.
+#   GA_SQLITE_SYNCHRONOUS=OFF ga experiment --protocol configs/experiments/social_network_v2.yaml --execute --jobs 3
+name: social_network_v2
+base_config: configs/research_n25_2day.yaml
+question: "In a 25-resident town over two days, how does contact opportunity change the social network when the measures do not depend on a single tie threshold, and does the dose-response found post hoc in round one hold when it is registered in advance?"
+hypothesis: >-
+  H1: weighted density rises monotonically with contact opportunity across the four cooldown
+  levels (720 < 240 < 133 < 30 minutes of cooldown reversed: low < reduced < baseline < high).
+  H2: density at threshold 0.5 and the share of pairs who talked are higher under high contact
+  than under low contact. H3: density at threshold 0.2 differs between the extreme contact
+  conditions by less than 0.05 (the saturation seen in round one).
+conditions:
+  low_contact: ["dialogue.cooldown_minutes=720"]
+  reduced_contact: ["dialogue.cooldown_minutes=240"]
+  baseline: []
+  high_contact: ["dialogue.cooldown_minutes=30"]
+seeds: [211, 212, 213, 214, 215, 216, 217, 218]
+metrics: [network, behavior, beliefs]
+metric_params:
+  network: {thresholds: [0.2, 0.35, 0.5, 0.75]}
+primary_outcomes: [network_weighted_density, network_conversation_density, network_density_t50, network_density_t20, conversations_per_agent]
+contrasts:
+  - {label: "H1 weighted density: high > baseline", outcome: network_weighted_density, a: high_contact, b: baseline, expect: ">"}
+  - {label: "H1 weighted density: baseline > reduced", outcome: network_weighted_density, a: baseline, b: reduced_contact, expect: ">"}
+  - {label: "H1 weighted density: reduced > low", outcome: network_weighted_density, a: reduced_contact, b: low_contact, expect: ">"}
+  - {label: "H2 density at 0.5: high > low", outcome: network_density_t50, a: high_contact, b: low_contact, expect: ">"}
+  - {label: "H2 pairs who talked: high > low", outcome: network_conversation_density, a: high_contact, b: low_contact, expect: ">"}
+  - {label: "H3 density at 0.2: high = low", outcome: network_density_t20, a: high_contact, b: low_contact, expect: "=", tolerance: 0.05}
+determinism_check: true
+output_dir: runs/experiments

@@ -8,7 +8,9 @@ Requests: ``POST {base_url}/chat/completions`` with a system and a user message,
 config, if any (local servers usually accept anything).
 
 This follows the OpenAI wire format. It was exercised against llama.cpp's ``llama-server``
-(chat with a JSON schema and embeddings), not against LM Studio. Servers differ in how strictly
+(chat with a JSON schema and embeddings) and against llama-cpp-python's server, not against
+LM Studio. llama-cpp-python's server rejects ``json_schema`` and takes the schema inside
+``{"type": "json_object", "schema": ...}`` instead; ``schema_format="json_object"`` sends that. Servers differ in how strictly
 they enforce ``json_schema``; the gateway validates every reply and repairs or fails visibly
 either way.
 """
@@ -47,14 +49,21 @@ class OpenAICompatibleProvider:
         seed: int | None = None,
         timeout_s: float = 600.0,
         client: JSONClient | None = None,
+        schema_format: str = "json_schema",
     ):
+        if schema_format not in ("json_schema", "json_object"):
+            raise ValueError(f"unknown schema_format {schema_format!r}")
         self.model = model
         self.base_url = (base_url or DEFAULT_URL).rstrip("/")
         self.seed = seed
+        self.schema_format = schema_format
         self.client = client or _client(self.base_url, api_key_env, timeout_s)
 
     def describe(self) -> dict[str, Any]:
-        return {"provider": self.name, "model": self.model, "base_url": self.base_url, "seed": self.seed, "local": is_local_url(self.base_url)}
+        d = {"provider": self.name, "model": self.model, "base_url": self.base_url, "seed": self.seed, "local": is_local_url(self.base_url)}
+        if self.schema_format != "json_schema":
+            d["schema_format"] = self.schema_format
+        return d
 
     def complete(self, request: LLMRequest) -> LLMResponse:
         schema = request.decoding_schema or inline_refs(request.output_schema)
@@ -68,7 +77,11 @@ class OpenAICompatibleProvider:
             "stream": False,
             # Local servers decode within a grammar built from this schema, so the tighter
             # decoding schema (offered choices, counts, ranges) applies when there is one.
-            "response_format": {"type": "json_schema", "json_schema": {"name": request.task, "schema": schema, "strict": True}},
+            "response_format": (
+                {"type": "json_object", "schema": schema}
+                if self.schema_format == "json_object"
+                else {"type": "json_schema", "json_schema": {"name": request.task, "schema": schema, "strict": True}}
+            ),
         }
         if request.temperature is not None:
             body["temperature"] = request.temperature

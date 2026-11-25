@@ -1,0 +1,23 @@
+# The paper's scale for the research platform's second round (docs/experiments/round2.md):
+# all 25 Smallville residents, 13–15 February, with the offline MOCK model for words and
+# decisions and REAL sentence embeddings (all-MiniLM-L6-v2, 384 dimensions, computed in
+# process) for retrieval. Relevance is therefore semantic; behavior is still the fixture's.
+# About 35,000 mock calls and ten minutes of wall time per run on one core.
+#   uv sync --extra local-embeddings
+#   ga run --config configs/research_n25_2day.yaml --run-id n25
+run:
+  name: n25-2day
+  label: "25 residents, two days (MOCK model, semantic embeddings)"
+scenario:
+  path: scenarios/smallville_n25/scenario.yaml
+  start: "2023-02-13T00:00:00"
+  end: "2023-02-15T00:01:00"
+budget:
+  max_calls: 200000
+  max_input_tokens: 200000000
+  max_output_tokens: 20000000
+output:
+  checkpoint_every_steps: 360
+providers:
+  llm: {kind: mock, model: mock-llm-v1}
+  embeddings: {kind: sentence-transformers, model: sentence-transformers/all-MiniLM-L6-v2, dims: 384}

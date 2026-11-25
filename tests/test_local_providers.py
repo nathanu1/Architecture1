@@ -239,3 +239,26 @@ def test_openai_compatible_server_request_and_reply(monkeypatch):
     finally:
         srv.shutdown()
         srv.server_close()
+
+
+def test_openai_compatible_can_send_the_schema_as_a_json_object_for_llama_cpp_python():
+    """llama-cpp-python's server rejects ``json_schema``; it takes the schema inside ``json_object``."""
+
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), _OpenAIish)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{srv.server_address[1]}/v1"
+    _OpenAIish.seen.clear()
+    try:
+        provider = OpenAICompatibleProvider("llama3.2-3b-q4", base_url=base, seed=5, schema_format="json_object")
+        gw = gateway(provider)
+        assert gw.run("importance", variables("importance"), agent_id="a", constraints={"rating": {"minimum": 1, "maximum": 10}}).output.rating == 3
+        _, body, _ = _OpenAIish.seen[0]
+        assert body["response_format"]["type"] == "json_object"
+        assert body["response_format"]["schema"]["properties"]["rating"] == {"type": "integer", "minimum": 1, "maximum": 10}
+        assert "json_schema" not in body["response_format"]
+        assert provider.describe()["schema_format"] == "json_object"
+    finally:
+        srv.shutdown()
+        srv.server_close()
+    with pytest.raises(ValueError):
+        OpenAICompatibleProvider("m", schema_format="yaml")

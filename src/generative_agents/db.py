@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -164,6 +165,20 @@ def sha256_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def apply_sync_mode(conn: sqlite3.Connection) -> None:
+    """Honor ``GA_SQLITE_SYNCHRONOUS`` (OFF, NORMAL, FULL; default: SQLite's own FULL).
+
+    Every model call commits twice (state and ledger), and a durable commit waits for the
+    disk. Batches of offline experiment runs can trade that durability for speed: with OFF a
+    power loss can corrupt the run being written (re-run it), and nothing about the results
+    changes. Interactive and live runs should leave the variable unset.
+    """
+
+    mode = os.environ.get("GA_SQLITE_SYNCHRONOUS", "").strip().upper()
+    if mode in ("OFF", "NORMAL", "FULL"):
+        conn.execute(f"PRAGMA synchronous={mode}")
+
+
 class Database:
     """Thin wrapper over a SQLite connection with explicit transactions."""
 
@@ -177,6 +192,7 @@ class Database:
         self.conn.row_factory = sqlite3.Row
         self.conn.execute("PRAGMA foreign_keys=ON")
         if not read_only:
+            apply_sync_mode(self.conn)
             self.conn.executescript(SCHEMA)
             self.conn.commit()
         self.read_only = read_only

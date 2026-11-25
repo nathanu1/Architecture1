@@ -10,6 +10,13 @@ Measures: density ``2|E| / (n(n-1))``, mean degree, degree distribution, recipro
 components (count and largest), and the mean familiarity and valence over directed ties.
 ``reconstruct`` rebuilds every record as it stood at a simulated time from the append-only
 ``relationship_events`` log, so a time series needs no extra bookkeeping during the run.
+
+Three measures do not depend on one chosen threshold (added after the first experiments
+showed the thresholded density saturating): ``weighted_density`` is the mean over all
+unordered pairs of the weaker direction's familiarity (zero when a direction has no record),
+``conversation_density`` counts pairs that actually talked, and ``threshold_sweep`` reports
+the thresholded measures at several thresholds side by side. ``degree_gini`` describes how
+unevenly ties are spread over agents.
 """
 
 from __future__ import annotations
@@ -21,6 +28,8 @@ from itertools import combinations
 from typing import Any
 
 from ..db import Database
+
+SWEEP_THRESHOLDS = (0.2, 0.35, 0.5, 0.75)
 
 
 def ties(states: list[dict[str, Any]], threshold: float) -> dict[tuple[str, str], dict[str, Any]]:
@@ -78,6 +87,50 @@ def clustering(nodes: list[str], edges: list[tuple[str, str]]) -> float | None:
     return round(sum(coeffs) / len(coeffs), 4) if coeffs else None
 
 
+def gini(values: list[float]) -> float | None:
+    """Gini coefficient of non-negative values (0 = equal, toward 1 = concentrated)."""
+
+    vals = sorted(values)
+    total = sum(vals)
+    if not vals or total <= 0:
+        return None
+    n = len(vals)
+    return round(sum((2 * (i + 1) - n - 1) * v for i, v in enumerate(vals)) / (n * total), 4)
+
+
+def weighted_density(nodes: list[str], states: list[dict[str, Any]]) -> float | None:
+    """Mean over unordered pairs of ``min(familiarity a→b, familiarity b→a)``; no threshold involved."""
+
+    n = len(nodes)
+    if n < 2:
+        return None
+    fam = {(s["agent_id"], s["other_id"]): float(s.get("familiarity", 0.0)) for s in states}
+    inside = set(nodes)
+    total = sum(min(f, fam.get((b, a), 0.0)) for (a, b), f in fam.items() if a < b and a in inside and b in inside)
+    return round(total / (n * (n - 1) / 2), 4)
+
+
+def conversation_density(nodes: list[str], states: list[dict[str, Any]]) -> float | None:
+    """Share of unordered pairs with at least one recorded conversation (either direction's record)."""
+
+    n = len(nodes)
+    if n < 2:
+        return None
+    inside = set(nodes)
+    pairs = {tuple(sorted((s["agent_id"], s["other_id"]))) for s in states if s.get("conversations", 0) and s["agent_id"] in inside and s["other_id"] in inside}
+    return round(len(pairs) / (n * (n - 1) / 2), 4)
+
+
+def threshold_sweep(nodes: list[str], states: list[dict[str, Any]], thresholds: list[float] | tuple[float, ...] = SWEEP_THRESHOLDS) -> list[dict[str, Any]]:
+    """The thresholded measures at several tie thresholds, so no single choice carries a conclusion."""
+
+    out = []
+    for t in thresholds:
+        m = measures(nodes, states, t)
+        out.append({"threshold": t, **{k: m[k] for k in ("edge_count", "density", "mean_degree", "components", "largest_component", "isolates", "clustering")}})
+    return out
+
+
 def measures(nodes: list[str], states: list[dict[str, Any]], threshold: float) -> dict[str, Any]:
     n = len(nodes)
     directed = ties(states, threshold)
@@ -106,6 +159,9 @@ def measures(nodes: list[str], states: list[dict[str, Any]], threshold: float) -
         "largest_component": len(comps[0]) if comps else 0,
         "mean_familiarity": round(sum(fam) / len(fam), 4) if fam else None,
         "mean_valence": round(sum(val) / len(val), 4) if val else None,
+        "weighted_density": weighted_density(nodes, states),
+        "conversation_density": conversation_density(nodes, states),
+        "degree_gini": gini([float(degree.get(a, 0)) for a in nodes]),
         "records": len(states),
     }
 

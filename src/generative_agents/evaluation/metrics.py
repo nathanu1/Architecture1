@@ -142,20 +142,24 @@ def evaluation(ctx: MetricContext) -> dict[str, Any]:
 
 @metric("network")
 def network_metric(ctx: MetricContext) -> dict[str, Any]:
+    """``metric_params.network.thresholds``: tie thresholds to report next to the configured one."""
+
     from ..social import network
 
+    thresholds = [float(t) for t in ctx.params.get("thresholds", network.SWEEP_THRESHOLDS)]
     db = ctx.state()
     try:
         states = network.current_states(db)
         m = network.measures(ctx.agents, states, ctx.cfg.social.tie_threshold)
+        sweep = network.threshold_sweep(ctx.agents, states, thresholds)
         start, end = ctx.cfg.scenario.start, parse_iso(db.get_meta("sim_time")) or ctx.cfg.scenario.end
         hours = int((end - start).total_seconds() // 3600)
         times = [start + (end - start) * i / max(1, min(hours, 48)) for i in range(0, min(hours, 48) + 1)]
         series = network.time_series(db, ctx.agents, times, ctx.cfg.social.tie_threshold)
     finally:
         db.close()
-    ctx.write("network", {"final": m, "series": series})
-    return {
+    ctx.write("network", {"final": m, "threshold_sweep": sweep, "series": series})
+    out = {
         "network_density": m["density"],
         "network_edges": m["edge_count"],
         "network_components": m["components"],
@@ -163,10 +167,16 @@ def network_metric(ctx: MetricContext) -> dict[str, Any]:
         "network_isolates": m["isolates"],
         "network_reciprocity": m["reciprocity"],
         "network_clustering": m["clustering"],
+        "network_weighted_density": m["weighted_density"],
+        "network_conversation_density": m["conversation_density"],
+        "network_degree_gini": m["degree_gini"],
         "mean_familiarity": m["mean_familiarity"],
         "mean_valence": m["mean_valence"],
         "relationship_records": m["records"],
     }
+    for row in sweep:
+        out[f"network_density_t{round(row['threshold'] * 100):02d}"] = row["density"]
+    return out
 
 
 @metric("behavior")
@@ -185,6 +195,8 @@ def behavior_metric(ctx: MetricContext) -> dict[str, Any]:
 
 @metric("memory_probe")
 def memory_probe_metric(ctx: MetricContext) -> dict[str, Any]:
+    """``metric_params.memory_probe``: ``k``, ``facts`` (YAML path), ``variants`` ({name: retrieval overrides})."""
+
     from .memory_probe import load_facts, own_experiences, planted_facts
 
     snap = ctx.snapshot("final")
@@ -192,19 +204,39 @@ def memory_probe_metric(ctx: MetricContext) -> dict[str, Any]:
         raise FileNotFoundError("no final snapshot; the memory probe needs one")
     k = int(ctx.params.get("k", 10))
     facts = load_facts(ctx.params.get("facts"))
-    planted = planted_facts(ctx.cfg, snap, ctx.agents, facts=facts, k=k, embedding_provider=ctx.embedding_provider)
+    variants = {str(n): dict(o or {}) for n, o in (ctx.params.get("variants") or {}).items()}
+    planted = planted_facts(ctx.cfg, snap, ctx.agents, facts=facts, k=k, embedding_provider=ctx.embedding_provider, variants=variants)
     own = own_experiences(ctx.cfg, snap, ctx.agents, k=k, embedding_provider=ctx.embedding_provider)
     ctx.write("memory_probe", {"planted": planted, "own_experiences": own})
     ps = planted["summary"]
-    return {
+    styles = ps.get("by_style") or {}
+    sizes = list((planted.get("stream_sizes") or {}).values())
+    out = {
         "memory_recall_at_k": ps.get("recall_at_k"),
         "memory_recall_at_30": ps.get("recall_at_30"),
         "memory_mrr": ps.get("mean_reciprocal_rank"),
+        "memory_median_rank": ps.get("median_rank"),
+        "memory_rank_percentile": ps.get("mean_rank_percentile"),
         "memory_recall_old": (ps.get("by_age") or {}).get(">24h"),
+        "memory_recall_old_at_30": (ps.get("old") or {}).get("recall_at_30"),
+        "memory_recall_old_important_at_30": (ps.get("old_important") or {}).get("recall_at_30"),
         "memory_recall_recent": (ps.get("by_age") or {}).get("<=1h"),
         "memory_forgotten": ps.get("forgotten"),
+        "memory_stream_size": round(sum(sizes) / len(sizes), 1) if sizes else None,
         "own_experience_recall": own["summary"].get("recall_at_k"),
     }
+    for style in ("lexical", "paraphrase"):
+        if style in styles:
+            out[f"memory_recall_{style}"] = styles[style]["recall_at_k"]
+            out[f"memory_recall_{style}_at_30"] = styles[style]["recall_at_30"]
+    for name, v in (planted.get("variants") or {}).items():
+        vs = v["summary"]
+        out[f"memory_recall_at_k__{name}"] = vs.get("recall_at_k")
+        out[f"memory_recall_at_30__{name}"] = vs.get("recall_at_30")
+        out[f"memory_recall_old_at_30__{name}"] = (vs.get("old") or {}).get("recall_at_30")
+        out[f"memory_recall_old_important_at_30__{name}"] = (vs.get("old_important") or {}).get("recall_at_30")
+        out[f"memory_forgotten__{name}"] = vs.get("forgotten")
+    return out
 
 
 @metric("beliefs")

@@ -1,0 +1,52 @@
+# Experiment C2 (docs/experiments/round2.md): adaptation to a fire, as counterfactual forks at
+# the paper's scale. Round one had five agents, one perceiver, and three seeds that turned out to
+# be copies of each other: with the mock, a fork's seed changes nothing after the fork point.
+# Here every seed has its OWN recorded morning (fork_from.run_dir with {seed}), so the six
+# replicates differ in who is where when the fire starts; the three conditions of a seed share
+# that morning. All 25 residents; the fire starts at 12:35, when the cafe is busiest (five
+# residents at lunch in the timing run), lasts until 13:30, and the forks run until 16:30.
+# MOCK: the fixture reacts to "burning" by rule and never retells an observed event, so the
+# reaction and the absence of word of mouth check the pipeline; they are not findings.
+#   GA_SQLITE_SYNCHRONOUS=OFF ga experiment --protocol configs/experiments/adaptation_fork_v2.yaml --execute --jobs 3
+name: adaptation_fork_v2
+base_config: configs/research_n25_2day.yaml
+fork_from:
+  run_dir: "runs/experiments/adaptation_fork_v2_sources/s{seed}"
+  snapshot: "2023-02-13T12-30-00"
+  create:
+    config: configs/research_n25_2day.yaml
+    overrides:
+      - "output.snapshots=[initial, '2023-02-13T12:30:00', final]"
+      - "scenario.end=2023-02-13T12:30:10"
+question: "When a fire breaks out in a busy cafe at lunch, how many of 25 residents perceive it, how many of them change plans and how fast, does word reach the rest of the town, and does an hourly-only planner adapt differently?"
+hypothesis: >-
+  H1: several residents perceive the fire (more than the single perceiver of round one) and the
+  number varies between seeds, because each seed has its own morning. H2: the share of residents
+  who change plans is higher in `fire` than in `control`. H3: the hourly-only planner changes
+  plans as often as the full hierarchy (difference under 0.05) with fewer model calls.
+  H4 (fixture prediction): no conversation mentions the fire, because the mock never retells an
+  observed event; a real model is needed to move this measure.
+conditions:
+  control: ["scenario.end=2023-02-13T16:30:00"]
+  fire: ["scenario.end=2023-02-13T16:30:00"]
+  fire_hourly: ["scenario.end=2023-02-13T16:30:00", "planning.decompose=false"]
+interventions:
+  fire:
+    - {kind: ambient, at: "2023-02-13T12:35:00", id: cafe_fire, tile: [78, 19], subject: fire, predicate: is, object: burning, description: "a fire is burning in Hobbs Cafe", until: "2023-02-13T13:30:00"}
+    - {kind: object_state, at: "2023-02-13T12:35:00", address: "the Ville:Hobbs Cafe:cafe:cooking area", state: burning}
+  fire_hourly:
+    - {kind: ambient, at: "2023-02-13T12:35:00", id: cafe_fire, tile: [78, 19], subject: fire, predicate: is, object: burning, description: "a fire is burning in Hobbs Cafe", until: "2023-02-13T13:30:00"}
+    - {kind: object_state, at: "2023-02-13T12:35:00", address: "the Ville:Hobbs Cafe:cafe:cooking area", state: burning}
+seeds: [221, 222, 223, 224, 225, 226]
+metrics: [adaptation, behavior, beliefs, network]
+metric_params:
+  adaptation: {at: "2023-02-13T12:35:00", keywords: ["fire", "burning", "smoke"], window_minutes: 180}
+primary_outcomes: [adaptation_perceivers, adaptation_changed_share, adaptation_changed_among_perceivers, adaptation_median_latency_min, adaptation_mentions, replans_per_agent]
+contrasts:
+  - {label: "H1 perceivers: fire > control", outcome: adaptation_perceivers, a: fire, b: control, expect: ">"}
+  - {label: "H2 share who changed plans: fire > control", outcome: adaptation_changed_share, a: fire, b: control, expect: ">"}
+  - {label: "H3 share who changed plans: hourly-only = full hierarchy", outcome: adaptation_changed_share, a: fire_hourly, b: fire, expect: "=", tolerance: 0.05}
+  - {label: "H3 model calls: hourly-only < full hierarchy", outcome: calls, a: fire_hourly, b: fire, expect: "<"}
+  - {label: "H4 conversations mentioning the fire: fire = control", outcome: adaptation_mentions, a: fire, b: control, expect: "=", tolerance: 0}
+determinism_check: true
+output_dir: runs/experiments

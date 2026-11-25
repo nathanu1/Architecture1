@@ -1,0 +1,58 @@
+# Experiment A2 (docs/experiments/round2.md): retrieval at the paper's scale with semantic
+# embeddings. Round one's memory experiment had a floor (old facts ranked below k = 10 in every
+# condition), lexical relevance only, three near-identical seeds and five agents. This protocol
+# answers those four points: rank-based outcomes and a recall curve, a paraphrase query for
+# every fact, eight seeds analysed as matched pairs, and all 25 residents for two days.
+# Scoring ablations that only change how a query is scored (weights, forgetting) are probe
+# variants: the same planted facts in the same snapshot are re-scored, so those contrasts are
+# exact. Conditions that change what the stream contains are separate runs.
+# The model is still the MOCK; the embeddings are real (all-MiniLM-L6-v2), so the retrieval
+# results are results about the scoring function on a town-sized stream, not about agent talk.
+#   GA_SQLITE_SYNCHRONOUS=OFF ga experiment --protocol configs/experiments/memory_retrieval_v2.yaml --execute --jobs 3
+name: memory_retrieval_v2
+base_config: configs/research_n25_2day.yaml
+question: "On a town-sized two-day memory stream, how do embedding type, reflection, forgetting and the three score weights change which planted facts come back, by age, importance and query style?"
+hypothesis: >-
+  H1: semantic embeddings raise recall of paraphrase queries far above the hash fixture
+  (full > hash_embeddings on recall@30 of paraphrase queries); lexical-query recall is expected
+  to change little (described, not tested).
+  H2: recall falls with a fact's age because min-max normalization spreads recency over the
+  whole run; on the same snapshots, scoring without recency raises recall@30 of facts older than
+  a day above the paper weights.
+  H3: forgetting (threshold -0.6) makes the low- and mid-importance facts older than about a day
+  inaccessible (5 of 18 facts per agent) and does not lower recall@30 of the important old
+  facts that stay accessible.
+  H4: removing reflection changes planted-fact recall@30 by less than 0.05 in either direction.
+  H5: running the town with recency-only retrieval lowers own-conversation recall, as in round
+  one (supported party recall is expected to fall too; described, not tested).
+  H6: doubling the relevance weight raises recall@30 of old facts above the paper weights.
+conditions:
+  full: []
+  hash_embeddings: ["providers.embeddings.kind=mock-hash", "providers.embeddings.model=mock-hash-256", "providers.embeddings.dims=256"]
+  no_reflection: ["architecture.reflection=false"]
+  recency_only: ["retrieval.weights.importance=0", "retrieval.weights.relevance=0"]
+seeds: [201, 202, 203, 204, 205, 206, 207, 208]
+metrics: [memory_probe, behavior, evaluation, beliefs, network]
+metric_params:
+  memory_probe:
+    k: 10
+    facts: configs/probes/memory_facts_v2.yaml
+    variants:
+      no_recency: {"weights.recency": 0}
+      half_recency: {"weights.recency": 0.5}
+      relevance_only: {"weights.recency": 0, "weights.importance": 0}
+      double_relevance: {"weights.relevance": 2}
+      recency_only: {"weights.importance": 0, "weights.relevance": 0}
+      forgetting: {"forgetting.enabled": true, "forgetting.threshold": -0.6}
+primary_outcomes: [memory_recall_paraphrase_at_30, memory_recall_lexical_at_30, memory_recall_old_at_30, memory_rank_percentile, own_experience_recall, supported_party_recall]
+contrasts:
+  - {label: "H1 paraphrase recall@30: semantic > hash", outcome: memory_recall_paraphrase_at_30, a: full, b: hash_embeddings, expect: ">"}
+  - {label: "H2 old-fact recall@30 on the same snapshots: no recency > paper weights", outcome: memory_recall_old_at_30__no_recency, outcome_b: memory_recall_old_at_30, a: full, b: full, expect: ">"}
+  - {label: "H3 important old facts, recall@30: forgetting >= paper weights", outcome: memory_recall_old_important_at_30__forgetting, outcome_b: memory_recall_old_important_at_30, a: full, b: full, expect: ">="}
+  - {label: "H4 recall@30: no reflection = full", outcome: memory_recall_at_30, a: no_reflection, b: full, expect: "=", tolerance: 0.05}
+  - {label: "H5 own-conversation recall: full > recency-only town", outcome: own_experience_recall, a: full, b: recency_only, expect: ">"}
+  - {label: "H6 old-fact recall@30 on the same snapshots: double relevance > paper weights", outcome: memory_recall_old_at_30__double_relevance, outcome_b: memory_recall_old_at_30, a: full, b: full, expect: ">"}
+evaluate_relationships: false
+min_minutes: 10
+determinism_check: true
+output_dir: runs/experiments

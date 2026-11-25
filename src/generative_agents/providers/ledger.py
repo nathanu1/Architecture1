@@ -16,6 +16,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from ..db import apply_sync_mode
+
 LEDGER_SCHEMA = """
 CREATE TABLE IF NOT EXISTS calls (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -87,6 +89,7 @@ class CallLedger:
         self.scope = scope
         self.conn = sqlite3.connect(self.path, check_same_thread=False)
         self.conn.row_factory = sqlite3.Row
+        apply_sync_mode(self.conn)
         self.conn.executescript(LEDGER_SCHEMA)
         self.conn.commit()
         self._counts: dict[str, int] = {}

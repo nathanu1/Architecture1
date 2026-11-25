@@ -109,3 +109,65 @@ def strip_chart(title: str, groups: dict[str, list[tuple[str, float]]], *, lo: f
         out.append(f'<text x="{cx:.1f}" y="{pad_t + plot_h + 18}" text-anchor="middle" fill="{INK}">{escape(name)} (n={len(pts)})</text>')
     out.append("</svg>")
     return "\n".join(out)
+
+
+def line_chart(
+    title: str,
+    x_labels: list[str],
+    series: dict[str, list[float | None]],
+    *,
+    lo: float = 0.0,
+    hi: float = 1.0,
+    x_title: str = "",
+    width: int = 560,
+    height: int = 280,
+) -> str:
+    """Lines over ordered categories (ages, thresholds, hours), one per series, on a fixed axis.
+
+    Missing values break the line. The legend sits under the plot, one entry per series, so a
+    series is never identified by color alone in the surrounding report text.
+    """
+
+    vals = [v for vs in series.values() for v in vs if v is not None]
+    lo, hi = min([lo, *vals]), max([hi, *vals])
+    span = (hi - lo) or 1.0
+    rows = (len(series) + 2) // 3
+    pad_l, pad_t, pad_b = 48, 36, 44 + 16 * rows
+    plot_w, plot_h = width - pad_l - 16, height - pad_t - pad_b
+    step = plot_w / max(1, len(x_labels) - 1) if len(x_labels) > 1 else 0.0
+
+    def xy(i: int, v: float) -> tuple[float, float]:
+        return pad_l + i * step, pad_t + plot_h - plot_h * (v - lo) / span
+
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" font-family="IBM Plex Mono, monospace" font-size="11">']
+    out.append(f'<text x="{pad_l}" y="20" fill="{INK}" font-size="13">{escape(title)}</text>')
+    for tick in (lo, lo + span / 2, hi):
+        ty = xy(0, tick)[1]
+        out.append(f'<line x1="{pad_l}" y1="{ty:.1f}" x2="{pad_l + plot_w}" y2="{ty:.1f}" stroke="{MUTED}" stroke-opacity="0.35"/>')
+        out.append(f'<text x="{pad_l - 6}" y="{ty + 4:.1f}" text-anchor="end" fill="{MUTED}">{tick:g}</text>')
+    for i, label in enumerate(x_labels):
+        out.append(f'<text x="{pad_l + i * step:.1f}" y="{pad_t + plot_h + 16}" text-anchor="middle" fill="{INK}">{escape(label)}</text>')
+    if x_title:
+        out.append(f'<text x="{pad_l + plot_w / 2:.1f}" y="{pad_t + plot_h + 32}" text-anchor="middle" fill="{MUTED}">{escape(x_title)}</text>')
+    dashes = ["", "6 3", "2 3", "8 3 2 3", "1 4"]
+    for si, (name, vs) in enumerate(series.items()):
+        # past the palette's length a color returns with a different dash, so no two series look alike
+        color, dash = COLORS[si % len(COLORS)], dashes[(si + si // len(COLORS)) % len(dashes)]
+        segment: list[str] = []
+        for i, v in enumerate(vs):
+            if v is None:
+                if len(segment) > 1:
+                    out.append(f'<polyline points="{" ".join(segment)}" fill="none" stroke="{color}" stroke-width="2" stroke-dasharray="{dash}"/>')
+                segment = []
+                continue
+            px, py = xy(i, v)
+            segment.append(f"{px:.1f},{py:.1f}")
+            out.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="3.2" fill="{color}"><title>{escape(name)} at {escape(x_labels[i])}: {v:g}</title></circle>')
+        if len(segment) > 1:
+            out.append(f'<polyline points="{" ".join(segment)}" fill="none" stroke="{color}" stroke-width="2" stroke-dasharray="{dash}"/>')
+        lx = pad_l + (si % 3) * (plot_w / 3)
+        ly = height - 16 * (rows - si // 3) + 4
+        out.append(f'<line x1="{lx:.1f}" y1="{ly - 4}" x2="{lx + 18:.1f}" y2="{ly - 4}" stroke="{color}" stroke-width="2" stroke-dasharray="{dash}"/>')
+        out.append(f'<text x="{lx + 22:.1f}" y="{ly}" fill="{INK}">{escape(name)}</text>')
+    out.append("</svg>")
+    return "\n".join(out)

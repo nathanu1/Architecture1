@@ -13,7 +13,16 @@ design:
   snapshot of a recorded run instead of starting fresh;
 * **interventions** per condition are scheduled into each run (``interventions.yaml``);
 * **determinism_check** re-runs one configuration and compares state hashes, which documents
-  whether the model sampling is reproducible on this setup.
+  whether the model sampling is reproducible on this setup;
+* **fork_from.run_dir** may contain ``{seed}``: every seed then forks from its *own* recorded
+  past, so replicates differ before the fork point as well (with the mock a fork's seed alone
+  changes nothing, which makes same-source forks copies, not replicates). ``fork_from.create``
+  names the config and overrides that produce a missing source run;
+* **jobs** runs independent simulations in parallel worker processes (``ga experiment --jobs``);
+* comparisons are reported **unpaired** (exact or Monte-Carlo permutation of run labels) and
+  **paired by seed** (sign-flip permutation of the per-seed differences, effect size d_z),
+  each with the smallest p-value its design can produce, and Holm-adjusted across the
+  protocol's primary comparisons.
 
 The run is the unit of analysis. Primary outcomes are fixed in the protocol before running.
 Runs matched by seed share the initial world; with a hosted model this does not make the
@@ -27,12 +36,15 @@ and p-values are descriptive.
 from __future__ import annotations
 
 import json
+import math
+import os
 import random
 import statistics
 import time
 from collections import Counter
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from itertools import combinations
+from itertools import combinations, product
 from pathlib import Path
 from typing import Any
 
@@ -63,9 +75,16 @@ class Protocol:
     # research platform extensions
     metrics: list[str] = field(default_factory=lambda: ["evaluation"])
     metric_params: dict[str, dict[str, Any]] = field(default_factory=dict)
-    fork_from: dict[str, str] | None = None  # {"run_dir": ..., "snapshot": ...}
+    fork_from: dict[str, Any] | None = None  # {"run_dir": ... ("{seed}" allowed), "snapshot": ..., "create": {"config": ..., "overrides": [...]}}
     interventions: dict[str, list[dict[str, Any]]] = field(default_factory=dict)  # condition -> interventions
     determinism_check: bool = False
+    # Planned contrasts, fixed with the hypothesis:
+    # [{"outcome": ..., "a": ..., "b": ..., "expect": ">" | "<" | ">=" | "<=" | "=", "tolerance": 0.0, "outcome_b": ...}].
+    # ``outcome_b`` compares two different outcomes (for example a probe variant against the
+    # paper weights on the same snapshots, with a == b).
+    # When given, they are the family for the multiplicity adjustment; every other pairwise
+    # comparison is still reported, as exploration.
+    contrasts: list[dict[str, Any]] = field(default_factory=list)
 
     @classmethod
     def load(cls, path: str | Path) -> Protocol:
@@ -91,6 +110,7 @@ class Protocol:
             fork_from=dict(d["fork_from"]) if d.get("fork_from") else None,
             interventions={k: list(v or []) for k, v in (d.get("interventions") or {}).items()},
             determinism_check=bool(d.get("determinism_check", False)),
+            contrasts=[dict(c) for c in (d.get("contrasts") or [])],
         )
 
     def params_for(self, metric: str) -> dict[str, Any]:
@@ -118,16 +138,42 @@ class Protocol:
     def config_for(self, run: dict[str, Any]) -> Any:
         from ..config import GAConfig
 
-        if self.fork_from:
-            raw = yaml.safe_load((self._fork_source() / "config.yaml").read_text())
+        if self.fork_from and (self._fork_source(run["seed"]) / "config.yaml").exists():
+            raw = yaml.safe_load((self._fork_source(run["seed"]) / "config.yaml").read_text())
+        elif self.fork_from and self.fork_from.get("create"):
+            raw = self._source_raw(run["seed"])  # the source has not been run yet (planning, estimates)
         else:
             raw = load_raw(self.base_config)
         return GAConfig.model_validate(apply_overrides(raw, run["overrides"]))
 
-    def _fork_source(self) -> Path:
+    def _fork_source(self, seed: int | None = None) -> Path:
+        """The run a fork continues. ``{seed}`` in ``fork_from.run_dir`` gives every seed its own past."""
+
         assert self.fork_from is not None
-        src = Path(self.fork_from["run_dir"])
-        return src if src.exists() else repo_path(self.fork_from["run_dir"])
+        template = str(self.fork_from["run_dir"])
+        name = template.format(seed=seed if seed is not None else self.seeds[0]) if "{seed}" in template else template
+        src = Path(name)
+        return src if src.is_absolute() or src.exists() else repo_path(name)
+
+    def per_seed_sources(self) -> bool:
+        return bool(self.fork_from) and "{seed}" in str(self.fork_from["run_dir"])
+
+    def _source_raw(self, seed: int) -> dict[str, Any]:
+        assert self.fork_from is not None
+        create = self.fork_from.get("create") or {}
+        raw = load_raw(create.get("config") or self.base_config)
+        overrides = [str(o) for o in create.get("overrides") or []]
+        if self.per_seed_sources():
+            overrides.append(f"run.seed={seed}")
+        return apply_overrides(raw, overrides)
+
+    def source_runs(self) -> list[dict[str, Any]]:
+        """Source runs that ``fork_from.create`` must produce: one per seed, or a single shared one."""
+
+        if not self.fork_from or not self.fork_from.get("create"):
+            return []
+        seeds = self.seeds if self.per_seed_sources() else self.seeds[:1]
+        return [{"seed": s, "run_dir": self._fork_source(s)} for s in seeds]
 
 
 def estimate(protocol: Protocol, measured_run: str | Path | None = None) -> dict[str, Any]:
@@ -194,7 +240,7 @@ def _run_one(protocol: Protocol, run: dict[str, Any], run_dir: Path, *, provider
             from ..simulation.fork import fork_run
 
             origin = fork_run(
-                protocol._fork_source(),
+                protocol._fork_source(run["seed"]),
                 protocol.fork_from.get("snapshot", "final"),
                 run_dir,
                 overrides=run["overrides"],
@@ -279,25 +325,168 @@ def determinism_check(protocol: Protocol, root: Path, *, provider_factory: Any =
     }
 
 
-def execute(protocol: Protocol, *, provider_factory: Any = None, embedding_factory: Any = None, progress: Any = None) -> dict[str, Any]:
+def _make_source(protocol: Protocol, seed: int) -> dict[str, Any]:
+    """Run one fork source (``fork_from.create``) unless its snapshot already exists."""
+
+    from ..config import GAConfig
+    from ..simulation.engine import Simulation, save_config
+
+    assert protocol.fork_from is not None
+    run_dir = protocol._fork_source(seed)
+    name = str(protocol.fork_from.get("snapshot", "final"))
+    snap = run_dir / "snapshots" / f"{name}.sqlite"
+    out = {"seed": seed, "run_dir": str(run_dir), "snapshot": name}
+    if snap.exists():
+        return {**out, "status": "exists"}
+    t0 = time.time()
+    try:
+        cfg = GAConfig.model_validate(protocol._source_raw(seed))
+        run_dir.mkdir(parents=True, exist_ok=True)
+        if not (run_dir / "config.yaml").exists():
+            save_config(cfg, run_dir)
+        sim = Simulation(cfg, run_dir)
+        status = sim.status if sim.status == "completed" else sim.run()
+        sim.close()
+        out["status"] = status if snap.exists() else f"{status}, but snapshot {name!r} was not written (add its time to output.snapshots)"
+    except Exception as exc:  # recorded; the forks of this source then fail visibly
+        out["status"] = f"error: {type(exc).__name__}: {exc}"
+    out["wall_s"] = round(time.time() - t0, 1)
+    return out
+
+
+def _worker(protocol: Protocol, run: dict[str, Any], run_dir: str) -> dict[str, Any]:
+    return _run_one(protocol, run, Path(run_dir), provider_factory=None, embedding_factory=None)
+
+
+def _pool(jobs: int) -> ProcessPoolExecutor:
+    # Each worker is a whole simulation; numerical libraries must not multiply the threads.
+    for var in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS", "TOKENIZERS_PARALLELISM"):
+        os.environ.setdefault(var, "false" if var == "TOKENIZERS_PARALLELISM" else "1")
+    return ProcessPoolExecutor(max_workers=jobs)
+
+
+def execute(protocol: Protocol, *, provider_factory: Any = None, embedding_factory: Any = None, progress: Any = None, jobs: int = 1) -> dict[str, Any]:
+    """Run every condition × seed. ``jobs`` > 1 runs simulations in parallel worker processes.
+
+    Parallel workers build their providers from each run's config, so ``jobs`` is ignored
+    when a provider or embedding factory is injected (tests). Rows keep the protocol's order
+    whatever order the workers finish in.
+    """
+
     root = protocol.root()
     root.mkdir(parents=True, exist_ok=True)
-    rows = []
-    for run in protocol.runs():
-        row = _run_one(protocol, run, root / run["run_id"], provider_factory=provider_factory, embedding_factory=embedding_factory)
-        rows.append(row)
-        if progress:
-            progress(row)
-    summary = summarize(rows, protocol)
+    runs = protocol.runs()
+    parallel = jobs > 1 and provider_factory is None and embedding_factory is None
+    sources = []
+    todo = protocol.source_runs()
+    if todo and parallel and len(todo) > 1:
+        with _pool(jobs) as pool:
+            sources = list(pool.map(_make_source, [protocol] * len(todo), [t["seed"] for t in todo]))
+    else:
+        sources = [_make_source(protocol, t["seed"]) for t in todo]
+    if progress:
+        for src in sources:
+            progress({"run_id": f"source {src['run_dir']}", "status": src["status"]})
+    if parallel:
+        done: dict[str, dict[str, Any]] = {}
+        with _pool(jobs) as pool:
+            futures = {pool.submit(_worker, protocol, run, str(root / run["run_id"])): run for run in runs}
+            for fut in as_completed(futures):
+                run = futures[fut]
+                try:
+                    row = fut.result()
+                except Exception as exc:  # a crashed worker is a failed run, not a lost one
+                    row = {
+                        "condition": run["condition"],
+                        "seed": run["seed"],
+                        "run_id": run["run_id"],
+                        "run_dir": str(root / run["run_id"]),
+                        "status": "error",
+                        "stop_detail": f"worker: {type(exc).__name__}: {exc}",
+                    }
+                done[run["run_id"]] = row
+                if progress:
+                    progress(row)
+        rows = [done[run["run_id"]] for run in runs]
+    else:
+        rows = []
+        for run in runs:
+            row = _run_one(protocol, run, root / run["run_id"], provider_factory=provider_factory, embedding_factory=embedding_factory)
+            rows.append(row)
+            if progress:
+                progress(row)
+    extra: dict[str, Any] = {}
+    if sources:
+        extra["fork_sources"] = sources
     if protocol.determinism_check:
-        summary["determinism"] = determinism_check(protocol, root, provider_factory=provider_factory, embedding_factory=embedding_factory)
+        extra["determinism"] = determinism_check(protocol, root, provider_factory=provider_factory, embedding_factory=embedding_factory)
+    summary = write_outputs(protocol, rows, root, extra)
+    return {"rows": rows, "summary": summary, "dir": str(root)}
+
+
+def write_outputs(protocol: Protocol, rows: list[dict[str, Any]], root: Path, extra: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Summary, tables, charts and the report from finished rows (also used by ``rebuild``)."""
+
+    from .detail import detail_sections
+
+    summary = {**summarize(rows, protocol), **(extra or {})}
     write_csv(root / "runs.csv", rows, list(dict.fromkeys(k for r in rows for k in r)))
+    (root / "rows.json").write_text(json.dumps(rows, indent=2, default=str))
     for k in protocol.primary_outcomes:
         pts = {c: [(r["run_id"], r[k]) for r in rows if r["condition"] == c and isinstance(r.get(k), int | float)] for c in protocol.conditions}
         (root / f"outcome_{k}.svg").write_text(strip_chart(k.replace("_", " "), pts))
+    lines, detail = detail_sections(rows, list(protocol.conditions), protocol.metrics, root)
+    if detail:
+        (root / "detail.json").write_text(json.dumps(detail, indent=2, default=str))
     (root / "summary.json").write_text(json.dumps(summary, indent=2, default=str))
-    (root / "report.md").write_text(render(protocol, rows, summary))
+    (root / "report.md").write_text(render(protocol, rows, summary, detail=lines))
     (root / "protocol.json").write_text(json.dumps(protocol.__dict__, indent=2, default=str))
+    return summary
+
+
+def _coerce(value: str) -> Any:
+    if value == "":
+        return None
+    for cast in (int, float):
+        try:
+            return cast(value)
+        except ValueError:
+            continue
+    if value[:1] in "[{":
+        try:
+            return json.loads(value)
+        except json.JSONDecodeError:
+            return value
+    return value
+
+
+def load_rows(root: Path) -> list[dict[str, Any]]:
+    """The rows of an executed experiment: ``rows.json``, or ``runs.csv`` from before it existed."""
+
+    if (root / "rows.json").exists():
+        return json.loads((root / "rows.json").read_text())
+    import csv
+
+    with (root / "runs.csv").open(newline="") as f:
+        return [
+            {k: (v if k in ("run_id", "condition", "run_dir", "status", "mode", "stop_detail", "forked_from") else _coerce(v)) for k, v in r.items()}
+            for r in csv.DictReader(f)
+        ]
+
+
+def rebuild(protocol: Protocol) -> dict[str, Any]:
+    """Re-analyse an executed experiment from its saved rows: no simulation, no model, no probe.
+
+    Used after the analysis itself changed (new comparisons, new report sections) and to
+    check that a report follows from its rows. Sources and the determinism result are
+    carried over from the existing summary.
+    """
+
+    root = protocol.root()
+    rows = load_rows(root)
+    old = json.loads((root / "summary.json").read_text()) if (root / "summary.json").exists() else {}
+    extra = {k: old[k] for k in ("fork_sources", "determinism") if k in old}
+    summary = write_outputs(protocol, rows, root, extra)
     return {"rows": rows, "summary": summary, "dir": str(root)}
 
 
@@ -309,21 +498,113 @@ def _bootstrap_diff(a: list[float], b: list[float], seed: int = 0, n: int = 2000
     return (round(diffs[int(0.025 * n)], 3), round(diffs[int(0.975 * n) - 1], 3))
 
 
-def _permutation_p(a: list[float], b: list[float]) -> float | None:
-    """Exact two-sided permutation test on the difference in means (small n only)."""
+def _bootstrap_mean(vals: list[float], seed: int = 0, n: int = 2000) -> tuple[float, float] | None:
+    """Percentile bootstrap interval of a mean (None below three values)."""
 
-    if not a or not b or len(a) + len(b) > 16:
+    if len(vals) < 3:
+        return None
+    rng = random.Random(seed)
+    means = sorted(statistics.mean(rng.choices(vals, k=len(vals))) for _ in range(n))
+    return (round(means[int(0.025 * n)], 3), round(means[int(0.975 * n) - 1], 3))
+
+
+EXACT_LABEL_LIMIT = 16  # C(16, 8) = 12,870 relabelings
+EXACT_SIGN_LIMIT = 16  # 2 ** 16 = 65,536 sign patterns
+MONTE_CARLO_DRAWS = 20000
+
+
+def _permutation_test(a: list[float], b: list[float], seed: int = 0) -> dict[str, Any] | None:
+    """Two-sided permutation test on the difference in means of two independent groups.
+
+    Exact (every relabeling) up to ``EXACT_LABEL_LIMIT`` pooled values, Monte Carlo beyond.
+    ``min_p`` is the smallest p this design can give (perfectly separated groups), so a
+    reader can tell "p = 0.1" from "p = 0.1, the floor with three runs a side".
+    """
+
+    if not a or not b:
         return None
     pooled = a + b
+    n, na = len(pooled), len(a)
     obs = abs(statistics.mean(a) - statistics.mean(b))
-    count = total = 0
-    for idx in combinations(range(len(pooled)), len(a)):
-        sa = [pooled[i] for i in idx]
-        sb = [pooled[i] for i in range(len(pooled)) if i not in idx]
-        total += 1
-        if abs(statistics.mean(sa) - statistics.mean(sb)) >= obs - 1e-12:
-            count += 1
-    return round(count / total, 4)
+    total_sum = sum(pooled)
+
+    def extreme(sa_sum: float) -> bool:
+        return abs(sa_sum / na - (total_sum - sa_sum) / (n - na)) >= obs - 1e-12
+
+    relabelings = math.comb(n, na)
+    if n <= EXACT_LABEL_LIMIT:
+        count = sum(1 for idx in combinations(range(n), na) if extreme(sum(pooled[i] for i in idx)))
+        p, method = count / relabelings, "exact"
+    else:
+        rng = random.Random(seed)
+        count = 1  # the observed labeling counts (Phipson & Smyth 2010)
+        for _ in range(MONTE_CARLO_DRAWS):
+            if extreme(sum(rng.sample(pooled, na))):
+                count += 1
+        p, method = count / (MONTE_CARLO_DRAWS + 1), f"monte-carlo ({MONTE_CARLO_DRAWS} draws)"
+    floor = (2 if na == n - na else 1) / relabelings
+    return {"p": round(p, 4), "method": method, "min_p": round(max(floor, 1 / (MONTE_CARLO_DRAWS + 1)) if method != "exact" else floor, 5)}
+
+
+def _permutation_p(a: list[float], b: list[float]) -> float | None:
+    """Two-sided permutation p for the difference in means (kept for callers of the old name)."""
+
+    t = _permutation_test(a, b)
+    return t["p"] if t else None
+
+
+def _paired_test(a: dict[int, float], b: dict[int, float], seed: int = 0) -> dict[str, Any] | None:
+    """Matched-seed comparison: per-seed differences, sign-flip permutation, effect size d_z.
+
+    Conditions are run on the same seeds, so the natural unit is the within-seed difference.
+    Under the null the sign of each difference is exchangeable; the test enumerates all
+    ``2 ** n`` sign patterns (Monte Carlo above ``EXACT_SIGN_LIMIT`` seeds).
+    """
+
+    seeds = sorted(set(a) & set(b))
+    if len(seeds) < 2:
+        return None
+    d = [a[s] - b[s] for s in seeds]
+    n = len(d)
+    mean_d = statistics.mean(d)
+    sd_d = statistics.stdev(d)
+    obs = abs(sum(d))
+    if all(abs(x) <= 1e-12 for x in d):
+        p, method = 1.0, "all differences are zero"
+    elif n <= EXACT_SIGN_LIMIT:
+        count = sum(1 for signs in product((1, -1), repeat=n) if abs(sum(sg * x for sg, x in zip(signs, d, strict=True))) >= obs - 1e-12)
+        p, method = count / 2**n, "exact sign-flip"
+    else:
+        rng = random.Random(seed)
+        count = 1
+        for _ in range(MONTE_CARLO_DRAWS):
+            if abs(sum(x if rng.random() < 0.5 else -x for x in d)) >= obs - 1e-12:
+                count += 1
+        p, method = count / (MONTE_CARLO_DRAWS + 1), f"monte-carlo sign-flip ({MONTE_CARLO_DRAWS} draws)"
+    rng = random.Random(seed)
+    boots = sorted(statistics.mean(rng.choices(d, k=n)) for _ in range(2000))
+    return {
+        "n_pairs": n,
+        "mean_difference": round(mean_d, 4),
+        "sd_difference": round(sd_d, 4),
+        "effect_size_dz": round(mean_d / sd_d, 3) if sd_d > 1e-12 else None,  # None: every seed gave the same difference
+        "same_sign": sum(1 for x in d if x > 1e-12) if mean_d >= 0 else sum(1 for x in d if x < -1e-12),
+        "bootstrap_95ci": (round(boots[50], 3), round(boots[1949], 3)),
+        "p": round(p, 5),
+        "method": method,
+        "min_p": round(2 / 2**n, 5) if n <= EXACT_SIGN_LIMIT else round(1 / (MONTE_CARLO_DRAWS + 1), 5),
+    }
+
+
+def _holm(pvals: dict[str, float]) -> dict[str, float]:
+    """Holm step-down adjustment over a family of p-values."""
+
+    order = sorted(pvals, key=lambda k: pvals[k])
+    m, running, out = len(order), 0.0, {}
+    for i, k in enumerate(order):
+        running = max(running, min(1.0, (m - i) * pvals[k]))
+        out[k] = round(running, 5)
+    return out
 
 
 def outcome_keys(rows: list[dict[str, Any]], protocol: Protocol) -> list[str]:
@@ -363,6 +644,7 @@ def summarize(rows: list[dict[str, Any]], protocol: Protocol) -> dict[str, Any]:
                     "n": len(vals),
                     "mean": round(statistics.mean(vals), 3),
                     "sd": round(statistics.stdev(vals), 3) if len(vals) > 1 else None,
+                    "ci95": _bootstrap_mean(vals),
                     "median": statistics.median(vals),
                     "min": min(vals),
                     "max": max(vals),
@@ -375,18 +657,90 @@ def summarize(rows: list[dict[str, Any]], protocol: Protocol) -> dict[str, Any]:
     if 2 <= len(conds) <= 6:
         for a, b in combinations(conds, 2):
             for k in protocol.primary_outcomes:
-                va = [r[k] for r in rows if r["condition"] == a and _numeric(r.get(k))]
-                vb = [r[k] for r in rows if r["condition"] == b and _numeric(r.get(k))]
+                ra = {r.get("seed", ("row", i)): r[k] for i, r in enumerate(rows) if r["condition"] == a and _numeric(r.get(k))}
+                rb = {r.get("seed", ("row", i)): r[k] for i, r in enumerate(rows) if r["condition"] == b and _numeric(r.get(k))}
+                va, vb = list(ra.values()), list(rb.values())
                 name = k if len(conds) == 2 else f"{k} ({a} vs {b})"
+                unpaired = _permutation_test(va, vb)
+                no_spread = len(va) > 1 and len(vb) > 1 and statistics.pstdev(va) <= 1e-12 and statistics.pstdev(vb) <= 1e-12
                 out["comparisons"][name] = {
                     "outcome": k,
                     "difference": f"{a} - {b}",
                     "mean_difference": round(statistics.mean(va) - statistics.mean(vb), 3) if va and vb else None,
                     "bootstrap_95ci": _bootstrap_diff(va, vb),
-                    "permutation_p": _permutation_p(va, vb),
+                    "permutation_p": unpaired["p"] if unpaired else None,
+                    "permutation_method": unpaired["method"] if unpaired else None,
+                    "permutation_min_p": unpaired["min_p"] if unpaired else None,
+                    "paired": _paired_test(ra, rb),
                     "n": [len(va), len(vb)],
+                    # Seeds that produce the same value in both conditions are copies, not
+                    # replicates: the p-value then reflects determinism, not sampling.
+                    "no_between_seed_variation": no_spread,
                     "note": "exploratory; run-level; not powered",
                 }
+        family = {name: c["paired"]["p"] for name, c in out["comparisons"].items() if c.get("paired")}
+        for name, adj in _holm(family).items():
+            out["comparisons"][name]["paired"]["p_holm"] = adj
+        out["comparison_family"] = {"size": len(family), "adjustment": "Holm over the paired p-values of all primary comparisons"}
+    if protocol.contrasts:
+        out["contrasts"] = planned_contrasts(rows, protocol)
+    return out
+
+
+def planned_contrasts(rows: list[dict[str, Any]], protocol: Protocol) -> list[dict[str, Any]]:
+    """The protocol's registered contrasts: paired by seed, Holm-adjusted within this family only.
+
+    ``expect`` is what the hypothesis predicts for ``a - b``: ``>`` or ``<`` (beyond
+    ``tolerance``), ``>=`` or ``<=`` (not worse than ``tolerance`` the other way), or ``=``
+    (within ``tolerance``, an equivalence band on the mean difference). ``supported`` says
+    whether the observed mean difference fits; it is a descriptive verdict, with the test
+    result next to it. ``outcome_b`` lets a contrast compare two outcomes, for example a
+    probe variant with the paper weights on the same snapshots.
+    """
+
+    out = []
+    for c in protocol.contrasts:
+        k, a, b = c["outcome"], c["a"], c["b"]
+        kb = c.get("outcome_b", k)
+        ra = {r.get("seed", ("row", i)): r[k] for i, r in enumerate(rows) if r["condition"] == a and _numeric(r.get(k))}
+        rb = {r.get("seed", ("row", i)): r[kb] for i, r in enumerate(rows) if r["condition"] == b and _numeric(r.get(kb))}
+        paired = _paired_test(ra, rb)
+        va, vb = list(ra.values()), list(rb.values())
+        diff = round(statistics.mean(va) - statistics.mean(vb), 4) if va and vb else None
+        expect = str(c.get("expect", ">"))
+        tol = float(c.get("tolerance", 0.0))
+        if diff is None:
+            supported = None
+        elif expect == ">":
+            supported = diff > tol
+        elif expect == "<":
+            supported = diff < -tol
+        elif expect == ">=":
+            supported = diff >= -tol
+        elif expect == "<=":
+            supported = diff <= tol
+        else:
+            supported = abs(diff) <= tol
+        out.append(
+            {
+                "label": c.get("label") or (f"{k}: {a} {expect} {b}" if kb == k else f"{a}: {k} {expect} {kb}" if a == b else f"{k} ({a}) {expect} {kb} ({b})"),
+                "outcome": k,
+                "outcome_b": kb,
+                "a": a,
+                "b": b,
+                "expect": expect,
+                "tolerance": tol,
+                "mean_a": round(statistics.mean(va), 4) if va else None,
+                "mean_b": round(statistics.mean(vb), 4) if vb else None,
+                "mean_difference": diff,
+                "supported": supported,
+                "paired": paired,
+                "n": [len(va), len(vb)],
+            }
+        )
+    family = {str(i): c["paired"]["p"] for i, c in enumerate(out) if c.get("paired")}
+    for i, adj in _holm(family).items():
+        out[int(i)]["paired"]["p_holm"] = adj
     return out
 
 
@@ -416,6 +770,21 @@ LABELS = {
     "conversations_per_agent": "Conversations per agent",
     "memory_recall_at_k": "Planted-fact recall@k",
     "memory_recall_at_30": "Planted-fact recall@30 (paper cap)",
+    "memory_recall_lexical": "Recall@k, queries sharing words with the fact",
+    "memory_recall_paraphrase": "Recall@k, paraphrase queries (no shared content words)",
+    "memory_recall_lexical_at_30": "Recall@30, lexical queries",
+    "memory_recall_paraphrase_at_30": "Recall@30, paraphrase queries",
+    "memory_recall_old_at_30": "Recall@30 of facts older than a day",
+    "memory_median_rank": "Median rank of the planted fact",
+    "memory_rank_percentile": "Mean rank percentile (0 = top)",
+    "memory_stream_size": "Memories per agent at the probe",
+    "network_weighted_density": "Weighted density (mean mutual familiarity over all pairs)",
+    "network_conversation_density": "Pairs who talked (share of all pairs)",
+    "network_degree_gini": "Degree inequality (Gini)",
+    "network_density_t20": "Density at tie threshold 0.20",
+    "network_density_t35": "Density at tie threshold 0.35",
+    "network_density_t50": "Density at tie threshold 0.50",
+    "network_density_t75": "Density at tie threshold 0.75",
     "memory_mrr": "Planted-fact MRR",
     "memory_recall_old": "Recall of facts older than a day",
     "memory_recall_recent": "Recall of facts under an hour old",
@@ -437,7 +806,8 @@ def _cell(stats: dict[str, Any], key: str) -> str:
     if not stats.get("n"):
         return "unpriced" if key == "cost_usd" else "n/a"
     sd = f" ± {_num(stats['sd'])}" if stats.get("sd") is not None else ""
-    return f"{_num(stats['mean'])}{sd} (median {_num(stats['median'])}; {_num(stats['min'])}–{_num(stats['max'])}; n={stats['n']})"
+    ci = f"; 95% CI {_num(stats['ci95'][0])} to {_num(stats['ci95'][1])}" if stats.get("ci95") else ""
+    return f"{_num(stats['mean'])}{sd} (median {_num(stats['median'])}; {_num(stats['min'])}–{_num(stats['max'])}{ci}; n={stats['n']})"
 
 
 def _label(k: str) -> str:
@@ -452,7 +822,7 @@ def _fmt(v: Any) -> str:
     return str(v)
 
 
-def render(protocol: Protocol, rows: list[dict[str, Any]], summary: dict[str, Any]) -> str:
+def render(protocol: Protocol, rows: list[dict[str, Any]], summary: dict[str, Any], detail: list[str] | None = None) -> str:
     modes = Counter(str(r.get("mode") or "unknown") for r in rows)
     not_live = sorted(set(modes) - {"live"})
     conds = list(protocol.conditions)
@@ -467,10 +837,15 @@ def render(protocol: Protocol, rows: list[dict[str, Any]], summary: dict[str, An
         extra = f"; interventions: {len(protocol.interventions[c])}" if c in protocol.interventions else ""
         lines.append(f"* `{c}`: " + (", ".join(f"`{o}`" for o in ov) if ov else "base configuration") + extra)
     if protocol.fork_from:
-        lines += [
-            "",
-            f"Every run is a fork of `{protocol.fork_from['run_dir']}` at snapshot `{protocol.fork_from.get('snapshot', 'final')}`: the same past, different futures.",
-        ]
+        snap = protocol.fork_from.get("snapshot", "final")
+        if protocol.per_seed_sources():
+            lines += [
+                "",
+                f"Every run is a fork of `{protocol.fork_from['run_dir']}` at snapshot `{snap}`: each seed has its own recorded past, "
+                "and the conditions of one seed share that past and differ only after the fork point.",
+            ]
+        else:
+            lines += ["", f"Every run is a fork of `{protocol.fork_from['run_dir']}` at snapshot `{snap}`: the same past, different futures."]
     lines += [
         "",
         f"Seeds {protocol.seeds}. Runs are matched by seed; a hosted model does not reproduce identical samples, so matching is of the initial world, not of the randomness. "
@@ -495,17 +870,66 @@ def render(protocol: Protocol, rows: list[dict[str, Any]], summary: dict[str, An
         label = f"**{label}**" if k in prim else label
         cells = [_cell(summary["conditions"].get(c, {}).get("outcomes", {}).get(k, {}), k) for c in conds]
         lines.append(f"| {label} | " + " | ".join(cells) + " |")
-    lines += ["", "Mean ± SD (median; range; runs with a value). Primary outcomes, fixed in the protocol before running, are in bold."]
+    lines += [
+        "",
+        "Mean ± SD (median; range; bootstrap 95% interval of the mean from three runs up; runs with a value). Primary outcomes, fixed in the protocol before running, are in bold.",
+    ]
+    if summary.get("contrasts"):
+        lines += [
+            "",
+            "## Planned contrasts (registered with the hypothesis)",
+            "",
+            "| Contrast | Mean a | Mean b | a − b | Direction as predicted | Seeds agreeing | d_z | Paired p | Holm p |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        ]
+        for c in summary["contrasts"]:
+            pr = c.get("paired") or {}
+            verdict = "n/a" if c["supported"] is None else ("yes" if c["supported"] else "**no**")
+            band = f" (within ±{c['tolerance']:g})" if c["expect"] == "=" else f" (margin {c['tolerance']:g})" if c["tolerance"] else ""
+            agree = f"{pr['same_sign']} of {pr['n_pairs']}" if pr else "n/a"
+            dz = "n/a" if not pr else ("same on every seed" if pr["effect_size_dz"] is None else _fmt(pr["effect_size_dz"]))
+            lines.append(
+                f"| {c['label']}{band} | {_fmt(c['mean_a'])} | {_fmt(c['mean_b'])} | {_fmt(c['mean_difference'])} | {verdict} | {agree} | {dz} | "
+                f"{_fmt(pr.get('p'))} | {_fmt(pr.get('p_holm'))} |"
+            )
+        floor = min((c["paired"]["min_p"] for c in summary["contrasts"] if c.get("paired")), default=None)
+        lines += [
+            "",
+            f"Paired by seed (exact sign-flip permutation; smallest possible p = {_fmt(floor)}), Holm-adjusted over these {len(summary['contrasts'])} contrasts only. "
+            '"Direction as predicted" compares the observed mean difference with the registered expectation; for an expected equality it checks the stated band.',
+        ]
     lines += ["", "## Comparisons (exploratory)", ""]
     for k, v in summary.get("comparisons", {}).items():
-        lines.append(
-            f"* **{k}**: {v['difference']} = {v['mean_difference']} (bootstrap 95% CI {v['bootstrap_95ci']}, exact permutation p = {v['permutation_p']}, n = {v['n']})"
+        line = (
+            f"* **{k}**: {v['difference']} = {v['mean_difference']} (bootstrap 95% CI {v['bootstrap_95ci']}, "
+            f"{v.get('permutation_method') or 'exact'} permutation p = {v['permutation_p']}"
+            + (f", smallest possible {v['permutation_min_p']}" if v.get("permutation_min_p") is not None else "")
+            + f", n = {v['n']})"
         )
+        pr = v.get("paired")
+        if pr:
+            dz = "undefined (identical difference on every seed)" if pr["effect_size_dz"] is None else pr["effect_size_dz"]
+            line += (
+                f"; paired by seed: mean difference {pr['mean_difference']} over {pr['n_pairs']} seeds "
+                f"({pr['same_sign']} in the direction of the mean), d_z = {dz}, {pr['method']} p = {pr['p']} "
+                f"(smallest possible {pr['min_p']}; Holm-adjusted {pr.get('p_holm')})"
+            )
+        if v.get("no_between_seed_variation"):
+            line += ". **No between-seed variation in either condition: the seeds are copies here, so these p-values describe determinism, not sampling.**"
+        lines.append(line)
+    if summary.get("comparison_family"):
+        fam = summary["comparison_family"]
+        lines += [
+            "",
+            f"Paired p-values are Holm-adjusted over the {fam['size']} primary comparisons of this protocol. All tests are two-sided and descriptive.",
+        ]
     if not summary.get("comparisons"):
         lines.append("* none (one condition, or more than six)")
     plots = [k for k in prim if (protocol.root() / f"outcome_{k}.svg").exists()]
     if plots:
         lines += ["", "One dot per run; the bar is the condition mean.", ""] + [f"![{_label(k)}](outcome_{k}.svg)" for k in plots]
+    if detail:
+        lines += detail
     if summary.get("excluded"):
         lines += ["", "## Runs without outcomes", ""] + [f"* {e['run_id']}: {e['status']} — {e['reason']}" for e in summary["excluded"]]
     if summary.get("metric_failures"):
