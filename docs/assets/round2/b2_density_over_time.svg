@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="280" font-family="IBM Plex Mono, monospace" font-size="11">
+<text x="48" y="20" fill="#16211B" font-size="13">Network density over simulated time</text>
+<line x1="48" y1="204.0" x2="664" y2="204.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="208.0" text-anchor="end" fill="#5B6B61">0</text>
+<line x1="48" y1="120.0" x2="664" y2="120.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="124.0" text-anchor="end" fill="#5B6B61">0.5</text>
+<line x1="48" y1="36.0" x2="664" y2="36.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="40.0" text-anchor="end" fill="#5B6B61">1</text>
+<text x="48.0" y="220" text-anchor="middle" fill="#16211B">02-13 00h</text>
+<text x="125.0" y="220" text-anchor="middle" fill="#16211B">02-13 06h</text>
+<text x="202.0" y="220" text-anchor="middle" fill="#16211B">02-13 12h</text>
+<text x="279.0" y="220" text-anchor="middle" fill="#16211B">02-13 18h</text>
+<text x="356.0" y="220" text-anchor="middle" fill="#16211B">02-14 00h</text>
+<text x="433.0" y="220" text-anchor="middle" fill="#16211B">02-14 06h</text>
+<text x="510.0" y="220" text-anchor="middle" fill="#16211B">02-14 12h</text>
+<text x="587.0" y="220" text-anchor="middle" fill="#16211B">02-14 18h</text>
+<text x="664.0" y="220" text-anchor="middle" fill="#16211B">02-15 00h</text>
+<text x="356.0" y="236" text-anchor="middle" fill="#5B6B61">simulated time (month-day hour)</text>
+<circle cx="48.0" cy="204.0" r="3.2" fill="#2353AC"><title>low_contact at 02-13 00h: 0</title></circle>
+<circle cx="125.0" cy="203.6" r="3.2" fill="#2353AC"><title>low_contact at 02-13 06h: 0.002475</title></circle>
+<circle cx="202.0" cy="192.5" r="3.2" fill="#2353AC"><title>low_contact at 02-13 12h: 0.0687375</title></circle>
+<circle cx="279.0" cy="174.5" r="3.2" fill="#2353AC"><title>low_contact at 02-13 18h: 0.175825</title></circle>
+<circle cx="356.0" cy="172.4" r="3.2" fill="#2353AC"><title>low_contact at 02-14 00h: 0.188337</title></circle>
+<circle cx="433.0" cy="172.4" r="3.2" fill="#2353AC"><title>low_contact at 02-14 06h: 0.188337</title></circle>
+<circle cx="510.0" cy="172.2" r="3.2" fill="#2353AC"><title>low_contact at 02-14 12h: 0.189175</title></circle>
+<circle cx="587.0" cy="170.2" r="3.2" fill="#2353AC"><title>low_contact at 02-14 18h: 0.201263</title></circle>
+<circle cx="664.0" cy="170.0" r="3.2" fill="#2353AC"><title>low_contact at 02-15 00h: 0.2021</title></circle>
+<polyline points="48.0,204.0 125.0,203.6 202.0,192.5 279.0,174.5 356.0,172.4 433.0,172.4 510.0,172.2 587.0,170.2 664.0,170.0" fill="none" stroke="#2353AC" stroke-width="2" stroke-dasharray=""/>
+<line x1="48.0" y1="248" x2="66.0" y2="248" stroke="#2353AC" stroke-width="2" stroke-dasharray=""/>
+<text x="70.0" y="252" fill="#16211B">low_contact</text>
+<circle cx="48.0" cy="204.0" r="3.2" fill="#B4461C"><title>reduced_contact at 02-13 00h: 0</title></circle>
+<circle cx="125.0" cy="203.6" r="3.2" fill="#B4461C"><title>reduced_contact at 02-13 06h: 0.002475</title></circle>
+<circle cx="202.0" cy="192.5" r="3.2" fill="#B4461C"><title>reduced_contact at 02-13 12h: 0.0687375</title></circle>
+<circle cx="279.0" cy="174.8" r="3.2" fill="#B4461C"><title>reduced_contact at 02-13 18h: 0.173762</title></circle>
+<circle cx="356.0" cy="173.1" r="3.2" fill="#B4461C"><title>reduced_contact at 02-14 00h: 0.18375</title></circle>
+<circle cx="433.0" cy="173.1" r="3.2" fill="#B4461C"><title>reduced_contact at 02-14 06h: 0.18375</title></circle>
+<circle cx="510.0" cy="173.0" r="3.2" fill="#B4461C"><title>reduced_contact at 02-14 12h: 0.184587</title></circle>
+<circle cx="587.0" cy="171.0" r="3.2" fill="#B4461C"><title>reduced_contact at 02-14 18h: 0.196238</title></circle>
+<circle cx="664.0" cy="170.9" r="3.2" fill="#B4461C"><title>reduced_contact at 02-15 00h: 0.197063</title></circle>
+<polyline points="48.0,204.0 125.0,203.6 202.0,192.5 279.0,174.8 356.0,173.1 433.0,173.1 510.0,173.0 587.0,171.0 664.0,170.9" fill="none" stroke="#B4461C" stroke-width="2" stroke-dasharray="6 3"/>
+<line x1="253.3" y1="248" x2="271.3" y2="248" stroke="#B4461C" stroke-width="2" stroke-dasharray="6 3"/>
+<text x="275.3" y="252" fill="#16211B">reduced_contact</text>
+<circle cx="48.0" cy="204.0" r="3.2" fill="#6B3E9B"><title>baseline at 02-13 00h: 0</title></circle>
+<circle cx="125.0" cy="203.6" r="3.2" fill="#6B3E9B"><title>baseline at 02-13 06h: 0.002475</title></circle>
+<circle cx="202.0" cy="192.4" r="3.2" fill="#6B3E9B"><title>baseline at 02-13 12h: 0.0691625</title></circle>
+<circle cx="279.0" cy="175.8" r="3.2" fill="#6B3E9B"><title>baseline at 02-13 18h: 0.167925</title></circle>
+<circle cx="356.0" cy="173.6" r="3.2" fill="#6B3E9B"><title>baseline at 02-14 00h: 0.180825</title></circle>
+<circle cx="433.0" cy="173.6" r="3.2" fill="#6B3E9B"><title>baseline at 02-14 06h: 0.180825</title></circle>
+<circle cx="510.0" cy="173.3" r="3.2" fill="#6B3E9B"><title>baseline at 02-14 12h: 0.182487</title></circle>
+<circle cx="587.0" cy="170.9" r="3.2" fill="#6B3E9B"><title>baseline at 02-14 18h: 0.197087</title></circle>
+<circle cx="664.0" cy="170.5" r="3.2" fill="#6B3E9B"><title>baseline at 02-15 00h: 0.199588</title></circle>
+<polyline points="48.0,204.0 125.0,203.6 202.0,192.4 279.0,175.8 356.0,173.6 433.0,173.6 510.0,173.3 587.0,170.9 664.0,170.5" fill="none" stroke="#6B3E9B" stroke-width="2" stroke-dasharray="2 3"/>
+<line x1="458.7" y1="248" x2="476.7" y2="248" stroke="#6B3E9B" stroke-width="2" stroke-dasharray="2 3"/>
+<text x="480.7" y="252" fill="#16211B">baseline</text>
+<circle cx="48.0" cy="204.0" r="3.2" fill="#1E6E62"><title>high_contact at 02-13 00h: 0</title></circle>
+<circle cx="125.0" cy="203.6" r="3.2" fill="#1E6E62"><title>high_contact at 02-13 06h: 0.002475</title></circle>
+<circle cx="202.0" cy="191.8" r="3.2" fill="#1E6E62"><title>high_contact at 02-13 12h: 0.0729125</title></circle>
+<circle cx="279.0" cy="175.2" r="3.2" fill="#1E6E62"><title>high_contact at 02-13 18h: 0.171262</title></circle>
+<circle cx="356.0" cy="173.0" r="3.2" fill="#1E6E62"><title>high_contact at 02-14 00h: 0.1846</title></circle>
+<circle cx="433.0" cy="173.0" r="3.2" fill="#1E6E62"><title>high_contact at 02-14 06h: 0.1846</title></circle>
+<circle cx="510.0" cy="172.8" r="3.2" fill="#1E6E62"><title>high_contact at 02-14 12h: 0.185837</title></circle>
+<circle cx="587.0" cy="170.3" r="3.2" fill="#1E6E62"><title>high_contact at 02-14 18h: 0.200412</title></circle>
+<circle cx="664.0" cy="170.3" r="3.2" fill="#1E6E62"><title>high_contact at 02-15 00h: 0.200838</title></circle>
+<polyline points="48.0,204.0 125.0,203.6 202.0,191.8 279.0,175.2 356.0,173.0 433.0,173.0 510.0,172.8 587.0,170.3 664.0,170.3" fill="none" stroke="#1E6E62" stroke-width="2" stroke-dasharray="8 3 2 3"/>
+<line x1="48.0" y1="264" x2="66.0" y2="264" stroke="#1E6E62" stroke-width="2" stroke-dasharray="8 3 2 3"/>
+<text x="70.0" y="268" fill="#16211B">high_contact</text>
+</svg>

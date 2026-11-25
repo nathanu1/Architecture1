@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="280" font-family="IBM Plex Mono, monospace" font-size="11">
+<text x="48" y="20" fill="#16211B" font-size="13">Network density by tie threshold</text>
+<line x1="48" y1="204.0" x2="544" y2="204.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="208.0" text-anchor="end" fill="#5B6B61">0</text>
+<line x1="48" y1="120.0" x2="544" y2="120.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="124.0" text-anchor="end" fill="#5B6B61">0.5</text>
+<line x1="48" y1="36.0" x2="544" y2="36.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="40.0" text-anchor="end" fill="#5B6B61">1</text>
+<text x="48.0" y="220" text-anchor="middle" fill="#16211B">0.2</text>
+<text x="213.3" y="220" text-anchor="middle" fill="#16211B">0.35</text>
+<text x="378.7" y="220" text-anchor="middle" fill="#16211B">0.5</text>
+<text x="544.0" y="220" text-anchor="middle" fill="#16211B">0.75</text>
+<text x="296.0" y="236" text-anchor="middle" fill="#5B6B61">tie threshold (mutual familiarity)</text>
+<circle cx="48.0" cy="170.0" r="3.2" fill="#2353AC"><title>low_contact at 0.2: 0.2021</title></circle>
+<circle cx="213.3" cy="174.0" r="3.2" fill="#2353AC"><title>low_contact at 0.35: 0.17875</title></circle>
+<circle cx="378.7" cy="183.7" r="3.2" fill="#2353AC"><title>low_contact at 0.5: 0.120838</title></circle>
+<circle cx="544.0" cy="201.9" r="3.2" fill="#2353AC"><title>low_contact at 0.75: 0.012475</title></circle>
+<polyline points="48.0,170.0 213.3,174.0 378.7,183.7 544.0,201.9" fill="none" stroke="#2353AC" stroke-width="2" stroke-dasharray=""/>
+<line x1="48.0" y1="248" x2="66.0" y2="248" stroke="#2353AC" stroke-width="2" stroke-dasharray=""/>
+<text x="70.0" y="252" fill="#16211B">low_contact</text>
+<circle cx="48.0" cy="170.9" r="3.2" fill="#B4461C"><title>reduced_contact at 0.2: 0.197063</title></circle>
+<circle cx="213.3" cy="174.7" r="3.2" fill="#B4461C"><title>reduced_contact at 0.35: 0.1746</title></circle>
+<circle cx="378.7" cy="182.6" r="3.2" fill="#B4461C"><title>reduced_contact at 0.5: 0.1275</title></circle>
+<circle cx="544.0" cy="190.6" r="3.2" fill="#B4461C"><title>reduced_contact at 0.75: 0.08</title></circle>
+<polyline points="48.0,170.9 213.3,174.7 378.7,182.6 544.0,190.6" fill="none" stroke="#B4461C" stroke-width="2" stroke-dasharray="6 3"/>
+<line x1="213.3" y1="248" x2="231.3" y2="248" stroke="#B4461C" stroke-width="2" stroke-dasharray="6 3"/>
+<text x="235.3" y="252" fill="#16211B">reduced_contact</text>
+<circle cx="48.0" cy="170.5" r="3.2" fill="#6B3E9B"><title>baseline at 0.2: 0.199588</title></circle>
+<circle cx="213.3" cy="174.9" r="3.2" fill="#6B3E9B"><title>baseline at 0.35: 0.173325</title></circle>
+<circle cx="378.7" cy="182.5" r="3.2" fill="#6B3E9B"><title>baseline at 0.5: 0.127925</title></circle>
+<circle cx="544.0" cy="189.4" r="3.2" fill="#6B3E9B"><title>baseline at 0.75: 0.0870875</title></circle>
+<polyline points="48.0,170.5 213.3,174.9 378.7,182.5 544.0,189.4" fill="none" stroke="#6B3E9B" stroke-width="2" stroke-dasharray="2 3"/>
+<line x1="378.7" y1="248" x2="396.7" y2="248" stroke="#6B3E9B" stroke-width="2" stroke-dasharray="2 3"/>
+<text x="400.7" y="252" fill="#16211B">baseline</text>
+<circle cx="48.0" cy="170.3" r="3.2" fill="#1E6E62"><title>high_contact at 0.2: 0.200838</title></circle>
+<circle cx="213.3" cy="175.4" r="3.2" fill="#1E6E62"><title>high_contact at 0.35: 0.169988</title></circle>
+<circle cx="378.7" cy="179.8" r="3.2" fill="#1E6E62"><title>high_contact at 0.5: 0.144162</title></circle>
+<circle cx="544.0" cy="187.4" r="3.2" fill="#1E6E62"><title>high_contact at 0.75: 0.0987625</title></circle>
+<polyline points="48.0,170.3 213.3,175.4 378.7,179.8 544.0,187.4" fill="none" stroke="#1E6E62" stroke-width="2" stroke-dasharray="8 3 2 3"/>
+<line x1="48.0" y1="264" x2="66.0" y2="264" stroke="#1E6E62" stroke-width="2" stroke-dasharray="8 3 2 3"/>
+<text x="70.0" y="268" fill="#16211B">high_contact</text>
+</svg>
