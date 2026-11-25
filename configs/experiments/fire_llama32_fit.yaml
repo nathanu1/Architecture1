@@ -1,0 +1,32 @@
+# Experiment D2 (docs/experiments/round2.md): the fire forks of experiment D again, with
+# `planning.fit_durations` on. Experiment D showed that the 3B model fails only where a plan
+# needs arithmetic: every rejected answer was a decomposition whose minutes did not add up or
+# a schedule with times out of order. The fit corrects the minutes and keeps the activities.
+# Same recorded morning, same fork point, same three seeds as the `fire` condition of D, so
+# each fork pairs with a strict fork that saw the same past and was sent the same seed.
+#
+#   ga experiment --protocol configs/experiments/fire_llama32_fit.yaml --execute
+name: fire_llama32_fit
+base_config: configs/llamacpp_pilot.yaml
+fork_from: {run_dir: runs/llama_fire_source, snapshot: "fork"}
+question: "Does fitting task durations to the window remove the 3B model's decomposition failures in a live run, and does a resident with a working task plan respond to the fire differently?"
+hypothesis: >-
+  H1: no decomposition or replanning call is rejected for its arithmetic (experiment D: 43 of 56
+  such calls rejected; replayed offline, the fit accepts 41 of the 43). H2: plan failures per
+  fork fall below those of the strict `fire` fork with the same seed in all three seeds; the
+  failures that remain are day plans and hourly schedules with times out of order, which the
+  fit does not touch. H3 (no prediction of direction): the reaction to the fire and the
+  interview answer are reported next to those of the strict forks.
+conditions:
+  fire_fit: ["scenario.end=2023-02-13T10:00:00", "planning.fit_durations=true"]
+interventions:
+  fire_fit:
+    - {kind: ambient, at: "2023-02-13T09:10:00", id: cafe_fire, tile: [78, 19], subject: fire, predicate: is, object: burning, description: "a fire is burning in Hobbs Cafe", until: "2023-02-13T09:50:00"}
+    - {kind: object_state, at: "2023-02-13T09:10:00", address: "the Ville:Hobbs Cafe:cafe:cooking area", state: burning}
+seeds: [1, 2, 3]
+metrics: [adaptation, behavior, beliefs, network]
+metric_params:
+  adaptation: {at: "2023-02-13T09:10:00", keywords: ["fire", "burning", "smoke", "flame"], window_minutes: 50}
+primary_outcomes: [plan_failures, adaptation_perceivers, adaptation_changed_share, replans_per_agent]
+determinism_check: false
+output_dir: runs/experiments

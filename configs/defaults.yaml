@@ -63,6 +63,7 @@ planning:
   max_repairs: 1
   store_hourly_in_memory: true
   decompose: true
+  fit_durations: false
 perception:
   vision_r: null
   att_bandwidth: null

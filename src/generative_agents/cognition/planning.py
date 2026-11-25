@@ -18,6 +18,9 @@ retried after a cooldown) rather than receiving an invented one. When only a dec
 fails, the agent follows its own hour-level activity for that window and the fallback is
 recorded on the task.
 
+Extension for small models: with ``planning.fit_durations`` on, task durations that miss the
+window are fitted to it (see ``fit_durations``) instead of being rejected; off by default.
+
 Research ablation: with ``planning.decompose`` off, every hour block is followed as a single
 task and replanning after an interruption resumes the block's own activity without a model
 call. This gives an "hourly only" planner to compare against the full hierarchy.
@@ -79,6 +82,31 @@ def read_blocks(blocks: list[Any]) -> tuple[list[tuple[int | None, int | None, s
             continue
         rows.append((s, e, b.activity.strip(), k))
     return rows, notes
+
+
+def fit_durations(durations: list[int], total: int, lo: int, hi: int) -> list[int] | None:
+    """Fit task durations to an exact ``total`` with every task in ``lo``..``hi`` minutes.
+
+    Durations are clamped to the range first. The difference to the total is then taken from
+    (or added to) the tasks from the last one backwards, and trailing tasks are dropped when
+    even their minimum does not fit, so the fewest tasks change and the start of the model's
+    list is kept. Returns None when the list cannot be fitted: it is empty, or all its tasks
+    at the maximum still fall short of the total (the model gave too few tasks).
+    """
+
+    if not durations or total < lo:
+        return None
+    fitted = [min(hi, max(lo, int(d))) for d in durations]
+    while len(fitted) > 1 and lo * len(fitted) > total:
+        fitted.pop()
+    if hi * len(fitted) < total:
+        return None
+    diff = total - sum(fitted)
+    for i in reversed(range(len(fitted))):
+        step = min(diff, hi - fitted[i]) if diff > 0 else max(diff, lo - fitted[i])
+        fitted[i] += step
+        diff -= step
+    return fitted if diff == 0 else None
 
 
 def _day_start(d: date) -> datetime:
@@ -453,6 +481,27 @@ class Planner:
             start = floor_minute(now)
         return self._decompose(identity, now, block, start, we)
 
+    def _fit(self, out: Any, total: int, lo: int, hi: int, agent_id: str, now: datetime, level: str) -> None:
+        """With ``planning.fit_durations`` on, fit an answer's durations to the window in place.
+
+        Runs inside the validators, before the checks, so a fitted answer is accepted on the
+        attempt that produced it and an unfittable one gets the usual repair. The model's raw
+        answer stays in the call ledger; the ``plan_fitted`` event records both versions.
+        """
+
+        if not self.cfg.fit_durations or not out.tasks:
+            return
+        given = [t.duration_minutes for t in out.tasks]
+        fitted = fit_durations(given, total, lo, hi)
+        if fitted is None or fitted == given:
+            return
+        del out.tasks[len(fitted) :]
+        left = total
+        for task, minutes in zip(out.tasks, fitted, strict=True):
+            left -= minutes
+            task.duration_minutes, task.minutes_left = minutes, left
+        self.svc.events.log("plan_fitted", now, agent_id, level=level, window_minutes=total, given=given, fitted=fitted)
+
     def schedule_context(self, agent_id: str, d: date) -> str:
         lines = []
         for it in self.plans.items(agent_id, day=d.isoformat(), level=PlanLevel.HOUR):
@@ -485,6 +534,7 @@ class Planner:
             errs = []
             if not out.tasks:
                 return ["give at least one task"]
+            self._fit(out, minutes, lo, hi, identity.id, now, "task")
             total = 0
             for k, t in enumerate(out.tasks, start=1):
                 if not t.activity.strip():
@@ -640,6 +690,7 @@ class Planner:
 
         def validate(out: Any) -> list[str]:
             errs = []
+            self._fit(out, rest, lo, hi, identity.id, now, "replan")
             total = sum(t.duration_minutes for t in out.tasks)
             if total != rest:
                 errs.append(f"durations add up to {total} minutes, need exactly {rest}")

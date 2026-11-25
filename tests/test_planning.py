@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from generative_agents.cognition.planning import Planner, PlanStore, is_sleep
+from generative_agents.cognition.planning import Planner, PlanStore, fit_durations, is_sleep
 from generative_agents.cognition.summary import SummaryService
 from generative_agents.providers.mock import MockLLM, ScriptedLLM
 from generative_agents.schemas import MemoryKind, PlanLevel, PlanStatus
@@ -99,6 +99,67 @@ def test_tasks_are_decomposed_just_in_time_for_the_current_window():
     assert planner.current_task(KLAUS, t + timedelta(minutes=1)).id in {x.id for x in window}
     assert len(rt.ledger.rows(task="decompose")) == n  # no repeated decomposition inside the window
     assert all(x.end <= ws + timedelta(hours=1) for x in tasks)  # later windows not decomposed yet
+
+
+@pytest.mark.parametrize(
+    "given,total,expected",
+    [
+        ([5, 10, 8, 12, 5, 10, 15], 60, [5, 10, 8, 12, 5, 10, 10]),  # five minutes over: the last task gives them up
+        ([5, 10, 8, 12, 5, 10], 60, [5, 10, 8, 12, 10, 15]),  # ten minutes short: added from the end, within the range
+        ([5, 2, 3, 8, 5, 10, 6, 4], 44, [5, 5, 5, 8, 5, 6, 5, 5]),  # out-of-range durations are clamped first
+        ([60, 1, 10, 8], 44, [15, 5, 10, 14]),
+        ([10, 10, 10, 10, 10, 10, 10, 10], 18, [8, 5, 5]),  # trailing tasks are dropped when even their minimum does not fit
+        ([15, 15, 15, 15], 60, [15, 15, 15, 15]),  # a valid answer is returned unchanged
+        ([10, 10], 60, None),  # too few tasks to fill the window: left to the repair attempt
+        ([], 60, None),
+        ([10], 3, None),
+    ],
+)
+def test_fit_durations(given, total, expected):
+    fitted = fit_durations(given, total, 5, 15)
+    assert fitted == expected
+    if fitted is not None:
+        assert sum(fitted) == total and all(5 <= d <= 15 for d in fitted) and len(fitted) <= len(given)
+
+
+def _bad_sum(n_tasks: int, minutes: int) -> dict:
+    return {"tasks": [{"activity": f"step {k}", "duration_minutes": minutes, "minutes_left": 0} for k in range(1, n_tasks + 1)]}
+
+
+def test_a_decomposition_with_wrong_arithmetic_is_rejected_by_default_and_fitted_on_request():
+    bad = _bad_sum(7, 10)  # 70 minutes for a 60-minute window
+    t = D0 + timedelta(hours=9, minutes=20)
+
+    planner, plans, rt, svc = planner_for(ScriptedLLM({"decompose": [bad, bad]}, fallback=MockLLM(seed=11)))
+    planner.ensure_day(KLAUS, D0)
+    task = planner.current_task(KLAUS, t)
+    assert task.metadata.get("decomposition_failed") and [c["status"] for c in rt.ledger.rows(task="decompose")] == ["invalid", "invalid"]
+    assert not svc.events.query("plan_fitted")
+
+    planner, plans, rt, svc = planner_for(ScriptedLLM({"decompose": [bad]}, fallback=MockLLM(seed=11)), ["planning.fit_durations=true"])
+    planner.ensure_day(KLAUS, D0)
+    task = planner.current_task(KLAUS, t)
+    window = [x for x in plans.items(KLAUS.id, level=PlanLevel.TASK) if x.parent_id == task.parent_id]
+    total = sum(x.duration_min for x in window)
+    assert [c["status"] for c in rt.ledger.rows(task="decompose")] == ["ok"]  # accepted on the first attempt
+    assert [x.description for x in window] == [f"step {k}" for k in range(1, len(window) + 1)]  # the model's activities, in order
+    assert all(5 <= x.duration_min <= 15 for x in window) and total in (60, int((plans.get(task.parent_id).end - window[0].start).total_seconds() // 60))
+    fitted = svc.events.query("plan_fitted")
+    assert len(fitted) == 1 and fitted[0]["given"] == [10] * 7 and sum(fitted[0]["fitted"]) == total
+    assert '"duration_minutes": 10' in rt.ledger.rows(task="decompose")[0]["raw_output"].replace('":10', '": 10')  # the raw answer is kept
+
+
+def test_fitting_leaves_valid_answers_and_other_runs_untouched():
+    a = planner_for()
+    b = planner_for(overrides=["planning.fit_durations=true"])
+    t = D0 + timedelta(hours=9, minutes=20)
+    out = []
+    for planner, plans, _rt, svc in (a, b):
+        planner.ensure_day(KLAUS, D0)
+        planner.current_task(KLAUS, t)
+        out.append([(x.start, x.duration_min, x.description) for x in plans.items(KLAUS.id, level=PlanLevel.TASK)])
+        assert not svc.events.query("plan_fitted")
+    assert out[0] == out[1]
 
 
 def test_sleep_is_not_decomposed():

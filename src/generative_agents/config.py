@@ -124,6 +124,12 @@ class PlanningSection(_Base):
     # Research ablation: with ``decompose`` off, agents follow their hour blocks as single
     # tasks and never break them into 5-15 minute actions (an "hourly only" planner).
     decompose: bool = True
+    # Extension for models that cannot add: with ``fit_durations`` on, a decomposition whose
+    # task durations miss the window (or leave the 5-15 minute range) is fitted to it by the
+    # planner instead of being rejected: durations are clamped, then the last tasks are
+    # shortened, lengthened or dropped until the total is exact. Activities and their order
+    # are the model's; only minutes change, and each fit is logged as a ``plan_fitted`` event.
+    fit_durations: bool = False
 
 
 class PerceptionSection(_Base):
@@ -339,6 +345,7 @@ class GAConfig(_Base):
             ("constraints.policy", self.constraints.policy, "E"),
             ("retrieval.forgetting", self.retrieval.forgetting.enabled, "X" if self.retrieval.forgetting.enabled else "P"),
             ("planning.decompose", self.planning.decompose, "P" if self.planning.decompose else "X"),
+            ("planning.fit_durations", self.planning.fit_durations, "X" if self.planning.fit_durations else "P"),
             ("social.appraisal", self.social.appraisal, "X" if self.social.appraisal != "none" else "P"),
             ("social.inform_prompts", self.social.inform_prompts, "X" if self.social.inform_prompts else "P"),
             ("scenario.seed_rendering", self.scenario.seed_rendering, "P" if self.scenario.seed_rendering == "verbatim" else "C"),
