@@ -3,6 +3,8 @@
 **A simulation town with memory.**
 [Nathan Lee Yang · @nathanu1](https://github.com/nathanu1).
 
+[![Publish the town in a tab](https://github.com/nathanu1/Architecture1/actions/workflows/tab-site.yml/badge.svg?event=deployment)](https://github.com/nathanu1/Architecture1/actions/workflows/tab-site.yml)
+
 Hearthside is a town simulation where residents remember conversations, plan their days, and respond to the people and places around them. You can talk to them, build things they ask for, and inspect the memories behind their decisions.
 
 It brings together a reproduction of *Generative Agents* and a town-building interface that runs on your own computer.
