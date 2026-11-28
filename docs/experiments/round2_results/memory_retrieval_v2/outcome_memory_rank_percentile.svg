@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="240" font-family="IBM Plex Mono, monospace" font-size="11">
+<text x="48" y="20" fill="#16211B" font-size="13">memory rank percentile</text>
+<line x1="48" y1="210.0" x2="404" y2="210.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="214.0" text-anchor="end" fill="#5B6B61">0</text>
+<line x1="48" y1="123.0" x2="404" y2="123.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="127.0" text-anchor="end" fill="#5B6B61">0.5</text>
+<line x1="48" y1="36.0" x2="404" y2="36.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="40.0" text-anchor="end" fill="#5B6B61">1</text>
+<circle cx="92.5" cy="199.9" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>full-s201: 0.0581</title></circle>
+<circle cx="92.5" cy="199.5" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>full-s202: 0.0603</title></circle>
+<circle cx="92.5" cy="199.6" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>full-s203: 0.06</title></circle>
+<circle cx="92.5" cy="199.7" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>full-s204: 0.0591</title></circle>
+<circle cx="92.5" cy="199.4" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>full-s205: 0.0609</title></circle>
+<circle cx="92.5" cy="199.7" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>full-s206: 0.059</title></circle>
+<circle cx="92.5" cy="199.8" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>full-s207: 0.0589</title></circle>
+<circle cx="101.5" cy="199.8" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>full-s208: 0.0589</title></circle>
+<line x1="65.8" y1="199.7" x2="119.2" y2="199.7" stroke="#16211B" stroke-width="2"/>
+<text x="123.2" y="203.7" fill="#16211B">0.06</text>
+<text x="92.5" y="228" text-anchor="middle" fill="#16211B">full (n=8)</text>
+<circle cx="181.5" cy="172.7" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>hash_embeddings-s201: 0.2143</title></circle>
+<circle cx="181.5" cy="172.9" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>hash_embeddings-s202: 0.2133</title></circle>
+<circle cx="181.5" cy="172.7" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>hash_embeddings-s203: 0.2146</title></circle>
+<circle cx="181.5" cy="173.4" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>hash_embeddings-s204: 0.2103</title></circle>
+<circle cx="181.5" cy="172.8" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>hash_embeddings-s205: 0.214</title></circle>
+<circle cx="181.5" cy="172.4" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>hash_embeddings-s206: 0.2163</title></circle>
+<circle cx="181.5" cy="172.5" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>hash_embeddings-s207: 0.2156</title></circle>
+<circle cx="181.5" cy="172.6" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>hash_embeddings-s208: 0.215</title></circle>
+<line x1="154.8" y1="172.7" x2="208.2" y2="172.7" stroke="#16211B" stroke-width="2"/>
+<text x="212.2" y="176.7" fill="#16211B">0.21</text>
+<text x="181.5" y="228" text-anchor="middle" fill="#16211B">hash_embeddings (n=8)</text>
+<circle cx="270.5" cy="199.0" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>no_reflection-s201: 0.0635</title></circle>
+<circle cx="270.5" cy="198.9" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>no_reflection-s202: 0.0636</title></circle>
+<circle cx="270.5" cy="199.0" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>no_reflection-s203: 0.0631</title></circle>
+<circle cx="270.5" cy="199.1" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>no_reflection-s204: 0.0628</title></circle>
+<circle cx="270.5" cy="199.1" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>no_reflection-s205: 0.0626</title></circle>
+<circle cx="279.5" cy="198.9" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>no_reflection-s206: 0.0636</title></circle>
+<circle cx="270.5" cy="199.4" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>no_reflection-s207: 0.0609</title></circle>
+<circle cx="279.5" cy="199.1" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>no_reflection-s208: 0.0626</title></circle>
+<line x1="243.8" y1="199.1" x2="297.2" y2="199.1" stroke="#16211B" stroke-width="2"/>
+<text x="301.2" y="203.1" fill="#16211B">0.06</text>
+<text x="270.5" y="228" text-anchor="middle" fill="#16211B">no_reflection (n=8)</text>
+<circle cx="359.5" cy="132.9" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>recency_only-s201: 0.4431</title></circle>
+<circle cx="359.5" cy="133.4" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>recency_only-s202: 0.4403</title></circle>
+<circle cx="359.5" cy="132.0" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>recency_only-s203: 0.448</title></circle>
+<circle cx="359.5" cy="132.1" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>recency_only-s204: 0.4475</title></circle>
+<circle cx="359.5" cy="131.9" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>recency_only-s205: 0.4486</title></circle>
+<circle cx="359.5" cy="132.8" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>recency_only-s206: 0.4437</title></circle>
+<circle cx="359.5" cy="133.7" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>recency_only-s207: 0.4383</title></circle>
+<circle cx="359.5" cy="132.6" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>recency_only-s208: 0.4449</title></circle>
+<line x1="332.8" y1="132.7" x2="386.2" y2="132.7" stroke="#16211B" stroke-width="2"/>
+<text x="390.2" y="136.7" fill="#16211B">0.44</text>
+<text x="359.5" y="228" text-anchor="middle" fill="#16211B">recency_only (n=8)</text>
+</svg>

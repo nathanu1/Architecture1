@@ -1,0 +1,2981 @@
+{
+  "protocol": "social_network_v2",
+  "unit": "run",
+  "conditions": {
+    "low_contact": {
+      "runs": 8,
+      "completed": 8,
+      "outcomes": {
+        "network_weighted_density": {
+          "n": 8,
+          "mean": 0.112,
+          "sd": 0.002,
+          "ci95": [
+            0.111,
+            0.113
+          ],
+          "median": 0.1123,
+          "min": 0.1096,
+          "max": 0.1138
+        },
+        "network_conversation_density": {
+          "n": 8,
+          "mean": 0.202,
+          "sd": 0.004,
+          "ci95": [
+            0.199,
+            0.205
+          ],
+          "median": 0.20165,
+          "min": 0.1967,
+          "max": 0.2067
+        },
+        "network_density_t50": {
+          "n": 8,
+          "mean": 0.121,
+          "sd": 0.003,
+          "ci95": [
+            0.119,
+            0.123
+          ],
+          "median": 0.12,
+          "min": 0.1167,
+          "max": 0.1267
+        },
+        "network_density_t20": {
+          "n": 8,
+          "mean": 0.202,
+          "sd": 0.004,
+          "ci95": [
+            0.199,
+            0.205
+          ],
+          "median": 0.20165,
+          "min": 0.1967,
+          "max": 0.2067
+        },
+        "conversations_per_agent": {
+          "n": 8,
+          "mean": 9.69,
+          "sd": 0.184,
+          "ci95": [
+            9.57,
+            9.81
+          ],
+          "median": 9.68,
+          "min": 9.36,
+          "max": 9.92
+        },
+        "network_density": {
+          "n": 8,
+          "mean": 0.202,
+          "sd": 0.004,
+          "ci95": [
+            0.199,
+            0.205
+          ],
+          "median": 0.20165,
+          "min": 0.1967,
+          "max": 0.2067
+        },
+        "network_edges": {
+          "n": 8,
+          "mean": 60.625,
+          "sd": 1.302,
+          "ci95": [
+            59.75,
+            61.5
+          ],
+          "median": 60.5,
+          "min": 59,
+          "max": 62
+        },
+        "network_components": {
+          "n": 8,
+          "mean": 6,
+          "sd": 0.0,
+          "ci95": [
+            6,
+            6
+          ],
+          "median": 6.0,
+          "min": 6,
+          "max": 6
+        },
+        "network_largest_component": {
+          "n": 8,
+          "mean": 16,
+          "sd": 0.0,
+          "ci95": [
+            16,
+            16
+          ],
+          "median": 16.0,
+          "min": 16,
+          "max": 16
+        },
+        "network_isolates": {
+          "n": 8,
+          "mean": 4,
+          "sd": 0.0,
+          "ci95": [
+            4,
+            4
+          ],
+          "median": 4.0,
+          "min": 4,
+          "max": 4
+        },
+        "network_reciprocity": {
+          "n": 8,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "network_clustering": {
+          "n": 8,
+          "mean": 0.759,
+          "sd": 0.016,
+          "ci95": [
+            0.748,
+            0.769
+          ],
+          "median": 0.7554,
+          "min": 0.7366,
+          "max": 0.7835
+        },
+        "network_degree_gini": {
+          "n": 8,
+          "mean": 0.394,
+          "sd": 0.007,
+          "ci95": [
+            0.39,
+            0.398
+          ],
+          "median": 0.39225,
+          "min": 0.3873,
+          "max": 0.4077
+        },
+        "mean_familiarity": {
+          "n": 8,
+          "mean": 0.513,
+          "sd": 0.015,
+          "ci95": [
+            0.504,
+            0.523
+          ],
+          "median": 0.5117,
+          "min": 0.4913,
+          "max": 0.5421
+        },
+        "mean_valence": {
+          "n": 0
+        },
+        "relationship_records": {
+          "n": 8,
+          "mean": 131.25,
+          "sd": 3.845,
+          "ci95": [
+            128.75,
+            133.75
+          ],
+          "median": 131.0,
+          "min": 126,
+          "max": 136
+        },
+        "network_density_t35": {
+          "n": 8,
+          "mean": 0.179,
+          "sd": 0.007,
+          "ci95": [
+            0.175,
+            0.183
+          ],
+          "median": 0.17835,
+          "min": 0.17,
+          "max": 0.19
+        },
+        "network_density_t75": {
+          "n": 8,
+          "mean": 0.012,
+          "sd": 0.002,
+          "ci95": [
+            0.011,
+            0.013
+          ],
+          "median": 0.0133,
+          "min": 0.01,
+          "max": 0.0133
+        },
+        "scheduled_share": {
+          "n": 8,
+          "mean": 0.83,
+          "sd": 0.005,
+          "ci95": [
+            0.827,
+            0.833
+          ],
+          "median": 0.8302499999999999,
+          "min": 0.824,
+          "max": 0.8381
+        },
+        "plan_adherence": {
+          "n": 8,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "idle_share": {
+          "n": 8,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "replans_per_agent": {
+          "n": 8,
+          "mean": 9.69,
+          "sd": 0.184,
+          "ci95": [
+            9.57,
+            9.81
+          ],
+          "median": 9.68,
+          "min": 9.36,
+          "max": 9.92
+        },
+        "reaction_rate": {
+          "n": 8,
+          "mean": 0.17,
+          "sd": 0.007,
+          "ci95": [
+            0.166,
+            0.175
+          ],
+          "median": 0.16985,
+          "min": 0.1598,
+          "max": 0.1786
+        },
+        "action_failures": {
+          "n": 8,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "constraint_refusals": {
+          "n": 8,
+          "mean": 16,
+          "sd": 0.0,
+          "ci95": [
+            16,
+            16
+          ],
+          "median": 16.0,
+          "min": 16,
+          "max": 16
+        },
+        "plan_failures": {
+          "n": 8,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "valentines_holders_pct": {
+          "n": 8,
+          "mean": 36.5,
+          "sd": 13.256,
+          "ci95": [
+            28.0,
+            45.0
+          ],
+          "median": 36.0,
+          "min": 20.0,
+          "max": 52.0
+        },
+        "valentines_knowledge_coverage": {
+          "n": 8,
+          "mean": 0.111,
+          "sd": 0.03,
+          "ci95": [
+            0.091,
+            0.13
+          ],
+          "median": 0.109,
+          "min": 0.067,
+          "max": 0.154
+        },
+        "valentines_conflicting_details": {
+          "n": 8,
+          "mean": 2,
+          "sd": 0.756,
+          "ci95": [
+            1.5,
+            2.5
+          ],
+          "median": 2.0,
+          "min": 1,
+          "max": 3
+        },
+        "mayor_holders_pct": {
+          "n": 8,
+          "mean": 17.0,
+          "sd": 8.485,
+          "ci95": [
+            12.0,
+            23.0
+          ],
+          "median": 14.0,
+          "min": 8.0,
+          "max": 32.0
+        },
+        "mayor_knowledge_coverage": {
+          "n": 8,
+          "mean": 0.074,
+          "sd": 0.011,
+          "ci95": [
+            0.067,
+            0.081
+          ],
+          "median": 0.075,
+          "min": 0.056,
+          "max": 0.089
+        },
+        "mayor_conflicting_details": {
+          "n": 8,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "calls": {
+          "n": 8,
+          "mean": 27376.875,
+          "sd": 120.855,
+          "ci95": [
+            27301.125,
+            27459.125
+          ],
+          "median": 27345.5,
+          "min": 27205,
+          "max": 27600
+        },
+        "input_tokens": {
+          "n": 8,
+          "mean": 14992475.125,
+          "sd": 152627.345,
+          "ci95": [
+            14876353.75,
+            15080423.75
+          ],
+          "median": 15029913.5,
+          "min": 14684951,
+          "max": 15160574
+        },
+        "output_tokens": {
+          "n": 8,
+          "mean": 720125.875,
+          "sd": 5412.982,
+          "ci95": [
+            716302.875,
+            723410.375
+          ],
+          "median": 721721.0,
+          "min": 711085,
+          "max": 727148
+        },
+        "cost_usd": {
+          "n": 0
+        },
+        "runtime_s": {
+          "n": 8,
+          "mean": 160.738,
+          "sd": 4.929,
+          "ci95": [
+            157.65,
+            164.15
+          ],
+          "median": 160.45,
+          "min": 153.6,
+          "max": 169.9
+        }
+      }
+    },
+    "reduced_contact": {
+      "runs": 8,
+      "completed": 8,
+      "outcomes": {
+        "network_weighted_density": {
+          "n": 8,
+          "mean": 0.127,
+          "sd": 0.001,
+          "ci95": [
+            0.126,
+            0.128
+          ],
+          "median": 0.12769999999999998,
+          "min": 0.1249,
+          "max": 0.1287
+        },
+        "network_conversation_density": {
+          "n": 8,
+          "mean": 0.197,
+          "sd": 0.005,
+          "ci95": [
+            0.194,
+            0.201
+          ],
+          "median": 0.1933,
+          "min": 0.1933,
+          "max": 0.2067
+        },
+        "network_density_t50": {
+          "n": 8,
+          "mean": 0.128,
+          "sd": 0.006,
+          "ci95": [
+            0.124,
+            0.131
+          ],
+          "median": 0.1267,
+          "min": 0.12,
+          "max": 0.1367
+        },
+        "network_density_t20": {
+          "n": 8,
+          "mean": 0.197,
+          "sd": 0.005,
+          "ci95": [
+            0.194,
+            0.201
+          ],
+          "median": 0.1933,
+          "min": 0.1933,
+          "max": 0.2067
+        },
+        "conversations_per_agent": {
+          "n": 8,
+          "mean": 15.34,
+          "sd": 0.401,
+          "ci95": [
+            15.1,
+            15.62
+          ],
+          "median": 15.16,
+          "min": 14.96,
+          "max": 16.08
+        },
+        "network_density": {
+          "n": 8,
+          "mean": 0.197,
+          "sd": 0.005,
+          "ci95": [
+            0.194,
+            0.201
+          ],
+          "median": 0.1933,
+          "min": 0.1933,
+          "max": 0.2067
+        },
+        "network_edges": {
+          "n": 8,
+          "mean": 59.125,
+          "sd": 1.642,
+          "ci95": [
+            58.25,
+            60.25
+          ],
+          "median": 58.0,
+          "min": 58,
+          "max": 62
+        },
+        "network_components": {
+          "n": 8,
+          "mean": 6,
+          "sd": 0.0,
+          "ci95": [
+            6,
+            6
+          ],
+          "median": 6.0,
+          "min": 6,
+          "max": 6
+        },
+        "network_largest_component": {
+          "n": 8,
+          "mean": 16,
+          "sd": 0.0,
+          "ci95": [
+            16,
+            16
+          ],
+          "median": 16.0,
+          "min": 16,
+          "max": 16
+        },
+        "network_isolates": {
+          "n": 8,
+          "mean": 4,
+          "sd": 0.0,
+          "ci95": [
+            4,
+            4
+          ],
+          "median": 4.0,
+          "min": 4,
+          "max": 4
+        },
+        "network_reciprocity": {
+          "n": 8,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "network_clustering": {
+          "n": 8,
+          "mean": 0.747,
+          "sd": 0.016,
+          "ci95": [
+            0.736,
+            0.757
+          ],
+          "median": 0.7463500000000001,
+          "min": 0.7259,
+          "max": 0.7669
+        },
+        "network_degree_gini": {
+          "n": 8,
+          "mean": 0.389,
+          "sd": 0.006,
+          "ci95": [
+            0.385,
+            0.393
+          ],
+          "median": 0.38825,
+          "min": 0.3814,
+          "max": 0.3981
+        },
+        "mean_familiarity": {
+          "n": 8,
+          "mean": 0.596,
+          "sd": 0.011,
+          "ci95": [
+            0.59,
+            0.604
+          ],
+          "median": 0.5926,
+          "min": 0.5829,
+          "max": 0.6145
+        },
+        "mean_valence": {
+          "n": 0
+        },
+        "relationship_records": {
+          "n": 8,
+          "mean": 128,
+          "sd": 2.828,
+          "ci95": [
+            126,
+            129.5
+          ],
+          "median": 129.0,
+          "min": 122,
+          "max": 130
+        },
+        "network_density_t35": {
+          "n": 8,
+          "mean": 0.175,
+          "sd": 0.004,
+          "ci95": [
+            0.172,
+            0.177
+          ],
+          "median": 0.1767,
+          "min": 0.17,
+          "max": 0.18
+        },
+        "network_density_t75": {
+          "n": 8,
+          "mean": 0.08,
+          "sd": 0.002,
+          "ci95": [
+            0.078,
+            0.082
+          ],
+          "median": 0.08,
+          "min": 0.0767,
+          "max": 0.0833
+        },
+        "scheduled_share": {
+          "n": 8,
+          "mean": 0.768,
+          "sd": 0.005,
+          "ci95": [
+            0.764,
+            0.771
+          ],
+          "median": 0.768,
+          "min": 0.7612,
+          "max": 0.7756
+        },
+        "plan_adherence": {
+          "n": 8,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "idle_share": {
+          "n": 8,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "replans_per_agent": {
+          "n": 8,
+          "mean": 15.34,
+          "sd": 0.401,
+          "ci95": [
+            15.1,
+            15.62
+          ],
+          "median": 15.16,
+          "min": 14.96,
+          "max": 16.08
+        },
+        "reaction_rate": {
+          "n": 8,
+          "mean": 0.263,
+          "sd": 0.014,
+          "ci95": [
+            0.255,
+            0.272
+          ],
+          "median": 0.25844999999999996,
+          "min": 0.2466,
+          "max": 0.2856
+        },
+        "action_failures": {
+          "n": 8,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "constraint_refusals": {
+          "n": 8,
+          "mean": 16,
+          "sd": 0.0,
+          "ci95": [
+            16,
+            16
+          ],
+          "median": 16.0,
+          "min": 16,
+          "max": 16
+        },
+        "plan_failures": {
+          "n": 8,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "valentines_holders_pct": {
+          "n": 8,
+          "mean": 35.5,
+          "sd": 16.345,
+          "ci95": [
+            25.0,
+            46.0
+          ],
+          "median": 36.0,
+          "min": 12.0,
+          "max": 52.0
+        },
+        "valentines_knowledge_coverage": {
+          "n": 8,
+          "mean": 0.109,
+          "sd": 0.033,
+          "ci95": [
+            0.087,
+            0.13
+          ],
+          "median": 0.109,
+          "min": 0.05,
+          "max": 0.16
+        },
+        "valentines_conflicting_details": {
+          "n": 8,
+          "mean": 2,
+          "sd": 0.756,
+          "ci95": [
+            1.5,
+            2.5
+          ],
+          "median": 2.0,
+          "min": 1,
+          "max": 3
+        },
+        "mayor_holders_pct": {
+          "n": 8,
+          "mean": 19.0,
+          "sd": 10.198,
+          "ci95": [
+            12.5,
+            26.0
+          ],
+          "median": 16.0,
+          "min": 8.0,
+          "max": 32.0
+        },
+        "mayor_knowledge_coverage": {
+          "n": 8,
+          "mean": 0.071,
+          "sd": 0.01,
+          "ci95": [
+            0.064,
+            0.078
+          ],
+          "median": 0.073,
+          "min": 0.056,
+          "max": 0.089
+        },
+        "mayor_conflicting_details": {
+          "n": 8,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "calls": {
+          "n": 8,
+          "mean": 31109.375,
+          "sd": 406.671,
+          "ci95": [
+            30867.25,
+            31380.75
+          ],
+          "median": 30932.5,
+          "min": 30714,
+          "max": 31722
+        },
+        "input_tokens": {
+          "n": 8,
+          "mean": 17240368,
+          "sd": 329635.962,
+          "ci95": [
+            17019890.25,
+            17448328.625
+          ],
+          "median": 17316944.0,
+          "min": 16651898,
+          "max": 17606901
+        },
+        "output_tokens": {
+          "n": 8,
+          "mean": 817522.875,
+          "sd": 13753.658,
+          "ci95": [
+            808441,
+            826350.625
+          ],
+          "median": 820004.0,
+          "min": 796446,
+          "max": 833669
+        },
+        "cost_usd": {
+          "n": 0
+        },
+        "runtime_s": {
+          "n": 8,
+          "mean": 209.85,
+          "sd": 41.499,
+          "ci95": [
+            192.113,
+            240.362
+          ],
+          "median": 198.55,
+          "min": 184.5,
+          "max": 311.4
+        }
+      }
+    },
+    "baseline": {
+      "runs": 8,
+      "completed": 8,
+      "outcomes": {
+        "network_weighted_density": {
+          "n": 8,
+          "mean": 0.132,
+          "sd": 0.002,
+          "ci95": [
+            0.131,
+            0.134
+          ],
+          "median": 0.13224999999999998,
+          "min": 0.1292,
+          "max": 0.1366
+        },
+        "network_conversation_density": {
+          "n": 8,
+          "mean": 0.2,
+          "sd": 0.005,
+          "ci95": [
+            0.196,
+            0.203
+          ],
+          "median": 0.19835000000000003,
+          "min": 0.1933,
+          "max": 0.2067
+        },
+        "network_density_t50": {
+          "n": 8,
+          "mean": 0.128,
+          "sd": 0.008,
+          "ci95": [
+            0.123,
+            0.134
+          ],
+          "median": 0.1267,
+          "min": 0.12,
+          "max": 0.14
+        },
+        "network_density_t20": {
+          "n": 8,
+          "mean": 0.2,
+          "sd": 0.005,
+          "ci95": [
+            0.196,
+            0.203
+          ],
+          "median": 0.19835000000000003,
+          "min": 0.1933,
+          "max": 0.2067
+        },
+        "conversations_per_agent": {
+          "n": 8,
+          "mean": 17.97,
+          "sd": 0.502,
+          "ci95": [
+            17.63,
+            18.28
+          ],
+          "median": 17.880000000000003,
+          "min": 17.04,
+          "max": 18.72
+        },
+        "network_density": {
+          "n": 8,
+          "mean": 0.2,
+          "sd": 0.005,
+          "ci95": [
+            0.196,
+            0.203
+          ],
+          "median": 0.19835000000000003,
+          "min": 0.1933,
+          "max": 0.2067
+        },
+        "network_edges": {
+          "n": 8,
+          "mean": 59.875,
+          "sd": 1.642,
+          "ci95": [
+            58.875,
+            61
+          ],
+          "median": 59.5,
+          "min": 58,
+          "max": 62
+        },
+        "network_components": {
+          "n": 8,
+          "mean": 6,
+          "sd": 0.0,
+          "ci95": [
+            6,
+            6
+          ],
+          "median": 6.0,
+          "min": 6,
+          "max": 6
+        },
+        "network_largest_component": {
+          "n": 8,
+          "mean": 16,
+          "sd": 0.0,
+          "ci95": [
+            16,
+            16
+          ],
+          "median": 16.0,
+          "min": 16,
+          "max": 16
+        },
+        "network_isolates": {
+          "n": 8,
+          "mean": 4,
+          "sd": 0.0,
+          "ci95": [
+            4,
+            4
+          ],
+          "median": 4.0,
+          "min": 4,
+          "max": 4
+        },
+        "network_reciprocity": {
+          "n": 8,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "network_clustering": {
+          "n": 8,
+          "mean": 0.754,
+          "sd": 0.017,
+          "ci95": [
+            0.743,
+            0.765
+          ],
+          "median": 0.7514000000000001,
+          "min": 0.7255,
+          "max": 0.7739
+        },
+        "network_degree_gini": {
+          "n": 8,
+          "mean": 0.395,
+          "sd": 0.003,
+          "ci95": [
+            0.392,
+            0.397
+          ],
+          "median": 0.395,
+          "min": 0.3903,
+          "max": 0.3981
+        },
+        "mean_familiarity": {
+          "n": 8,
+          "mean": 0.612,
+          "sd": 0.019,
+          "ci95": [
+            0.601,
+            0.625
+          ],
+          "median": 0.6062000000000001,
+          "min": 0.5913,
+          "max": 0.6506
+        },
+        "mean_valence": {
+          "n": 0
+        },
+        "relationship_records": {
+          "n": 8,
+          "mean": 129.5,
+          "sd": 2.976,
+          "ci95": [
+            127.75,
+            131.75
+          ],
+          "median": 128.0,
+          "min": 126,
+          "max": 134
+        },
+        "network_density_t35": {
+          "n": 8,
+          "mean": 0.173,
+          "sd": 0.006,
+          "ci95": [
+            0.169,
+            0.177
+          ],
+          "median": 0.1733,
+          "min": 0.1633,
+          "max": 0.18
+        },
+        "network_density_t75": {
+          "n": 8,
+          "mean": 0.087,
+          "sd": 0.006,
+          "ci95": [
+            0.084,
+            0.091
+          ],
+          "median": 0.0867,
+          "min": 0.08,
+          "max": 0.1
+        },
+        "scheduled_share": {
+          "n": 8,
+          "mean": 0.742,
+          "sd": 0.008,
+          "ci95": [
+            0.737,
+            0.747
+          ],
+          "median": 0.74125,
+          "min": 0.7307,
+          "max": 0.7538
+        },
+        "plan_adherence": {
+          "n": 8,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "idle_share": {
+          "n": 8,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "replans_per_agent": {
+          "n": 8,
+          "mean": 17.97,
+          "sd": 0.502,
+          "ci95": [
+            17.63,
+            18.28
+          ],
+          "median": 17.880000000000003,
+          "min": 17.04,
+          "max": 18.72
+        },
+        "reaction_rate": {
+          "n": 8,
+          "mean": 0.29,
+          "sd": 0.016,
+          "ci95": [
+            0.281,
+            0.301
+          ],
+          "median": 0.28395000000000004,
+          "min": 0.2756,
+          "max": 0.3204
+        },
+        "action_failures": {
+          "n": 8,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "constraint_refusals": {
+          "n": 8,
+          "mean": 16,
+          "sd": 0.0,
+          "ci95": [
+            16,
+            16
+          ],
+          "median": 16.0,
+          "min": 16,
+          "max": 16
+        },
+        "plan_failures": {
+          "n": 8,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "valentines_holders_pct": {
+          "n": 8,
+          "mean": 26.5,
+          "sd": 12.271,
+          "ci95": [
+            19.0,
+            35.0
+          ],
+          "median": 24.0,
+          "min": 12.0,
+          "max": 48.0
+        },
+        "valentines_knowledge_coverage": {
+          "n": 8,
+          "mean": 0.081,
+          "sd": 0.043,
+          "ci95": [
+            0.052,
+            0.11
+          ],
+          "median": 0.077,
+          "min": 0.0,
+          "max": 0.142
+        },
+        "valentines_conflicting_details": {
+          "n": 8,
+          "mean": 1.375,
+          "sd": 0.744,
+          "ci95": [
+            0.875,
+            1.75
+          ],
+          "median": 1.5,
+          "min": 0,
+          "max": 2
+        },
+        "mayor_holders_pct": {
+          "n": 8,
+          "mean": 15.0,
+          "sd": 5.555,
+          "ci95": [
+            11.5,
+            18.5
+          ],
+          "median": 16.0,
+          "min": 8.0,
+          "max": 24.0
+        },
+        "mayor_knowledge_coverage": {
+          "n": 8,
+          "mean": 0.073,
+          "sd": 0.01,
+          "ci95": [
+            0.067,
+            0.08
+          ],
+          "median": 0.07100000000000001,
+          "min": 0.062,
+          "max": 0.092
+        },
+        "mayor_conflicting_details": {
+          "n": 8,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "calls": {
+          "n": 8,
+          "mean": 33207.25,
+          "sd": 383.681,
+          "ci95": [
+            32950.25,
+            33455.375
+          ],
+          "median": 33189.5,
+          "min": 32793,
+          "max": 33701
+        },
+        "input_tokens": {
+          "n": 8,
+          "mean": 18593506,
+          "sd": 315596.444,
+          "ci95": [
+            18393821,
+            18795052.25
+          ],
+          "median": 18645288.5,
+          "min": 18122308,
+          "max": 19135947
+        },
+        "output_tokens": {
+          "n": 8,
+          "mean": 870576.375,
+          "sd": 11799.563,
+          "ci95": [
+            863117.125,
+            878589.75
+          ],
+          "median": 870128.0,
+          "min": 852765,
+          "max": 893492
+        },
+        "cost_usd": {
+          "n": 0
+        },
+        "runtime_s": {
+          "n": 8,
+          "mean": 220.15,
+          "sd": 8.261,
+          "ci95": [
+            214.925,
+            225.575
+          ],
+          "median": 218.60000000000002,
+          "min": 208.8,
+          "max": 232.3
+        }
+      }
+    },
+    "high_contact": {
+      "runs": 8,
+      "completed": 8,
+      "outcomes": {
+        "network_weighted_density": {
+          "n": 8,
+          "mean": 0.143,
+          "sd": 0.003,
+          "ci95": [
+            0.141,
+            0.145
+          ],
+          "median": 0.1432,
+          "min": 0.1386,
+          "max": 0.1467
+        },
+        "network_conversation_density": {
+          "n": 8,
+          "mean": 0.201,
+          "sd": 0.005,
+          "ci95": [
+            0.198,
+            0.204
+          ],
+          "median": 0.20165,
+          "min": 0.1933,
+          "max": 0.2067
+        },
+        "network_density_t50": {
+          "n": 8,
+          "mean": 0.144,
+          "sd": 0.006,
+          "ci95": [
+            0.14,
+            0.148
+          ],
+          "median": 0.14500000000000002,
+          "min": 0.1333,
+          "max": 0.15
+        },
+        "network_density_t20": {
+          "n": 8,
+          "mean": 0.201,
+          "sd": 0.005,
+          "ci95": [
+            0.198,
+            0.204
+          ],
+          "median": 0.20165,
+          "min": 0.1933,
+          "max": 0.2067
+        },
+        "conversations_per_agent": {
+          "n": 8,
+          "mean": 25.63,
+          "sd": 1.142,
+          "ci95": [
+            24.92,
+            26.37
+          ],
+          "median": 25.560000000000002,
+          "min": 24.0,
+          "max": 27.68
+        },
+        "network_density": {
+          "n": 8,
+          "mean": 0.201,
+          "sd": 0.005,
+          "ci95": [
+            0.198,
+            0.204
+          ],
+          "median": 0.20165,
+          "min": 0.1933,
+          "max": 0.2067
+        },
+        "network_edges": {
+          "n": 8,
+          "mean": 60.25,
+          "sd": 1.488,
+          "ci95": [
+            59.375,
+            61.125
+          ],
+          "median": 60.5,
+          "min": 58,
+          "max": 62
+        },
+        "network_components": {
+          "n": 8,
+          "mean": 6,
+          "sd": 0.0,
+          "ci95": [
+            6,
+            6
+          ],
+          "median": 6.0,
+          "min": 6,
+          "max": 6
+        },
+        "network_largest_component": {
+          "n": 8,
+          "mean": 16,
+          "sd": 0.0,
+          "ci95": [
+            16,
+            16
+          ],
+          "median": 16.0,
+          "min": 16,
+          "max": 16
+        },
+        "network_isolates": {
+          "n": 8,
+          "mean": 4,
+          "sd": 0.0,
+          "ci95": [
+            4,
+            4
+          ],
+          "median": 4.0,
+          "min": 4,
+          "max": 4
+        },
+        "network_reciprocity": {
+          "n": 8,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "network_clustering": {
+          "n": 8,
+          "mean": 0.76,
+          "sd": 0.015,
+          "ci95": [
+            0.751,
+            0.77
+          ],
+          "median": 0.75925,
+          "min": 0.7409,
+          "max": 0.7801
+        },
+        "network_degree_gini": {
+          "n": 8,
+          "mean": 0.396,
+          "sd": 0.008,
+          "ci95": [
+            0.391,
+            0.401
+          ],
+          "median": 0.39705,
+          "min": 0.3803,
+          "max": 0.4058
+        },
+        "mean_familiarity": {
+          "n": 8,
+          "mean": 0.638,
+          "sd": 0.009,
+          "ci95": [
+            0.632,
+            0.643
+          ],
+          "median": 0.6406000000000001,
+          "min": 0.6208,
+          "max": 0.6488
+        },
+        "mean_valence": {
+          "n": 0
+        },
+        "relationship_records": {
+          "n": 8,
+          "mean": 134.25,
+          "sd": 2.493,
+          "ci95": [
+            132.75,
+            135.75
+          ],
+          "median": 134.0,
+          "min": 130,
+          "max": 138
+        },
+        "network_density_t35": {
+          "n": 8,
+          "mean": 0.17,
+          "sd": 0.006,
+          "ci95": [
+            0.166,
+            0.174
+          ],
+          "median": 0.17,
+          "min": 0.16,
+          "max": 0.18
+        },
+        "network_density_t75": {
+          "n": 8,
+          "mean": 0.099,
+          "sd": 0.002,
+          "ci95": [
+            0.097,
+            0.1
+          ],
+          "median": 0.09834999999999999,
+          "min": 0.0967,
+          "max": 0.1033
+        },
+        "scheduled_share": {
+          "n": 8,
+          "mean": 0.676,
+          "sd": 0.007,
+          "ci95": [
+            0.672,
+            0.681
+          ],
+          "median": 0.6761999999999999,
+          "min": 0.6631,
+          "max": 0.688
+        },
+        "plan_adherence": {
+          "n": 8,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "idle_share": {
+          "n": 8,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "replans_per_agent": {
+          "n": 8,
+          "mean": 25.63,
+          "sd": 1.142,
+          "ci95": [
+            24.92,
+            26.37
+          ],
+          "median": 25.560000000000002,
+          "min": 24.0,
+          "max": 27.68
+        },
+        "reaction_rate": {
+          "n": 8,
+          "mean": 0.388,
+          "sd": 0.007,
+          "ci95": [
+            0.383,
+            0.392
+          ],
+          "median": 0.39170000000000005,
+          "min": 0.3721,
+          "max": 0.393
+        },
+        "action_failures": {
+          "n": 8,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "constraint_refusals": {
+          "n": 8,
+          "mean": 16,
+          "sd": 0.0,
+          "ci95": [
+            16,
+            16
+          ],
+          "median": 16.0,
+          "min": 16,
+          "max": 16
+        },
+        "plan_failures": {
+          "n": 8,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "valentines_holders_pct": {
+          "n": 8,
+          "mean": 30.5,
+          "sd": 10.889,
+          "ci95": [
+            23.0,
+            37.0
+          ],
+          "median": 34.0,
+          "min": 12.0,
+          "max": 44.0
+        },
+        "valentines_knowledge_coverage": {
+          "n": 8,
+          "mean": 0.096,
+          "sd": 0.029,
+          "ci95": [
+            0.077,
+            0.116
+          ],
+          "median": 0.0985,
+          "min": 0.056,
+          "max": 0.152
+        },
+        "valentines_conflicting_details": {
+          "n": 8,
+          "mean": 1.875,
+          "sd": 1.126,
+          "ci95": [
+            1.25,
+            2.625
+          ],
+          "median": 1.5,
+          "min": 1,
+          "max": 4
+        },
+        "mayor_holders_pct": {
+          "n": 8,
+          "mean": 10.5,
+          "sd": 2.976,
+          "ci95": [
+            8.5,
+            12.5
+          ],
+          "median": 10.0,
+          "min": 8.0,
+          "max": 16.0
+        },
+        "mayor_knowledge_coverage": {
+          "n": 8,
+          "mean": 0.065,
+          "sd": 0.017,
+          "ci95": [
+            0.053,
+            0.076
+          ],
+          "median": 0.0655,
+          "min": 0.042,
+          "max": 0.083
+        },
+        "mayor_conflicting_details": {
+          "n": 8,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "calls": {
+          "n": 8,
+          "mean": 38341,
+          "sd": 953.143,
+          "ci95": [
+            37766.125,
+            38982.875
+          ],
+          "median": 38198.5,
+          "min": 36987,
+          "max": 40180
+        },
+        "input_tokens": {
+          "n": 8,
+          "mean": 21601296.125,
+          "sd": 748508.889,
+          "ci95": [
+            21182454.625,
+            22117873
+          ],
+          "median": 21377477.5,
+          "min": 20759584,
+          "max": 23181134
+        },
+        "output_tokens": {
+          "n": 8,
+          "mean": 1002840.75,
+          "sd": 30464.181,
+          "ci95": [
+            984664.625,
+            1023502.625
+          ],
+          "median": 995581.0,
+          "min": 969864,
+          "max": 1064549
+        },
+        "cost_usd": {
+          "n": 0
+        },
+        "runtime_s": {
+          "n": 8,
+          "mean": 290.275,
+          "sd": 18.53,
+          "ci95": [
+            279.062,
+            303.175
+          ],
+          "median": 288.4,
+          "min": 269.4,
+          "max": 327.1
+        }
+      }
+    }
+  },
+  "comparisons": {
+    "network_weighted_density (low_contact vs reduced_contact)": {
+      "outcome": "network_weighted_density",
+      "difference": "low_contact - reduced_contact",
+      "mean_difference": -0.015,
+      "bootstrap_95ci": [
+        -0.017,
+        -0.014
+      ],
+      "permutation_p": 0.0002,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0151,
+        "sd_difference": 0.0025,
+        "effect_size_dz": -6.033,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          -0.017,
+          -0.013
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.2343
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_conversation_density (low_contact vs reduced_contact)": {
+      "outcome": "network_conversation_density",
+      "difference": "low_contact - reduced_contact",
+      "mean_difference": 0.005,
+      "bootstrap_95ci": [
+        0.0,
+        0.009
+      ],
+      "permutation_p": 0.0536,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": 0.005,
+        "sd_difference": 0.0053,
+        "effect_size_dz": 0.942,
+        "same_sign": 6,
+        "bootstrap_95ci": [
+          0.002,
+          0.008
+        ],
+        "p": 0.03125,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.46875
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_density_t50 (low_contact vs reduced_contact)": {
+      "outcome": "network_density_t50",
+      "difference": "low_contact - reduced_contact",
+      "mean_difference": -0.007,
+      "bootstrap_95ci": [
+        -0.011,
+        -0.002
+      ],
+      "permutation_p": 0.0193,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0067,
+        "sd_difference": 0.0059,
+        "effect_size_dz": -1.126,
+        "same_sign": 6,
+        "bootstrap_95ci": [
+          -0.011,
+          -0.003
+        ],
+        "p": 0.03125,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.46875
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_density_t20 (low_contact vs reduced_contact)": {
+      "outcome": "network_density_t20",
+      "difference": "low_contact - reduced_contact",
+      "mean_difference": 0.005,
+      "bootstrap_95ci": [
+        0.0,
+        0.009
+      ],
+      "permutation_p": 0.0536,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": 0.005,
+        "sd_difference": 0.0053,
+        "effect_size_dz": 0.942,
+        "same_sign": 6,
+        "bootstrap_95ci": [
+          0.002,
+          0.008
+        ],
+        "p": 0.03125,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.46875
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "conversations_per_agent (low_contact vs reduced_contact)": {
+      "outcome": "conversations_per_agent",
+      "difference": "low_contact - reduced_contact",
+      "mean_difference": -5.65,
+      "bootstrap_95ci": [
+        -5.95,
+        -5.39
+      ],
+      "permutation_p": 0.0002,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -5.65,
+        "sd_difference": 0.4967,
+        "effect_size_dz": -11.374,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          -5.99,
+          -5.33
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.2343
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_weighted_density (low_contact vs baseline)": {
+      "outcome": "network_weighted_density",
+      "difference": "low_contact - baseline",
+      "mean_difference": -0.02,
+      "bootstrap_95ci": [
+        -0.022,
+        -0.018
+      ],
+      "permutation_p": 0.0002,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0199,
+        "sd_difference": 0.0027,
+        "effect_size_dz": -7.263,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          -0.022,
+          -0.018
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.2343
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_conversation_density (low_contact vs baseline)": {
+      "outcome": "network_conversation_density",
+      "difference": "low_contact - baseline",
+      "mean_difference": 0.003,
+      "bootstrap_95ci": [
+        -0.002,
+        0.007
+      ],
+      "permutation_p": 0.352,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": 0.0025,
+        "sd_difference": 0.0073,
+        "effect_size_dz": 0.343,
+        "same_sign": 5,
+        "bootstrap_95ci": [
+          -0.002,
+          0.007
+        ],
+        "p": 0.40625,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 1.0
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_density_t50 (low_contact vs baseline)": {
+      "outcome": "network_density_t50",
+      "difference": "low_contact - baseline",
+      "mean_difference": -0.007,
+      "bootstrap_95ci": [
+        -0.013,
+        -0.001
+      ],
+      "permutation_p": 0.0511,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0071,
+        "sd_difference": 0.0078,
+        "effect_size_dz": -0.904,
+        "same_sign": 6,
+        "bootstrap_95ci": [
+          -0.012,
+          -0.002
+        ],
+        "p": 0.04688,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.56256
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_density_t20 (low_contact vs baseline)": {
+      "outcome": "network_density_t20",
+      "difference": "low_contact - baseline",
+      "mean_difference": 0.003,
+      "bootstrap_95ci": [
+        -0.002,
+        0.007
+      ],
+      "permutation_p": 0.352,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": 0.0025,
+        "sd_difference": 0.0073,
+        "effect_size_dz": 0.343,
+        "same_sign": 5,
+        "bootstrap_95ci": [
+          -0.002,
+          0.007
+        ],
+        "p": 0.40625,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 1.0
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "conversations_per_agent (low_contact vs baseline)": {
+      "outcome": "conversations_per_agent",
+      "difference": "low_contact - baseline",
+      "mean_difference": -8.28,
+      "bootstrap_95ci": [
+        -8.61,
+        -7.92
+      ],
+      "permutation_p": 0.0002,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -8.28,
+        "sd_difference": 0.6032,
+        "effect_size_dz": -13.726,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          -8.65,
+          -7.85
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.2343
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_weighted_density (low_contact vs high_contact)": {
+      "outcome": "network_weighted_density",
+      "difference": "low_contact - high_contact",
+      "mean_difference": -0.031,
+      "bootstrap_95ci": [
+        -0.033,
+        -0.028
+      ],
+      "permutation_p": 0.0002,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0307,
+        "sd_difference": 0.0035,
+        "effect_size_dz": -8.872,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          -0.033,
+          -0.028
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.2343
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_conversation_density (low_contact vs high_contact)": {
+      "outcome": "network_conversation_density",
+      "difference": "low_contact - high_contact",
+      "mean_difference": 0.001,
+      "bootstrap_95ci": [
+        -0.003,
+        0.005
+      ],
+      "permutation_p": 0.6076,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": 0.0013,
+        "sd_difference": 0.0064,
+        "effect_size_dz": 0.196,
+        "same_sign": 3,
+        "bootstrap_95ci": [
+          -0.003,
+          0.006
+        ],
+        "p": 0.6875,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 1.0
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_density_t50 (low_contact vs high_contact)": {
+      "outcome": "network_density_t50",
+      "difference": "low_contact - high_contact",
+      "mean_difference": -0.023,
+      "bootstrap_95ci": [
+        -0.028,
+        -0.019
+      ],
+      "permutation_p": 0.0002,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0233,
+        "sd_difference": 0.0074,
+        "effect_size_dz": -3.17,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          -0.028,
+          -0.018
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.2343
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_density_t20 (low_contact vs high_contact)": {
+      "outcome": "network_density_t20",
+      "difference": "low_contact - high_contact",
+      "mean_difference": 0.001,
+      "bootstrap_95ci": [
+        -0.003,
+        0.005
+      ],
+      "permutation_p": 0.6076,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": 0.0013,
+        "sd_difference": 0.0064,
+        "effect_size_dz": 0.196,
+        "same_sign": 3,
+        "bootstrap_95ci": [
+          -0.003,
+          0.006
+        ],
+        "p": 0.6875,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 1.0
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "conversations_per_agent (low_contact vs high_contact)": {
+      "outcome": "conversations_per_agent",
+      "difference": "low_contact - high_contact",
+      "mean_difference": -15.94,
+      "bootstrap_95ci": [
+        -16.71,
+        -15.22
+      ],
+      "permutation_p": 0.0002,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -15.94,
+        "sd_difference": 1.1231,
+        "effect_size_dz": -14.193,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          -16.65,
+          -15.23
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.2343
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_weighted_density (reduced_contact vs baseline)": {
+      "outcome": "network_weighted_density",
+      "difference": "reduced_contact - baseline",
+      "mean_difference": -0.005,
+      "bootstrap_95ci": [
+        -0.007,
+        -0.003
+      ],
+      "permutation_p": 0.0002,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0048,
+        "sd_difference": 0.0027,
+        "effect_size_dz": -1.794,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          -0.007,
+          -0.003
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.2343
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_conversation_density (reduced_contact vs baseline)": {
+      "outcome": "network_conversation_density",
+      "difference": "reduced_contact - baseline",
+      "mean_difference": -0.003,
+      "bootstrap_95ci": [
+        -0.008,
+        0.002
+      ],
+      "permutation_p": 0.3517,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0025,
+        "sd_difference": 0.0081,
+        "effect_size_dz": -0.31,
+        "same_sign": 4,
+        "bootstrap_95ci": [
+          -0.008,
+          0.003
+        ],
+        "p": 0.39062,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 1.0
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_density_t50 (reduced_contact vs baseline)": {
+      "outcome": "network_density_t50",
+      "difference": "reduced_contact - baseline",
+      "mean_difference": -0.0,
+      "bootstrap_95ci": [
+        -0.007,
+        0.006
+      ],
+      "permutation_p": 0.9388,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0004,
+        "sd_difference": 0.009,
+        "effect_size_dz": -0.047,
+        "same_sign": 3,
+        "bootstrap_95ci": [
+          -0.006,
+          0.006
+        ],
+        "p": 0.9375,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 1.0
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_density_t20 (reduced_contact vs baseline)": {
+      "outcome": "network_density_t20",
+      "difference": "reduced_contact - baseline",
+      "mean_difference": -0.003,
+      "bootstrap_95ci": [
+        -0.008,
+        0.002
+      ],
+      "permutation_p": 0.3517,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0025,
+        "sd_difference": 0.0081,
+        "effect_size_dz": -0.31,
+        "same_sign": 4,
+        "bootstrap_95ci": [
+          -0.008,
+          0.003
+        ],
+        "p": 0.39062,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 1.0
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "conversations_per_agent (reduced_contact vs baseline)": {
+      "outcome": "conversations_per_agent",
+      "difference": "reduced_contact - baseline",
+      "mean_difference": -2.63,
+      "bootstrap_95ci": [
+        -3.04,
+        -2.19
+      ],
+      "permutation_p": 0.0002,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -2.63,
+        "sd_difference": 0.4995,
+        "effect_size_dz": -5.265,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          -2.94,
+          -2.27
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.2343
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_weighted_density (reduced_contact vs high_contact)": {
+      "outcome": "network_weighted_density",
+      "difference": "reduced_contact - high_contact",
+      "mean_difference": -0.016,
+      "bootstrap_95ci": [
+        -0.018,
+        -0.013
+      ],
+      "permutation_p": 0.0002,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0156,
+        "sd_difference": 0.0022,
+        "effect_size_dz": -7.0,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          -0.017,
+          -0.014
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.2343
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_conversation_density (reduced_contact vs high_contact)": {
+      "outcome": "network_conversation_density",
+      "difference": "reduced_contact - high_contact",
+      "mean_difference": -0.004,
+      "bootstrap_95ci": [
+        -0.008,
+        0.001
+      ],
+      "permutation_p": 0.1692,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0038,
+        "sd_difference": 0.0073,
+        "effect_size_dz": -0.52,
+        "same_sign": 5,
+        "bootstrap_95ci": [
+          -0.008,
+          0.001
+        ],
+        "p": 0.23438,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 1.0
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_density_t50 (reduced_contact vs high_contact)": {
+      "outcome": "network_density_t50",
+      "difference": "reduced_contact - high_contact",
+      "mean_difference": -0.017,
+      "bootstrap_95ci": [
+        -0.022,
+        -0.011
+      ],
+      "permutation_p": 0.0005,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0167,
+        "sd_difference": 0.0072,
+        "effect_size_dz": -2.328,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          -0.022,
+          -0.012
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.2343
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_density_t20 (reduced_contact vs high_contact)": {
+      "outcome": "network_density_t20",
+      "difference": "reduced_contact - high_contact",
+      "mean_difference": -0.004,
+      "bootstrap_95ci": [
+        -0.008,
+        0.001
+      ],
+      "permutation_p": 0.1692,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0038,
+        "sd_difference": 0.0073,
+        "effect_size_dz": -0.52,
+        "same_sign": 5,
+        "bootstrap_95ci": [
+          -0.008,
+          0.001
+        ],
+        "p": 0.23438,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 1.0
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "conversations_per_agent (reduced_contact vs high_contact)": {
+      "outcome": "conversations_per_agent",
+      "difference": "reduced_contact - high_contact",
+      "mean_difference": -10.29,
+      "bootstrap_95ci": [
+        -11.09,
+        -9.52
+      ],
+      "permutation_p": 0.0002,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -10.29,
+        "sd_difference": 1.028,
+        "effect_size_dz": -10.01,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          -10.97,
+          -9.64
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.2343
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_weighted_density (baseline vs high_contact)": {
+      "outcome": "network_weighted_density",
+      "difference": "baseline - high_contact",
+      "mean_difference": -0.011,
+      "bootstrap_95ci": [
+        -0.013,
+        -0.008
+      ],
+      "permutation_p": 0.0002,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0107,
+        "sd_difference": 0.0027,
+        "effect_size_dz": -3.9,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          -0.013,
+          -0.009
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.2343
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_conversation_density (baseline vs high_contact)": {
+      "outcome": "network_conversation_density",
+      "difference": "baseline - high_contact",
+      "mean_difference": -0.001,
+      "bootstrap_95ci": [
+        -0.006,
+        0.003
+      ],
+      "permutation_p": 0.7209,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0013,
+        "sd_difference": 0.0053,
+        "effect_size_dz": -0.235,
+        "same_sign": 4,
+        "bootstrap_95ci": [
+          -0.005,
+          0.002
+        ],
+        "p": 0.625,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 1.0
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_density_t50 (baseline vs high_contact)": {
+      "outcome": "network_density_t50",
+      "difference": "baseline - high_contact",
+      "mean_difference": -0.016,
+      "bootstrap_95ci": [
+        -0.023,
+        -0.009
+      ],
+      "permutation_p": 0.0019,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0162,
+        "sd_difference": 0.0111,
+        "effect_size_dz": -1.469,
+        "same_sign": 7,
+        "bootstrap_95ci": [
+          -0.023,
+          -0.009
+        ],
+        "p": 0.01562,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.24992
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "network_density_t20 (baseline vs high_contact)": {
+      "outcome": "network_density_t20",
+      "difference": "baseline - high_contact",
+      "mean_difference": -0.001,
+      "bootstrap_95ci": [
+        -0.006,
+        0.003
+      ],
+      "permutation_p": 0.7209,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0013,
+        "sd_difference": 0.0053,
+        "effect_size_dz": -0.235,
+        "same_sign": 4,
+        "bootstrap_95ci": [
+          -0.005,
+          0.002
+        ],
+        "p": 0.625,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 1.0
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "conversations_per_agent (baseline vs high_contact)": {
+      "outcome": "conversations_per_agent",
+      "difference": "baseline - high_contact",
+      "mean_difference": -7.66,
+      "bootstrap_95ci": [
+        -8.54,
+        -6.89
+      ],
+      "permutation_p": 0.0002,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00016,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -7.66,
+        "sd_difference": 0.9356,
+        "effect_size_dz": -8.187,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          -8.24,
+          -7.05
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.2343
+      },
+      "n": [
+        8,
+        8
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    }
+  },
+  "excluded": [],
+  "outcomes": [
+    "network_weighted_density",
+    "network_conversation_density",
+    "network_density_t50",
+    "network_density_t20",
+    "conversations_per_agent",
+    "network_density",
+    "network_edges",
+    "network_components",
+    "network_largest_component",
+    "network_isolates",
+    "network_reciprocity",
+    "network_clustering",
+    "network_degree_gini",
+    "mean_familiarity",
+    "mean_valence",
+    "relationship_records",
+    "network_density_t35",
+    "network_density_t75",
+    "scheduled_share",
+    "plan_adherence",
+    "idle_share",
+    "replans_per_agent",
+    "reaction_rate",
+    "action_failures",
+    "constraint_refusals",
+    "plan_failures",
+    "valentines_holders_pct",
+    "valentines_knowledge_coverage",
+    "valentines_conflicting_details",
+    "mayor_holders_pct",
+    "mayor_knowledge_coverage",
+    "mayor_conflicting_details",
+    "calls",
+    "input_tokens",
+    "output_tokens",
+    "cost_usd",
+    "runtime_s"
+  ],
+  "primary": [
+    "network_weighted_density",
+    "network_conversation_density",
+    "network_density_t50",
+    "network_density_t20",
+    "conversations_per_agent"
+  ],
+  "metric_failures": {},
+  "comparison_family": {
+    "size": 30,
+    "adjustment": "Holm over the paired p-values of all primary comparisons"
+  },
+  "contrasts": [
+    {
+      "label": "H1 weighted density: high > baseline",
+      "outcome": "network_weighted_density",
+      "outcome_b": "network_weighted_density",
+      "a": "high_contact",
+      "b": "baseline",
+      "expect": ">",
+      "tolerance": 0.0,
+      "mean_a": 0.1427,
+      "mean_b": 0.132,
+      "mean_difference": 0.0107,
+      "supported": true,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": 0.0107,
+        "sd_difference": 0.0027,
+        "effect_size_dz": 3.9,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          0.009,
+          0.013
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.04686
+      },
+      "n": [
+        8,
+        8
+      ]
+    },
+    {
+      "label": "H1 weighted density: baseline > reduced",
+      "outcome": "network_weighted_density",
+      "outcome_b": "network_weighted_density",
+      "a": "baseline",
+      "b": "reduced_contact",
+      "expect": ">",
+      "tolerance": 0.0,
+      "mean_a": 0.132,
+      "mean_b": 0.1272,
+      "mean_difference": 0.0048,
+      "supported": true,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": 0.0048,
+        "sd_difference": 0.0027,
+        "effect_size_dz": 1.794,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          0.003,
+          0.007
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.04686
+      },
+      "n": [
+        8,
+        8
+      ]
+    },
+    {
+      "label": "H1 weighted density: reduced > low",
+      "outcome": "network_weighted_density",
+      "outcome_b": "network_weighted_density",
+      "a": "reduced_contact",
+      "b": "low_contact",
+      "expect": ">",
+      "tolerance": 0.0,
+      "mean_a": 0.1272,
+      "mean_b": 0.1121,
+      "mean_difference": 0.0151,
+      "supported": true,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": 0.0151,
+        "sd_difference": 0.0025,
+        "effect_size_dz": 6.033,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          0.013,
+          0.017
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.04686
+      },
+      "n": [
+        8,
+        8
+      ]
+    },
+    {
+      "label": "H2 density at 0.5: high > low",
+      "outcome": "network_density_t50",
+      "outcome_b": "network_density_t50",
+      "a": "high_contact",
+      "b": "low_contact",
+      "expect": ">",
+      "tolerance": 0.0,
+      "mean_a": 0.1442,
+      "mean_b": 0.1208,
+      "mean_difference": 0.0233,
+      "supported": true,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": 0.0233,
+        "sd_difference": 0.0074,
+        "effect_size_dz": 3.17,
+        "same_sign": 8,
+        "bootstrap_95ci": [
+          0.018,
+          0.028
+        ],
+        "p": 0.00781,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 0.04686
+      },
+      "n": [
+        8,
+        8
+      ]
+    },
+    {
+      "label": "H2 pairs who talked: high > low",
+      "outcome": "network_conversation_density",
+      "outcome_b": "network_conversation_density",
+      "a": "high_contact",
+      "b": "low_contact",
+      "expect": ">",
+      "tolerance": 0.0,
+      "mean_a": 0.2008,
+      "mean_b": 0.2021,
+      "mean_difference": -0.0013,
+      "supported": false,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0013,
+        "sd_difference": 0.0064,
+        "effect_size_dz": -0.196,
+        "same_sign": 3,
+        "bootstrap_95ci": [
+          -0.006,
+          0.003
+        ],
+        "p": 0.6875,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 1.0
+      },
+      "n": [
+        8,
+        8
+      ]
+    },
+    {
+      "label": "H3 density at 0.2: high = low",
+      "outcome": "network_density_t20",
+      "outcome_b": "network_density_t20",
+      "a": "high_contact",
+      "b": "low_contact",
+      "expect": "=",
+      "tolerance": 0.05,
+      "mean_a": 0.2008,
+      "mean_b": 0.2021,
+      "mean_difference": -0.0013,
+      "supported": true,
+      "paired": {
+        "n_pairs": 8,
+        "mean_difference": -0.0013,
+        "sd_difference": 0.0064,
+        "effect_size_dz": -0.196,
+        "same_sign": 3,
+        "bootstrap_95ci": [
+          -0.006,
+          0.003
+        ],
+        "p": 0.6875,
+        "method": "exact sign-flip",
+        "min_p": 0.00781,
+        "p_holm": 1.0
+      },
+      "n": [
+        8,
+        8
+      ]
+    }
+  ],
+  "determinism": {
+    "compared": [
+      "low_contact-s211",
+      "low_contact-s211-repeat"
+    ],
+    "identical": true,
+    "status": "completed",
+    "note": "same seed and configuration run twice; state tables memories, plans, conversations, agent_state, spatial_memory, world_objects, relationships"
+  }
+}

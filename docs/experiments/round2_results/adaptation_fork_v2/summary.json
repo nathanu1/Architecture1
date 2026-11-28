@@ -1,0 +1,2302 @@
+{
+  "protocol": "adaptation_fork_v2",
+  "unit": "run",
+  "conditions": {
+    "control": {
+      "runs": 6,
+      "completed": 6,
+      "outcomes": {
+        "adaptation_perceivers": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "adaptation_changed_share": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "adaptation_changed_among_perceivers": {
+          "n": 0
+        },
+        "adaptation_median_latency_min": {
+          "n": 0
+        },
+        "adaptation_mentions": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "replans_per_agent": {
+          "n": 6,
+          "mean": 5.293,
+          "sd": 0.211,
+          "ci95": [
+            5.12,
+            5.44
+          ],
+          "median": 5.32,
+          "min": 4.96,
+          "max": 5.52
+        },
+        "adaptation_agents_mentioning": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "scheduled_share": {
+          "n": 6,
+          "mean": 0.73,
+          "sd": 0.009,
+          "ci95": [
+            0.723,
+            0.736
+          ],
+          "median": 0.73165,
+          "min": 0.7179,
+          "max": 0.7407
+        },
+        "plan_adherence": {
+          "n": 6,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "idle_share": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reaction_rate": {
+          "n": 6,
+          "mean": 0.312,
+          "sd": 0.035,
+          "ci95": [
+            0.285,
+            0.338
+          ],
+          "median": 0.312,
+          "min": 0.2622,
+          "max": 0.3656
+        },
+        "conversations_per_agent": {
+          "n": 6,
+          "mean": 5.293,
+          "sd": 0.211,
+          "ci95": [
+            5.12,
+            5.44
+          ],
+          "median": 5.32,
+          "min": 4.96,
+          "max": 5.52
+        },
+        "action_failures": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "constraint_refusals": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "plan_failures": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "valentines_holders_pct": {
+          "n": 6,
+          "mean": 34.0,
+          "sd": 10.354,
+          "ci95": [
+            25.333,
+            40.667
+          ],
+          "median": 34.0,
+          "min": 16.0,
+          "max": 44.0
+        },
+        "valentines_knowledge_coverage": {
+          "n": 6,
+          "mean": 0.094,
+          "sd": 0.019,
+          "ci95": [
+            0.08,
+            0.107
+          ],
+          "median": 0.099,
+          "min": 0.062,
+          "max": 0.114
+        },
+        "valentines_conflicting_details": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "mayor_holders_pct": {
+          "n": 6,
+          "mean": 11.333,
+          "sd": 3.011,
+          "ci95": [
+            9.333,
+            13.333
+          ],
+          "median": 12.0,
+          "min": 8.0,
+          "max": 16.0
+        },
+        "mayor_knowledge_coverage": {
+          "n": 6,
+          "mean": 0.064,
+          "sd": 0.011,
+          "ci95": [
+            0.057,
+            0.073
+          ],
+          "median": 0.059,
+          "min": 0.056,
+          "max": 0.083
+        },
+        "mayor_conflicting_details": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "network_density": {
+          "n": 6,
+          "mean": 0.171,
+          "sd": 0.008,
+          "ci95": [
+            0.164,
+            0.176
+          ],
+          "median": 0.1717,
+          "min": 0.16,
+          "max": 0.18
+        },
+        "network_edges": {
+          "n": 6,
+          "mean": 51.167,
+          "sd": 2.483,
+          "ci95": [
+            49.333,
+            52.833
+          ],
+          "median": 51.5,
+          "min": 48,
+          "max": 54
+        },
+        "network_components": {
+          "n": 6,
+          "mean": 6,
+          "sd": 0.0,
+          "ci95": [
+            6,
+            6
+          ],
+          "median": 6.0,
+          "min": 6,
+          "max": 6
+        },
+        "network_largest_component": {
+          "n": 6,
+          "mean": 16,
+          "sd": 0.0,
+          "ci95": [
+            16,
+            16
+          ],
+          "median": 16.0,
+          "min": 16,
+          "max": 16
+        },
+        "network_isolates": {
+          "n": 6,
+          "mean": 4,
+          "sd": 0.0,
+          "ci95": [
+            4,
+            4
+          ],
+          "median": 4.0,
+          "min": 4,
+          "max": 4
+        },
+        "network_reciprocity": {
+          "n": 6,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "network_clustering": {
+          "n": 6,
+          "mean": 0.657,
+          "sd": 0.031,
+          "ci95": [
+            0.633,
+            0.679
+          ],
+          "median": 0.65405,
+          "min": 0.618,
+          "max": 0.6932
+        },
+        "network_weighted_density": {
+          "n": 6,
+          "mean": 0.063,
+          "sd": 0.002,
+          "ci95": [
+            0.061,
+            0.064
+          ],
+          "median": 0.06275,
+          "min": 0.0593,
+          "max": 0.0649
+        },
+        "network_conversation_density": {
+          "n": 6,
+          "mean": 0.171,
+          "sd": 0.008,
+          "ci95": [
+            0.164,
+            0.176
+          ],
+          "median": 0.1717,
+          "min": 0.16,
+          "max": 0.18
+        },
+        "network_degree_gini": {
+          "n": 6,
+          "mean": 0.36,
+          "sd": 0.009,
+          "ci95": [
+            0.353,
+            0.366
+          ],
+          "median": 0.3617,
+          "min": 0.3464,
+          "max": 0.3683
+        },
+        "mean_familiarity": {
+          "n": 6,
+          "mean": 0.317,
+          "sd": 0.009,
+          "ci95": [
+            0.31,
+            0.323
+          ],
+          "median": 0.318,
+          "min": 0.3014,
+          "max": 0.3274
+        },
+        "mean_valence": {
+          "n": 0
+        },
+        "relationship_records": {
+          "n": 6,
+          "mean": 118.333,
+          "sd": 1.966,
+          "ci95": [
+            117,
+            120
+          ],
+          "median": 118.0,
+          "min": 116,
+          "max": 122
+        },
+        "network_density_t20": {
+          "n": 6,
+          "mean": 0.171,
+          "sd": 0.008,
+          "ci95": [
+            0.164,
+            0.176
+          ],
+          "median": 0.1717,
+          "min": 0.16,
+          "max": 0.18
+        },
+        "network_density_t35": {
+          "n": 6,
+          "mean": 0.069,
+          "sd": 0.003,
+          "ci95": [
+            0.066,
+            0.071
+          ],
+          "median": 0.07,
+          "min": 0.0633,
+          "max": 0.0733
+        },
+        "network_density_t50": {
+          "n": 6,
+          "mean": 0.027,
+          "sd": 0.002,
+          "ci95": [
+            0.025,
+            0.028
+          ],
+          "median": 0.0267,
+          "min": 0.0233,
+          "max": 0.03
+        },
+        "network_density_t75": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "calls": {
+          "n": 6,
+          "mean": 2832.333,
+          "sd": 149.954,
+          "ci95": [
+            2730.333,
+            2949
+          ],
+          "median": 2811.0,
+          "min": 2647,
+          "max": 3075
+        },
+        "input_tokens": {
+          "n": 6,
+          "mean": 1615822,
+          "sd": 79193.047,
+          "ci95": [
+            1560049.333,
+            1676486.5
+          ],
+          "median": 1620480.5,
+          "min": 1519087,
+          "max": 1736889
+        },
+        "output_tokens": {
+          "n": 6,
+          "mean": 83338.5,
+          "sd": 3489.6,
+          "ci95": [
+            80829.667,
+            85847.667
+          ],
+          "median": 83957.0,
+          "min": 78234,
+          "max": 88370
+        },
+        "cost_usd": {
+          "n": 0
+        },
+        "runtime_s": {
+          "n": 6,
+          "mean": 18.8,
+          "sd": 1.609,
+          "ci95": [
+            17.633,
+            19.967
+          ],
+          "median": 19.0,
+          "min": 16.7,
+          "max": 20.7
+        }
+      }
+    },
+    "fire": {
+      "runs": 6,
+      "completed": 6,
+      "outcomes": {
+        "adaptation_perceivers": {
+          "n": 6,
+          "mean": 9,
+          "sd": 0.632,
+          "ci95": [
+            8.5,
+            9.5
+          ],
+          "median": 9.0,
+          "min": 8,
+          "max": 10
+        },
+        "adaptation_changed_share": {
+          "n": 6,
+          "mean": 0.3,
+          "sd": 0.022,
+          "ci95": [
+            0.287,
+            0.313
+          ],
+          "median": 0.30000000000000004,
+          "min": 0.28,
+          "max": 0.32
+        },
+        "adaptation_changed_among_perceivers": {
+          "n": 6,
+          "mean": 0.835,
+          "sd": 0.055,
+          "ci95": [
+            0.796,
+            0.872
+          ],
+          "median": 0.8375,
+          "min": 0.778,
+          "max": 0.889
+        },
+        "adaptation_median_latency_min": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "adaptation_mentions": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "replans_per_agent": {
+          "n": 6,
+          "mean": 5.827,
+          "sd": 0.171,
+          "ci95": [
+            5.693,
+            5.947
+          ],
+          "median": 5.84,
+          "min": 5.6,
+          "max": 6.0
+        },
+        "adaptation_agents_mentioning": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "scheduled_share": {
+          "n": 6,
+          "mean": 0.721,
+          "sd": 0.006,
+          "ci95": [
+            0.717,
+            0.726
+          ],
+          "median": 0.72165,
+          "min": 0.7147,
+          "max": 0.73
+        },
+        "plan_adherence": {
+          "n": 6,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "idle_share": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reaction_rate": {
+          "n": 6,
+          "mean": 0.29,
+          "sd": 0.012,
+          "ci95": [
+            0.28,
+            0.298
+          ],
+          "median": 0.29305000000000003,
+          "min": 0.2723,
+          "max": 0.304
+        },
+        "conversations_per_agent": {
+          "n": 6,
+          "mean": 5.267,
+          "sd": 0.171,
+          "ci95": [
+            5.133,
+            5.387
+          ],
+          "median": 5.28,
+          "min": 5.04,
+          "max": 5.44
+        },
+        "action_failures": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "constraint_refusals": {
+          "n": 6,
+          "mean": 0.167,
+          "sd": 0.408,
+          "ci95": [
+            0,
+            0.5
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 1
+        },
+        "plan_failures": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "valentines_holders_pct": {
+          "n": 6,
+          "mean": 34.0,
+          "sd": 11.243,
+          "ci95": [
+            24.0,
+            42.0
+          ],
+          "median": 32.0,
+          "min": 16.0,
+          "max": 48.0
+        },
+        "valentines_knowledge_coverage": {
+          "n": 6,
+          "mean": 0.093,
+          "sd": 0.019,
+          "ci95": [
+            0.08,
+            0.106
+          ],
+          "median": 0.099,
+          "min": 0.062,
+          "max": 0.114
+        },
+        "valentines_conflicting_details": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "mayor_holders_pct": {
+          "n": 6,
+          "mean": 11.333,
+          "sd": 3.011,
+          "ci95": [
+            9.333,
+            13.333
+          ],
+          "median": 12.0,
+          "min": 8.0,
+          "max": 16.0
+        },
+        "mayor_knowledge_coverage": {
+          "n": 6,
+          "mean": 0.063,
+          "sd": 0.007,
+          "ci95": [
+            0.058,
+            0.068
+          ],
+          "median": 0.062,
+          "min": 0.056,
+          "max": 0.073
+        },
+        "mayor_conflicting_details": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "network_density": {
+          "n": 6,
+          "mean": 0.168,
+          "sd": 0.007,
+          "ci95": [
+            0.162,
+            0.172
+          ],
+          "median": 0.16999999999999998,
+          "min": 0.16,
+          "max": 0.1733
+        },
+        "network_edges": {
+          "n": 6,
+          "mean": 50.333,
+          "sd": 1.966,
+          "ci95": [
+            48.667,
+            51.667
+          ],
+          "median": 51.0,
+          "min": 48,
+          "max": 52
+        },
+        "network_components": {
+          "n": 6,
+          "mean": 6,
+          "sd": 0.0,
+          "ci95": [
+            6,
+            6
+          ],
+          "median": 6.0,
+          "min": 6,
+          "max": 6
+        },
+        "network_largest_component": {
+          "n": 6,
+          "mean": 16,
+          "sd": 0.0,
+          "ci95": [
+            16,
+            16
+          ],
+          "median": 16.0,
+          "min": 16,
+          "max": 16
+        },
+        "network_isolates": {
+          "n": 6,
+          "mean": 4,
+          "sd": 0.0,
+          "ci95": [
+            4,
+            4
+          ],
+          "median": 4.0,
+          "min": 4,
+          "max": 4
+        },
+        "network_reciprocity": {
+          "n": 6,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "network_clustering": {
+          "n": 6,
+          "mean": 0.649,
+          "sd": 0.033,
+          "ci95": [
+            0.624,
+            0.672
+          ],
+          "median": 0.6486000000000001,
+          "min": 0.6071,
+          "max": 0.6832
+        },
+        "network_weighted_density": {
+          "n": 6,
+          "mean": 0.062,
+          "sd": 0.002,
+          "ci95": [
+            0.06,
+            0.063
+          ],
+          "median": 0.0622,
+          "min": 0.0593,
+          "max": 0.0636
+        },
+        "network_conversation_density": {
+          "n": 6,
+          "mean": 0.168,
+          "sd": 0.007,
+          "ci95": [
+            0.162,
+            0.172
+          ],
+          "median": 0.16999999999999998,
+          "min": 0.16,
+          "max": 0.1733
+        },
+        "network_degree_gini": {
+          "n": 6,
+          "mean": 0.36,
+          "sd": 0.007,
+          "ci95": [
+            0.355,
+            0.365
+          ],
+          "median": 0.36019999999999996,
+          "min": 0.3525,
+          "max": 0.3669
+        },
+        "mean_familiarity": {
+          "n": 6,
+          "mean": 0.319,
+          "sd": 0.008,
+          "ci95": [
+            0.312,
+            0.324
+          ],
+          "median": 0.32115,
+          "min": 0.307,
+          "max": 0.3281
+        },
+        "mean_valence": {
+          "n": 0
+        },
+        "relationship_records": {
+          "n": 6,
+          "mean": 116.667,
+          "sd": 1.633,
+          "ci95": [
+            115.333,
+            117.667
+          ],
+          "median": 117.0,
+          "min": 114,
+          "max": 118
+        },
+        "network_density_t20": {
+          "n": 6,
+          "mean": 0.168,
+          "sd": 0.007,
+          "ci95": [
+            0.162,
+            0.172
+          ],
+          "median": 0.16999999999999998,
+          "min": 0.16,
+          "max": 0.1733
+        },
+        "network_density_t35": {
+          "n": 6,
+          "mean": 0.071,
+          "sd": 0.002,
+          "ci95": [
+            0.07,
+            0.072
+          ],
+          "median": 0.07,
+          "min": 0.07,
+          "max": 0.0733
+        },
+        "network_density_t50": {
+          "n": 6,
+          "mean": 0.027,
+          "sd": 0.002,
+          "ci95": [
+            0.025,
+            0.028
+          ],
+          "median": 0.0267,
+          "min": 0.0233,
+          "max": 0.03
+        },
+        "network_density_t75": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "calls": {
+          "n": 6,
+          "mean": 3380.833,
+          "sd": 180.909,
+          "ci95": [
+            3252.5,
+            3513
+          ],
+          "median": 3389.5,
+          "min": 3181,
+          "max": 3613
+        },
+        "input_tokens": {
+          "n": 6,
+          "mean": 1901665.167,
+          "sd": 98912.229,
+          "ci95": [
+            1829875.167,
+            1969429.833
+          ],
+          "median": 1911845.0,
+          "min": 1759848,
+          "max": 2006676
+        },
+        "output_tokens": {
+          "n": 6,
+          "mean": 94124.833,
+          "sd": 4480.56,
+          "ci95": [
+            90945,
+            97332
+          ],
+          "median": 94332.5,
+          "min": 88377,
+          "max": 99789
+        },
+        "cost_usd": {
+          "n": 0
+        },
+        "runtime_s": {
+          "n": 6,
+          "mean": 20.633,
+          "sd": 1.914,
+          "ci95": [
+            19.083,
+            21.9
+          ],
+          "median": 21.0,
+          "min": 17.2,
+          "max": 22.9
+        }
+      }
+    },
+    "fire_hourly": {
+      "runs": 6,
+      "completed": 6,
+      "outcomes": {
+        "adaptation_perceivers": {
+          "n": 6,
+          "mean": 9,
+          "sd": 0.0,
+          "ci95": [
+            9,
+            9
+          ],
+          "median": 9.0,
+          "min": 9,
+          "max": 9
+        },
+        "adaptation_changed_share": {
+          "n": 6,
+          "mean": 0.287,
+          "sd": 0.016,
+          "ci95": [
+            0.28,
+            0.3
+          ],
+          "median": 0.28,
+          "min": 0.28,
+          "max": 0.32
+        },
+        "adaptation_changed_among_perceivers": {
+          "n": 6,
+          "mean": 0.796,
+          "sd": 0.045,
+          "ci95": [
+            0.778,
+            0.834
+          ],
+          "median": 0.778,
+          "min": 0.778,
+          "max": 0.889
+        },
+        "adaptation_median_latency_min": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "adaptation_mentions": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "replans_per_agent": {
+          "n": 6,
+          "mean": 5.867,
+          "sd": 0.217,
+          "ci95": [
+            5.707,
+            6.027
+          ],
+          "median": 5.82,
+          "min": 5.6,
+          "max": 6.16
+        },
+        "adaptation_agents_mentioning": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "scheduled_share": {
+          "n": 6,
+          "mean": 0.646,
+          "sd": 0.008,
+          "ci95": [
+            0.64,
+            0.653
+          ],
+          "median": 0.64525,
+          "min": 0.6342,
+          "max": 0.657
+        },
+        "plan_adherence": {
+          "n": 6,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "idle_share": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "reaction_rate": {
+          "n": 6,
+          "mean": 0.299,
+          "sd": 0.019,
+          "ci95": [
+            0.285,
+            0.312
+          ],
+          "median": 0.3073,
+          "min": 0.2734,
+          "max": 0.3147
+        },
+        "conversations_per_agent": {
+          "n": 6,
+          "mean": 5.32,
+          "sd": 0.213,
+          "ci95": [
+            5.16,
+            5.467
+          ],
+          "median": 5.28,
+          "min": 5.04,
+          "max": 5.6
+        },
+        "action_failures": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "constraint_refusals": {
+          "n": 6,
+          "mean": 0.167,
+          "sd": 0.408,
+          "ci95": [
+            0,
+            0.5
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 1
+        },
+        "plan_failures": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "valentines_holders_pct": {
+          "n": 6,
+          "mean": 34.667,
+          "sd": 10.633,
+          "ci95": [
+            26.0,
+            42.0
+          ],
+          "median": 36.0,
+          "min": 16.0,
+          "max": 48.0
+        },
+        "valentines_knowledge_coverage": {
+          "n": 6,
+          "mean": 0.098,
+          "sd": 0.022,
+          "ci95": [
+            0.081,
+            0.113
+          ],
+          "median": 0.103,
+          "min": 0.062,
+          "max": 0.118
+        },
+        "valentines_conflicting_details": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "mayor_holders_pct": {
+          "n": 6,
+          "mean": 11.333,
+          "sd": 3.011,
+          "ci95": [
+            9.333,
+            13.333
+          ],
+          "median": 12.0,
+          "min": 8.0,
+          "max": 16.0
+        },
+        "mayor_knowledge_coverage": {
+          "n": 6,
+          "mean": 0.065,
+          "sd": 0.011,
+          "ci95": [
+            0.058,
+            0.073
+          ],
+          "median": 0.062,
+          "min": 0.056,
+          "max": 0.083
+        },
+        "mayor_conflicting_details": {
+          "n": 6,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0.0,
+          "min": 0,
+          "max": 0
+        },
+        "network_density": {
+          "n": 6,
+          "mean": 0.171,
+          "sd": 0.009,
+          "ci95": [
+            0.163,
+            0.177
+          ],
+          "median": 0.16665000000000002,
+          "min": 0.1633,
+          "max": 0.1833
+        },
+        "network_edges": {
+          "n": 6,
+          "mean": 51.167,
+          "sd": 2.714,
+          "ci95": [
+            49,
+            53.167
+          ],
+          "median": 50.0,
+          "min": 49,
+          "max": 55
+        },
+        "network_components": {
+          "n": 6,
+          "mean": 6,
+          "sd": 0.0,
+          "ci95": [
+            6,
+            6
+          ],
+          "median": 6.0,
+          "min": 6,
+          "max": 6
+        },
+        "network_largest_component": {
+          "n": 6,
+          "mean": 16,
+          "sd": 0.0,
+          "ci95": [
+            16,
+            16
+          ],
+          "median": 16.0,
+          "min": 16,
+          "max": 16
+        },
+        "network_isolates": {
+          "n": 6,
+          "mean": 4,
+          "sd": 0.0,
+          "ci95": [
+            4,
+            4
+          ],
+          "median": 4.0,
+          "min": 4,
+          "max": 4
+        },
+        "network_reciprocity": {
+          "n": 6,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "network_clustering": {
+          "n": 6,
+          "mean": 0.662,
+          "sd": 0.04,
+          "ci95": [
+            0.632,
+            0.691
+          ],
+          "median": 0.648,
+          "min": 0.6232,
+          "max": 0.7177
+        },
+        "network_weighted_density": {
+          "n": 6,
+          "mean": 0.062,
+          "sd": 0.003,
+          "ci95": [
+            0.06,
+            0.064
+          ],
+          "median": 0.0621,
+          "min": 0.0583,
+          "max": 0.0654
+        },
+        "network_conversation_density": {
+          "n": 6,
+          "mean": 0.171,
+          "sd": 0.009,
+          "ci95": [
+            0.163,
+            0.177
+          ],
+          "median": 0.16665000000000002,
+          "min": 0.1633,
+          "max": 0.1833
+        },
+        "network_degree_gini": {
+          "n": 6,
+          "mean": 0.364,
+          "sd": 0.011,
+          "ci95": [
+            0.356,
+            0.372
+          ],
+          "median": 0.36235,
+          "min": 0.351,
+          "max": 0.3782
+        },
+        "mean_familiarity": {
+          "n": 6,
+          "mean": 0.322,
+          "sd": 0.007,
+          "ci95": [
+            0.317,
+            0.326
+          ],
+          "median": 0.32135,
+          "min": 0.3126,
+          "max": 0.3306
+        },
+        "mean_valence": {
+          "n": 0
+        },
+        "relationship_records": {
+          "n": 6,
+          "mean": 116,
+          "sd": 3.347,
+          "ci95": [
+            113.333,
+            118.333
+          ],
+          "median": 117.0,
+          "min": 112,
+          "max": 120
+        },
+        "network_density_t20": {
+          "n": 6,
+          "mean": 0.171,
+          "sd": 0.009,
+          "ci95": [
+            0.163,
+            0.177
+          ],
+          "median": 0.16665000000000002,
+          "min": 0.1633,
+          "max": 0.1833
+        },
+        "network_density_t35": {
+          "n": 6,
+          "mean": 0.068,
+          "sd": 0.007,
+          "ci95": [
+            0.062,
+            0.072
+          ],
+          "median": 0.07,
+          "min": 0.0567,
+          "max": 0.0733
+        },
+        "network_density_t50": {
+          "n": 6,
+          "mean": 0.026,
+          "sd": 0.003,
+          "ci95": [
+            0.024,
+            0.028
+          ],
+          "median": 0.0267,
+          "min": 0.0233,
+          "max": 0.03
+        },
+        "network_density_t75": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "calls": {
+          "n": 6,
+          "mean": 1920.333,
+          "sd": 182.784,
+          "ci95": [
+            1782.5,
+            2045.333
+          ],
+          "median": 1939.5,
+          "min": 1692,
+          "max": 2125
+        },
+        "input_tokens": {
+          "n": 6,
+          "mean": 1097794.667,
+          "sd": 114664.296,
+          "ci95": [
+            1011805.667,
+            1176725.667
+          ],
+          "median": 1101973.0,
+          "min": 939954,
+          "max": 1243231
+        },
+        "output_tokens": {
+          "n": 6,
+          "mean": 43054,
+          "sd": 4201.75,
+          "ci95": [
+            39759.833,
+            45846.667
+          ],
+          "median": 43340.5,
+          "min": 37122,
+          "max": 48478
+        },
+        "cost_usd": {
+          "n": 0
+        },
+        "runtime_s": {
+          "n": 6,
+          "mean": 17.45,
+          "sd": 1.999,
+          "ci95": [
+            16.05,
+            18.85
+          ],
+          "median": 17.15,
+          "min": 14.4,
+          "max": 20.0
+        }
+      }
+    }
+  },
+  "comparisons": {
+    "adaptation_perceivers (control vs fire)": {
+      "outcome": "adaptation_perceivers",
+      "difference": "control - fire",
+      "mean_difference": -9,
+      "bootstrap_95ci": [
+        -9.5,
+        -8.5
+      ],
+      "permutation_p": 0.0022,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00216,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": -9,
+        "sd_difference": 0.6325,
+        "effect_size_dz": -14.23,
+        "same_sign": 6,
+        "bootstrap_95ci": [
+          -9.5,
+          -8.5
+        ],
+        "p": 0.03125,
+        "method": "exact sign-flip",
+        "min_p": 0.03125,
+        "p_holm": 0.4375
+      },
+      "n": [
+        6,
+        6
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "adaptation_changed_share (control vs fire)": {
+      "outcome": "adaptation_changed_share",
+      "difference": "control - fire",
+      "mean_difference": -0.3,
+      "bootstrap_95ci": [
+        -0.313,
+        -0.287
+      ],
+      "permutation_p": 0.0022,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00216,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": -0.3,
+        "sd_difference": 0.0219,
+        "effect_size_dz": -13.693,
+        "same_sign": 6,
+        "bootstrap_95ci": [
+          -0.313,
+          -0.287
+        ],
+        "p": 0.03125,
+        "method": "exact sign-flip",
+        "min_p": 0.03125,
+        "p_holm": 0.4375
+      },
+      "n": [
+        6,
+        6
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "adaptation_changed_among_perceivers (control vs fire)": {
+      "outcome": "adaptation_changed_among_perceivers",
+      "difference": "control - fire",
+      "mean_difference": null,
+      "bootstrap_95ci": null,
+      "permutation_p": null,
+      "permutation_method": null,
+      "permutation_min_p": null,
+      "paired": null,
+      "n": [
+        0,
+        6
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "adaptation_median_latency_min (control vs fire)": {
+      "outcome": "adaptation_median_latency_min",
+      "difference": "control - fire",
+      "mean_difference": null,
+      "bootstrap_95ci": null,
+      "permutation_p": null,
+      "permutation_method": null,
+      "permutation_min_p": null,
+      "paired": null,
+      "n": [
+        0,
+        6
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "adaptation_mentions (control vs fire)": {
+      "outcome": "adaptation_mentions",
+      "difference": "control - fire",
+      "mean_difference": 0,
+      "bootstrap_95ci": [
+        0,
+        0
+      ],
+      "permutation_p": 1.0,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00216,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": 0,
+        "sd_difference": 0.0,
+        "effect_size_dz": null,
+        "same_sign": 0,
+        "bootstrap_95ci": [
+          0,
+          0
+        ],
+        "p": 1.0,
+        "method": "all differences are zero",
+        "min_p": 0.03125,
+        "p_holm": 1.0
+      },
+      "n": [
+        6,
+        6
+      ],
+      "no_between_seed_variation": true,
+      "note": "exploratory; run-level; not powered"
+    },
+    "replans_per_agent (control vs fire)": {
+      "outcome": "replans_per_agent",
+      "difference": "control - fire",
+      "mean_difference": -0.533,
+      "bootstrap_95ci": [
+        -0.733,
+        -0.347
+      ],
+      "permutation_p": 0.0022,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00216,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": -0.5333,
+        "sd_difference": 0.1401,
+        "effect_size_dz": -3.807,
+        "same_sign": 6,
+        "bootstrap_95ci": [
+          -0.64,
+          -0.453
+        ],
+        "p": 0.03125,
+        "method": "exact sign-flip",
+        "min_p": 0.03125,
+        "p_holm": 0.4375
+      },
+      "n": [
+        6,
+        6
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "adaptation_perceivers (control vs fire_hourly)": {
+      "outcome": "adaptation_perceivers",
+      "difference": "control - fire_hourly",
+      "mean_difference": -9,
+      "bootstrap_95ci": [
+        -9,
+        -9
+      ],
+      "permutation_p": 0.0022,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00216,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": -9,
+        "sd_difference": 0.0,
+        "effect_size_dz": null,
+        "same_sign": 6,
+        "bootstrap_95ci": [
+          -9,
+          -9
+        ],
+        "p": 0.03125,
+        "method": "exact sign-flip",
+        "min_p": 0.03125,
+        "p_holm": 0.4375
+      },
+      "n": [
+        6,
+        6
+      ],
+      "no_between_seed_variation": true,
+      "note": "exploratory; run-level; not powered"
+    },
+    "adaptation_changed_share (control vs fire_hourly)": {
+      "outcome": "adaptation_changed_share",
+      "difference": "control - fire_hourly",
+      "mean_difference": -0.287,
+      "bootstrap_95ci": [
+        -0.3,
+        -0.28
+      ],
+      "permutation_p": 0.0022,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00216,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": -0.2867,
+        "sd_difference": 0.0163,
+        "effect_size_dz": -17.555,
+        "same_sign": 6,
+        "bootstrap_95ci": [
+          -0.3,
+          -0.28
+        ],
+        "p": 0.03125,
+        "method": "exact sign-flip",
+        "min_p": 0.03125,
+        "p_holm": 0.4375
+      },
+      "n": [
+        6,
+        6
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "adaptation_changed_among_perceivers (control vs fire_hourly)": {
+      "outcome": "adaptation_changed_among_perceivers",
+      "difference": "control - fire_hourly",
+      "mean_difference": null,
+      "bootstrap_95ci": null,
+      "permutation_p": null,
+      "permutation_method": null,
+      "permutation_min_p": null,
+      "paired": null,
+      "n": [
+        0,
+        6
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "adaptation_median_latency_min (control vs fire_hourly)": {
+      "outcome": "adaptation_median_latency_min",
+      "difference": "control - fire_hourly",
+      "mean_difference": null,
+      "bootstrap_95ci": null,
+      "permutation_p": null,
+      "permutation_method": null,
+      "permutation_min_p": null,
+      "paired": null,
+      "n": [
+        0,
+        6
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "adaptation_mentions (control vs fire_hourly)": {
+      "outcome": "adaptation_mentions",
+      "difference": "control - fire_hourly",
+      "mean_difference": 0,
+      "bootstrap_95ci": [
+        0,
+        0
+      ],
+      "permutation_p": 1.0,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00216,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": 0,
+        "sd_difference": 0.0,
+        "effect_size_dz": null,
+        "same_sign": 0,
+        "bootstrap_95ci": [
+          0,
+          0
+        ],
+        "p": 1.0,
+        "method": "all differences are zero",
+        "min_p": 0.03125,
+        "p_holm": 1.0
+      },
+      "n": [
+        6,
+        6
+      ],
+      "no_between_seed_variation": true,
+      "note": "exploratory; run-level; not powered"
+    },
+    "replans_per_agent (control vs fire_hourly)": {
+      "outcome": "replans_per_agent",
+      "difference": "control - fire_hourly",
+      "mean_difference": -0.573,
+      "bootstrap_95ci": [
+        -0.807,
+        -0.36
+      ],
+      "permutation_p": 0.0022,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00216,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": -0.5733,
+        "sd_difference": 0.1652,
+        "effect_size_dz": -3.47,
+        "same_sign": 6,
+        "bootstrap_95ci": [
+          -0.687,
+          -0.447
+        ],
+        "p": 0.03125,
+        "method": "exact sign-flip",
+        "min_p": 0.03125,
+        "p_holm": 0.4375
+      },
+      "n": [
+        6,
+        6
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "adaptation_perceivers (fire vs fire_hourly)": {
+      "outcome": "adaptation_perceivers",
+      "difference": "fire - fire_hourly",
+      "mean_difference": 0,
+      "bootstrap_95ci": [
+        -0.5,
+        0.5
+      ],
+      "permutation_p": 1.0,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00216,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": 0,
+        "sd_difference": 0.6325,
+        "effect_size_dz": 0.0,
+        "same_sign": 1,
+        "bootstrap_95ci": [
+          -0.5,
+          0.5
+        ],
+        "p": 1.0,
+        "method": "exact sign-flip",
+        "min_p": 0.03125,
+        "p_holm": 1.0
+      },
+      "n": [
+        6,
+        6
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "adaptation_changed_share (fire vs fire_hourly)": {
+      "outcome": "adaptation_changed_share",
+      "difference": "fire - fire_hourly",
+      "mean_difference": 0.013,
+      "bootstrap_95ci": [
+        -0.007,
+        0.033
+      ],
+      "permutation_p": 0.5455,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00216,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": 0.0133,
+        "sd_difference": 0.0327,
+        "effect_size_dz": 0.408,
+        "same_sign": 3,
+        "bootstrap_95ci": [
+          -0.013,
+          0.033
+        ],
+        "p": 0.625,
+        "method": "exact sign-flip",
+        "min_p": 0.03125,
+        "p_holm": 1.0
+      },
+      "n": [
+        6,
+        6
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "adaptation_changed_among_perceivers (fire vs fire_hourly)": {
+      "outcome": "adaptation_changed_among_perceivers",
+      "difference": "fire - fire_hourly",
+      "mean_difference": 0.038,
+      "bootstrap_95ci": [
+        -0.017,
+        0.09
+      ],
+      "permutation_p": 0.2424,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00216,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": 0.0383,
+        "sd_difference": 0.0575,
+        "effect_size_dz": 0.667,
+        "same_sign": 3,
+        "bootstrap_95ci": [
+          -0.001,
+          0.078
+        ],
+        "p": 0.25,
+        "method": "exact sign-flip",
+        "min_p": 0.03125,
+        "p_holm": 1.0
+      },
+      "n": [
+        6,
+        6
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    },
+    "adaptation_median_latency_min (fire vs fire_hourly)": {
+      "outcome": "adaptation_median_latency_min",
+      "difference": "fire - fire_hourly",
+      "mean_difference": 0.0,
+      "bootstrap_95ci": [
+        0.0,
+        0.0
+      ],
+      "permutation_p": 1.0,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00216,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": 0.0,
+        "sd_difference": 0.0,
+        "effect_size_dz": null,
+        "same_sign": 0,
+        "bootstrap_95ci": [
+          0.0,
+          0.0
+        ],
+        "p": 1.0,
+        "method": "all differences are zero",
+        "min_p": 0.03125,
+        "p_holm": 1.0
+      },
+      "n": [
+        6,
+        6
+      ],
+      "no_between_seed_variation": true,
+      "note": "exploratory; run-level; not powered"
+    },
+    "adaptation_mentions (fire vs fire_hourly)": {
+      "outcome": "adaptation_mentions",
+      "difference": "fire - fire_hourly",
+      "mean_difference": 0,
+      "bootstrap_95ci": [
+        0,
+        0
+      ],
+      "permutation_p": 1.0,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00216,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": 0,
+        "sd_difference": 0.0,
+        "effect_size_dz": null,
+        "same_sign": 0,
+        "bootstrap_95ci": [
+          0,
+          0
+        ],
+        "p": 1.0,
+        "method": "all differences are zero",
+        "min_p": 0.03125,
+        "p_holm": 1.0
+      },
+      "n": [
+        6,
+        6
+      ],
+      "no_between_seed_variation": true,
+      "note": "exploratory; run-level; not powered"
+    },
+    "replans_per_agent (fire vs fire_hourly)": {
+      "outcome": "replans_per_agent",
+      "difference": "fire - fire_hourly",
+      "mean_difference": -0.04,
+      "bootstrap_95ci": [
+        -0.253,
+        0.153
+      ],
+      "permutation_p": 0.7597,
+      "permutation_method": "exact",
+      "permutation_min_p": 0.00216,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": -0.04,
+        "sd_difference": 0.1131,
+        "effect_size_dz": -0.354,
+        "same_sign": 3,
+        "bootstrap_95ci": [
+          -0.12,
+          0.047
+        ],
+        "p": 0.5,
+        "method": "exact sign-flip",
+        "min_p": 0.03125,
+        "p_holm": 1.0
+      },
+      "n": [
+        6,
+        6
+      ],
+      "no_between_seed_variation": false,
+      "note": "exploratory; run-level; not powered"
+    }
+  },
+  "excluded": [],
+  "outcomes": [
+    "adaptation_perceivers",
+    "adaptation_changed_share",
+    "adaptation_changed_among_perceivers",
+    "adaptation_median_latency_min",
+    "adaptation_mentions",
+    "replans_per_agent",
+    "adaptation_agents_mentioning",
+    "scheduled_share",
+    "plan_adherence",
+    "idle_share",
+    "reaction_rate",
+    "conversations_per_agent",
+    "action_failures",
+    "constraint_refusals",
+    "plan_failures",
+    "valentines_holders_pct",
+    "valentines_knowledge_coverage",
+    "valentines_conflicting_details",
+    "mayor_holders_pct",
+    "mayor_knowledge_coverage",
+    "mayor_conflicting_details",
+    "network_density",
+    "network_edges",
+    "network_components",
+    "network_largest_component",
+    "network_isolates",
+    "network_reciprocity",
+    "network_clustering",
+    "network_weighted_density",
+    "network_conversation_density",
+    "network_degree_gini",
+    "mean_familiarity",
+    "mean_valence",
+    "relationship_records",
+    "network_density_t20",
+    "network_density_t35",
+    "network_density_t50",
+    "network_density_t75",
+    "calls",
+    "input_tokens",
+    "output_tokens",
+    "cost_usd",
+    "runtime_s"
+  ],
+  "primary": [
+    "adaptation_perceivers",
+    "adaptation_changed_share",
+    "adaptation_changed_among_perceivers",
+    "adaptation_median_latency_min",
+    "adaptation_mentions",
+    "replans_per_agent"
+  ],
+  "metric_failures": {},
+  "comparison_family": {
+    "size": 14,
+    "adjustment": "Holm over the paired p-values of all primary comparisons"
+  },
+  "contrasts": [
+    {
+      "label": "H1 perceivers: fire > control",
+      "outcome": "adaptation_perceivers",
+      "outcome_b": "adaptation_perceivers",
+      "a": "fire",
+      "b": "control",
+      "expect": ">",
+      "tolerance": 0.0,
+      "mean_a": 9,
+      "mean_b": 0,
+      "mean_difference": 9,
+      "supported": true,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": 9,
+        "sd_difference": 0.6325,
+        "effect_size_dz": 14.23,
+        "same_sign": 6,
+        "bootstrap_95ci": [
+          8.5,
+          9.5
+        ],
+        "p": 0.03125,
+        "method": "exact sign-flip",
+        "min_p": 0.03125,
+        "p_holm": 0.15625
+      },
+      "n": [
+        6,
+        6
+      ]
+    },
+    {
+      "label": "H2 share who changed plans: fire > control",
+      "outcome": "adaptation_changed_share",
+      "outcome_b": "adaptation_changed_share",
+      "a": "fire",
+      "b": "control",
+      "expect": ">",
+      "tolerance": 0.0,
+      "mean_a": 0.3,
+      "mean_b": 0.0,
+      "mean_difference": 0.3,
+      "supported": true,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": 0.3,
+        "sd_difference": 0.0219,
+        "effect_size_dz": 13.693,
+        "same_sign": 6,
+        "bootstrap_95ci": [
+          0.287,
+          0.313
+        ],
+        "p": 0.03125,
+        "method": "exact sign-flip",
+        "min_p": 0.03125,
+        "p_holm": 0.15625
+      },
+      "n": [
+        6,
+        6
+      ]
+    },
+    {
+      "label": "H3 share who changed plans: hourly-only = full hierarchy",
+      "outcome": "adaptation_changed_share",
+      "outcome_b": "adaptation_changed_share",
+      "a": "fire_hourly",
+      "b": "fire",
+      "expect": "=",
+      "tolerance": 0.05,
+      "mean_a": 0.2867,
+      "mean_b": 0.3,
+      "mean_difference": -0.0133,
+      "supported": true,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": -0.0133,
+        "sd_difference": 0.0327,
+        "effect_size_dz": -0.408,
+        "same_sign": 3,
+        "bootstrap_95ci": [
+          -0.033,
+          0.013
+        ],
+        "p": 0.625,
+        "method": "exact sign-flip",
+        "min_p": 0.03125,
+        "p_holm": 1.0
+      },
+      "n": [
+        6,
+        6
+      ]
+    },
+    {
+      "label": "H3 model calls: hourly-only < full hierarchy",
+      "outcome": "calls",
+      "outcome_b": "calls",
+      "a": "fire_hourly",
+      "b": "fire",
+      "expect": "<",
+      "tolerance": 0.0,
+      "mean_a": 1920.3333,
+      "mean_b": 3380.8333,
+      "mean_difference": -1460.5,
+      "supported": true,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": -1460.5,
+        "sd_difference": 103.8301,
+        "effect_size_dz": -14.066,
+        "same_sign": 6,
+        "bootstrap_95ci": [
+          -1539.667,
+          -1387.5
+        ],
+        "p": 0.03125,
+        "method": "exact sign-flip",
+        "min_p": 0.03125,
+        "p_holm": 0.15625
+      },
+      "n": [
+        6,
+        6
+      ]
+    },
+    {
+      "label": "H4 conversations mentioning the fire: fire = control",
+      "outcome": "adaptation_mentions",
+      "outcome_b": "adaptation_mentions",
+      "a": "fire",
+      "b": "control",
+      "expect": "=",
+      "tolerance": 0.0,
+      "mean_a": 0,
+      "mean_b": 0,
+      "mean_difference": 0,
+      "supported": true,
+      "paired": {
+        "n_pairs": 6,
+        "mean_difference": 0,
+        "sd_difference": 0.0,
+        "effect_size_dz": null,
+        "same_sign": 0,
+        "bootstrap_95ci": [
+          0,
+          0
+        ],
+        "p": 1.0,
+        "method": "all differences are zero",
+        "min_p": 0.03125,
+        "p_holm": 1.0
+      },
+      "n": [
+        6,
+        6
+      ]
+    }
+  ],
+  "fork_sources": [
+    {
+      "seed": 221,
+      "run_dir": "runs/experiments/adaptation_fork_v2_sources/s221",
+      "snapshot": "2023-02-13T12-30-00",
+      "status": "completed",
+      "wall_s": 40.1
+    },
+    {
+      "seed": 222,
+      "run_dir": "runs/experiments/adaptation_fork_v2_sources/s222",
+      "snapshot": "2023-02-13T12-30-00",
+      "status": "completed",
+      "wall_s": 38.3
+    },
+    {
+      "seed": 223,
+      "run_dir": "runs/experiments/adaptation_fork_v2_sources/s223",
+      "snapshot": "2023-02-13T12-30-00",
+      "status": "completed",
+      "wall_s": 40.0
+    },
+    {
+      "seed": 224,
+      "run_dir": "runs/experiments/adaptation_fork_v2_sources/s224",
+      "snapshot": "2023-02-13T12-30-00",
+      "status": "completed",
+      "wall_s": 37.3
+    },
+    {
+      "seed": 225,
+      "run_dir": "runs/experiments/adaptation_fork_v2_sources/s225",
+      "snapshot": "2023-02-13T12-30-00",
+      "status": "completed",
+      "wall_s": 31.6
+    },
+    {
+      "seed": 226,
+      "run_dir": "runs/experiments/adaptation_fork_v2_sources/s226",
+      "snapshot": "2023-02-13T12-30-00",
+      "status": "completed",
+      "wall_s": 33.9
+    }
+  ],
+  "determinism": {
+    "compared": [
+      "control-s221",
+      "control-s221-repeat"
+    ],
+    "identical": true,
+    "status": "completed",
+    "note": "same seed and configuration run twice; state tables memories, plans, conversations, agent_state, spatial_memory, world_objects, relationships"
+  }
+}

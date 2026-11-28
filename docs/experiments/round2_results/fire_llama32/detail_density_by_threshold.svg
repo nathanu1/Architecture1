@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="280" font-family="IBM Plex Mono, monospace" font-size="11">
+<text x="48" y="20" fill="#16211B" font-size="13">Network density by tie threshold</text>
+<line x1="48" y1="220.0" x2="544" y2="220.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="224.0" text-anchor="end" fill="#5B6B61">0</text>
+<line x1="48" y1="128.0" x2="544" y2="128.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="132.0" text-anchor="end" fill="#5B6B61">0.5</text>
+<line x1="48" y1="36.0" x2="544" y2="36.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="40.0" text-anchor="end" fill="#5B6B61">1</text>
+<text x="48.0" y="236" text-anchor="middle" fill="#16211B">0.2</text>
+<text x="213.3" y="236" text-anchor="middle" fill="#16211B">0.35</text>
+<text x="378.7" y="236" text-anchor="middle" fill="#16211B">0.5</text>
+<text x="544.0" y="236" text-anchor="middle" fill="#16211B">0.75</text>
+<text x="296.0" y="252" text-anchor="middle" fill="#5B6B61">tie threshold (mutual familiarity)</text>
+<circle cx="48.0" cy="179.1" r="3.2" fill="#2353AC"><title>control at 0.2: 0.2222</title></circle>
+<circle cx="213.3" cy="220.0" r="3.2" fill="#2353AC"><title>control at 0.35: 0</title></circle>
+<circle cx="378.7" cy="220.0" r="3.2" fill="#2353AC"><title>control at 0.5: 0</title></circle>
+<circle cx="544.0" cy="220.0" r="3.2" fill="#2353AC"><title>control at 0.75: 0</title></circle>
+<polyline points="48.0,179.1 213.3,220.0 378.7,220.0 544.0,220.0" fill="none" stroke="#2353AC" stroke-width="2" stroke-dasharray=""/>
+<line x1="48.0" y1="264" x2="66.0" y2="264" stroke="#2353AC" stroke-width="2" stroke-dasharray=""/>
+<text x="70.0" y="268" fill="#16211B">control</text>
+<circle cx="48.0" cy="179.1" r="3.2" fill="#B4461C"><title>fire at 0.2: 0.2222</title></circle>
+<circle cx="213.3" cy="220.0" r="3.2" fill="#B4461C"><title>fire at 0.35: 0</title></circle>
+<circle cx="378.7" cy="220.0" r="3.2" fill="#B4461C"><title>fire at 0.5: 0</title></circle>
+<circle cx="544.0" cy="220.0" r="3.2" fill="#B4461C"><title>fire at 0.75: 0</title></circle>
+<polyline points="48.0,179.1 213.3,220.0 378.7,220.0 544.0,220.0" fill="none" stroke="#B4461C" stroke-width="2" stroke-dasharray="6 3"/>
+<line x1="213.3" y1="264" x2="231.3" y2="264" stroke="#B4461C" stroke-width="2" stroke-dasharray="6 3"/>
+<text x="235.3" y="268" fill="#16211B">fire</text>
+</svg>

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="240" font-family="IBM Plex Mono, monospace" font-size="11">
+<text x="48" y="20" fill="#16211B" font-size="13">network conversation density</text>
+<line x1="48" y1="210.0" x2="404" y2="210.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="214.0" text-anchor="end" fill="#5B6B61">0</text>
+<line x1="48" y1="123.0" x2="404" y2="123.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="127.0" text-anchor="end" fill="#5B6B61">0.5</text>
+<line x1="48" y1="36.0" x2="404" y2="36.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="40.0" text-anchor="end" fill="#5B6B61">1</text>
+<circle cx="92.5" cy="175.2" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>low_contact-s211: 0.2</title></circle>
+<circle cx="92.5" cy="174.6" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>low_contact-s212: 0.2033</title></circle>
+<circle cx="92.5" cy="174.0" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>low_contact-s213: 0.2067</title></circle>
+<circle cx="101.5" cy="174.0" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>low_contact-s214: 0.2067</title></circle>
+<circle cx="83.5" cy="174.0" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>low_contact-s215: 0.2067</title></circle>
+<circle cx="92.5" cy="175.8" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>low_contact-s216: 0.1967</title></circle>
+<circle cx="101.5" cy="175.8" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>low_contact-s217: 0.1967</title></circle>
+<circle cx="101.5" cy="175.2" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>low_contact-s218: 0.2</title></circle>
+<line x1="65.8" y1="174.8" x2="119.2" y2="174.8" stroke="#16211B" stroke-width="2"/>
+<text x="123.2" y="178.8" fill="#16211B">0.20</text>
+<text x="92.5" y="228" text-anchor="middle" fill="#16211B">low_contact (n=8)</text>
+<circle cx="181.5" cy="174.6" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>reduced_contact-s211: 0.2033</title></circle>
+<circle cx="181.5" cy="176.4" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>reduced_contact-s212: 0.1933</title></circle>
+<circle cx="181.5" cy="175.2" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>reduced_contact-s213: 0.2</title></circle>
+<circle cx="181.5" cy="174.0" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>reduced_contact-s214: 0.2067</title></circle>
+<circle cx="190.5" cy="176.4" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>reduced_contact-s215: 0.1933</title></circle>
+<circle cx="172.5" cy="176.4" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>reduced_contact-s216: 0.1933</title></circle>
+<circle cx="199.5" cy="176.4" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>reduced_contact-s217: 0.1933</title></circle>
+<circle cx="163.5" cy="176.4" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>reduced_contact-s218: 0.1933</title></circle>
+<line x1="154.8" y1="175.7" x2="208.2" y2="175.7" stroke="#16211B" stroke-width="2"/>
+<text x="212.2" y="179.7" fill="#16211B">0.20</text>
+<text x="181.5" y="228" text-anchor="middle" fill="#16211B">reduced_contact (n=8)</text>
+<circle cx="270.5" cy="175.8" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>baseline-s211: 0.1967</title></circle>
+<circle cx="270.5" cy="174.0" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>baseline-s212: 0.2067</title></circle>
+<circle cx="270.5" cy="176.4" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>baseline-s213: 0.1933</title></circle>
+<circle cx="270.5" cy="174.6" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>baseline-s214: 0.2033</title></circle>
+<circle cx="279.5" cy="175.8" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>baseline-s215: 0.1967</title></circle>
+<circle cx="279.5" cy="176.4" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>baseline-s216: 0.1933</title></circle>
+<circle cx="279.5" cy="174.0" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>baseline-s217: 0.2067</title></circle>
+<circle cx="270.5" cy="175.2" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>baseline-s218: 0.2</title></circle>
+<line x1="243.8" y1="175.3" x2="297.2" y2="175.3" stroke="#16211B" stroke-width="2"/>
+<text x="301.2" y="179.3" fill="#16211B">0.20</text>
+<text x="270.5" y="228" text-anchor="middle" fill="#16211B">baseline (n=8)</text>
+<circle cx="359.5" cy="174.6" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>high_contact-s211: 0.2033</title></circle>
+<circle cx="359.5" cy="174.0" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>high_contact-s212: 0.2067</title></circle>
+<circle cx="359.5" cy="176.4" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>high_contact-s213: 0.1933</title></circle>
+<circle cx="368.5" cy="174.6" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>high_contact-s214: 0.2033</title></circle>
+<circle cx="359.5" cy="175.2" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>high_contact-s215: 0.2</title></circle>
+<circle cx="359.5" cy="175.8" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>high_contact-s216: 0.1967</title></circle>
+<circle cx="368.5" cy="175.8" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>high_contact-s217: 0.1967</title></circle>
+<circle cx="368.5" cy="174.0" r="4.5" fill="#1E6E62" fill-opacity="0.8"><title>high_contact-s218: 0.2067</title></circle>
+<line x1="332.8" y1="175.1" x2="386.2" y2="175.1" stroke="#16211B" stroke-width="2"/>
+<text x="390.2" y="179.1" fill="#16211B">0.20</text>
+<text x="359.5" y="228" text-anchor="middle" fill="#16211B">high_contact (n=8)</text>
+</svg>

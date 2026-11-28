@@ -1,0 +1,103 @@
+{
+  "name": "social_network_v2",
+  "base_config": "configs/research_n25_2day.yaml",
+  "conditions": {
+    "low_contact": [
+      "dialogue.cooldown_minutes=720"
+    ],
+    "reduced_contact": [
+      "dialogue.cooldown_minutes=240"
+    ],
+    "baseline": [],
+    "high_contact": [
+      "dialogue.cooldown_minutes=30"
+    ]
+  },
+  "seeds": [
+    211,
+    212,
+    213,
+    214,
+    215,
+    216,
+    217,
+    218
+  ],
+  "question": "In a 25-resident town over two days, how does contact opportunity change the social network when the measures do not depend on a single tie threshold, and does the dose-response found post hoc in round one hold when it is registered in advance?",
+  "hypothesis": "H1: weighted density rises monotonically with contact opportunity across the four cooldown levels (720 < 240 < 133 < 30 minutes of cooldown reversed: low < reduced < baseline < high). H2: density at threshold 0.5 and the share of pairs who talked are higher under high contact than under low contact. H3: density at threshold 0.2 differs between the extreme contact conditions by less than 0.05 (the saturation seen in round one).",
+  "primary_outcomes": [
+    "network_weighted_density",
+    "network_conversation_density",
+    "network_density_t50",
+    "network_density_t20",
+    "conversations_per_agent"
+  ],
+  "evaluate_relationships": false,
+  "min_minutes": 10.0,
+  "output_dir": "runs/experiments",
+  "path": "configs/experiments/social_network_v2.yaml",
+  "metrics": [
+    "network",
+    "behavior",
+    "beliefs",
+    "usage"
+  ],
+  "metric_params": {
+    "network": {
+      "thresholds": [
+        0.2,
+        0.35,
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "fork_from": null,
+  "interventions": {},
+  "determinism_check": true,
+  "contrasts": [
+    {
+      "label": "H1 weighted density: high > baseline",
+      "outcome": "network_weighted_density",
+      "a": "high_contact",
+      "b": "baseline",
+      "expect": ">"
+    },
+    {
+      "label": "H1 weighted density: baseline > reduced",
+      "outcome": "network_weighted_density",
+      "a": "baseline",
+      "b": "reduced_contact",
+      "expect": ">"
+    },
+    {
+      "label": "H1 weighted density: reduced > low",
+      "outcome": "network_weighted_density",
+      "a": "reduced_contact",
+      "b": "low_contact",
+      "expect": ">"
+    },
+    {
+      "label": "H2 density at 0.5: high > low",
+      "outcome": "network_density_t50",
+      "a": "high_contact",
+      "b": "low_contact",
+      "expect": ">"
+    },
+    {
+      "label": "H2 pairs who talked: high > low",
+      "outcome": "network_conversation_density",
+      "a": "high_contact",
+      "b": "low_contact",
+      "expect": ">"
+    },
+    {
+      "label": "H3 density at 0.2: high = low",
+      "outcome": "network_density_t20",
+      "a": "high_contact",
+      "b": "low_contact",
+      "expect": "=",
+      "tolerance": 0.05
+    }
+  ]
+}

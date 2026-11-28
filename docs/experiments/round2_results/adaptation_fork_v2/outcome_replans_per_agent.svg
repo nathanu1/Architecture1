@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="240" font-family="IBM Plex Mono, monospace" font-size="11">
+<text x="48" y="20" fill="#16211B" font-size="13">replans per agent</text>
+<line x1="48" y1="210.0" x2="404" y2="210.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="214.0" text-anchor="end" fill="#5B6B61">0</text>
+<line x1="48" y1="123.0" x2="404" y2="123.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="127.0" text-anchor="end" fill="#5B6B61">3.08</text>
+<line x1="48" y1="36.0" x2="404" y2="36.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="40.0" text-anchor="end" fill="#5B6B61">6.16</text>
+<circle cx="107.3" cy="63.1" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>control-s221: 5.2</title></circle>
+<circle cx="107.3" cy="56.3" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>control-s222: 5.44</title></circle>
+<circle cx="107.3" cy="54.1" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>control-s223: 5.52</title></circle>
+<circle cx="107.3" cy="69.9" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>control-s224: 4.96</title></circle>
+<circle cx="116.3" cy="63.1" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>control-s225: 5.2</title></circle>
+<circle cx="116.3" cy="56.3" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>control-s226: 5.44</title></circle>
+<line x1="71.7" y1="60.5" x2="142.9" y2="60.5" stroke="#16211B" stroke-width="2"/>
+<text x="146.9" y="64.5" fill="#16211B">5.29</text>
+<text x="107.3" y="228" text-anchor="middle" fill="#16211B">control (n=6)</text>
+<circle cx="226.0" cy="49.6" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>fire-s221: 5.68</title></circle>
+<circle cx="226.0" cy="42.8" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>fire-s222: 5.92</title></circle>
+<circle cx="226.0" cy="40.5" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>fire-s223: 6</title></circle>
+<circle cx="226.0" cy="47.3" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>fire-s224: 5.76</title></circle>
+<circle cx="226.0" cy="51.8" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>fire-s225: 5.6</title></circle>
+<circle cx="235.0" cy="40.5" r="4.5" fill="#B4461C" fill-opacity="0.8"><title>fire-s226: 6</title></circle>
+<line x1="190.4" y1="45.4" x2="261.6" y2="45.4" stroke="#16211B" stroke-width="2"/>
+<text x="265.6" y="49.4" fill="#16211B">5.83</text>
+<text x="226.0" y="228" text-anchor="middle" fill="#16211B">fire (n=6)</text>
+<circle cx="344.7" cy="47.3" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>fire_hourly-s221: 5.76</title></circle>
+<circle cx="344.7" cy="38.3" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>fire_hourly-s222: 6.08</title></circle>
+<circle cx="344.7" cy="43.9" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>fire_hourly-s223: 5.88</title></circle>
+<circle cx="344.7" cy="48.4" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>fire_hourly-s224: 5.72</title></circle>
+<circle cx="344.7" cy="51.8" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>fire_hourly-s225: 5.6</title></circle>
+<circle cx="344.7" cy="36.0" r="4.5" fill="#6B3E9B" fill-opacity="0.8"><title>fire_hourly-s226: 6.16</title></circle>
+<line x1="309.1" y1="44.3" x2="380.3" y2="44.3" stroke="#16211B" stroke-width="2"/>
+<text x="384.3" y="48.3" fill="#16211B">5.87</text>
+<text x="344.7" y="228" text-anchor="middle" fill="#16211B">fire_hourly (n=6)</text>
+</svg>

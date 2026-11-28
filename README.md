@@ -133,9 +133,11 @@ The repository documents completed offline simulations with five and 25 agents, 
 | 25 | 07:00–09:15 | 2,525 |
 | 35 | 07:00–09:10 | 4,537 |
 
+Round two of the experiments adds 83 offline runs of the 25-resident town for two simulated days (retrieval with real sentence embeddings, network emergence, a fire as counterfactual forks) and a fire experiment on **Llama 3.2 3B through llama-cpp-python's server**: one recorded morning of three residents, forked into futures with and without a fire. Results, including the predictions that failed, are in [`docs/experiments/round2.md`](docs/experiments/round2.md).
+
 These runs check the local model path from start to finish. They do not establish human-like behavior or reproduce the paper's human-rated results. Detailed timings, validation failures, and limitations are in the [town guide](docs/game.md#running-it).
 
-Hosted adapters are implemented but have not been exercised against their live APIs in the documented runs. LM Studio compatibility uses the OpenAI-compatible adapter; LM Studio itself has not been tested. The 35-resident neighborhood is an extension to the original 25-resident scenario.
+Hosted adapters are implemented but have not been exercised against their live APIs in the documented runs. The OpenAI-compatible adapter has been run against llama-cpp-python's server; LM Studio uses the same adapter and has not itself been tested. The 35-resident neighborhood is an extension to the original 25-resident scenario.
 
 ### Development checks
 
@@ -149,7 +151,7 @@ npm run typecheck
 npm run build
 ```
 
-For this update, **217 Python tests passed (one skipped)** and the Python lint and format checks passed; the frontend (unchanged here) last passed 34 tests, its type check and both builds.
+For this update, **243 Python tests passed (one skipped)** and the Python lint and format checks passed; the frontend (unchanged here) last passed 34 tests, its type check and both builds.
 
 The tests cover memory isolation, retrieval and reflection, plan validation, private dialogue, world constraints, replay, evaluation, local adapters, and building rules. See the [reference](docs/reference.md#tests) for prompt-example maintenance.
 

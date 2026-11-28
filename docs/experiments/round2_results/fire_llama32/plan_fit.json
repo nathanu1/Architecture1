@@ -1,0 +1,89 @@
+{
+  "counts": {
+    "decompose": {
+      "calls": 39,
+      "rejected": 29,
+      "rescued": 29,
+      "tasks_dropped": 10,
+      "minutes_moved": 219
+    },
+    "replan": {
+      "calls": 17,
+      "rejected": 14,
+      "rescued": 12,
+      "tasks_dropped": 4,
+      "minutes_moved": 237
+    }
+  },
+  "examples": [
+    {
+      "run": "control-s1",
+      "task": "decompose",
+      "window": 60,
+      "given": [
+        5,
+        10,
+        8,
+        12,
+        5,
+        10,
+        15
+      ],
+      "fitted": [
+        5,
+        10,
+        8,
+        12,
+        5,
+        10,
+        10
+      ]
+    },
+    {
+      "run": "control-s1",
+      "task": "decompose",
+      "window": 60,
+      "given": [
+        5,
+        10,
+        8,
+        12,
+        5,
+        10
+      ],
+      "fitted": [
+        5,
+        10,
+        8,
+        12,
+        10,
+        15
+      ]
+    },
+    {
+      "run": "control-s1",
+      "task": "decompose",
+      "window": 44,
+      "given": [
+        5,
+        2,
+        3,
+        8,
+        5,
+        10,
+        6,
+        4
+      ],
+      "fitted": [
+        5,
+        5,
+        5,
+        8,
+        5,
+        6,
+        5,
+        5
+      ]
+    }
+  ]
+}

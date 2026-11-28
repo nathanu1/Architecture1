@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="280" font-family="IBM Plex Mono, monospace" font-size="11">
+<text x="48" y="20" fill="#16211B" font-size="13">Network density over simulated time</text>
+<line x1="48" y1="220.0" x2="664" y2="220.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="224.0" text-anchor="end" fill="#5B6B61">0</text>
+<line x1="48" y1="128.0" x2="664" y2="128.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="132.0" text-anchor="end" fill="#5B6B61">0.5</text>
+<line x1="48" y1="36.0" x2="664" y2="36.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="40.0" text-anchor="end" fill="#5B6B61">1</text>
+<text x="48.0" y="236" text-anchor="middle" fill="#16211B">02-13 00h</text>
+<text x="125.0" y="236" text-anchor="middle" fill="#16211B">02-13 02h</text>
+<text x="202.0" y="236" text-anchor="middle" fill="#16211B">02-13 04h</text>
+<text x="279.0" y="236" text-anchor="middle" fill="#16211B">02-13 06h</text>
+<text x="356.0" y="236" text-anchor="middle" fill="#16211B">02-13 08h</text>
+<text x="433.0" y="236" text-anchor="middle" fill="#16211B">02-13 10h</text>
+<text x="510.0" y="236" text-anchor="middle" fill="#16211B">02-13 12h</text>
+<text x="587.0" y="236" text-anchor="middle" fill="#16211B">02-13 14h</text>
+<text x="664.0" y="236" text-anchor="middle" fill="#16211B">02-13 16h</text>
+<text x="356.0" y="252" text-anchor="middle" fill="#5B6B61">simulated time (month-day hour)</text>
+<circle cx="48.0" cy="220.0" r="3.2" fill="#2353AC"><title>control at 02-13 00h: 0</title></circle>
+<circle cx="125.0" cy="220.0" r="3.2" fill="#2353AC"><title>control at 02-13 02h: 0</title></circle>
+<circle cx="202.0" cy="220.0" r="3.2" fill="#2353AC"><title>control at 02-13 04h: 0</title></circle>
+<circle cx="279.0" cy="219.4" r="3.2" fill="#2353AC"><title>control at 02-13 06h: 0.0033</title></circle>
+<circle cx="356.0" cy="214.1" r="3.2" fill="#2353AC"><title>control at 02-13 08h: 0.0322167</title></circle>
+<circle cx="433.0" cy="209.3" r="3.2" fill="#2353AC"><title>control at 02-13 10h: 0.0583333</title></circle>
+<circle cx="510.0" cy="194.6" r="3.2" fill="#2353AC"><title>control at 02-13 12h: 0.137783</title></circle>
+<circle cx="587.0" cy="188.6" r="3.2" fill="#2353AC"><title>control at 02-13 14h: 0.170567</title></circle>
+<circle cx="664.0" cy="188.6" r="3.2" fill="#2353AC"><title>control at 02-13 16h: 0.170567</title></circle>
+<polyline points="48.0,220.0 125.0,220.0 202.0,220.0 279.0,219.4 356.0,214.1 433.0,209.3 510.0,194.6 587.0,188.6 664.0,188.6" fill="none" stroke="#2353AC" stroke-width="2" stroke-dasharray=""/>
+<line x1="48.0" y1="264" x2="66.0" y2="264" stroke="#2353AC" stroke-width="2" stroke-dasharray=""/>
+<text x="70.0" y="268" fill="#16211B">control</text>
+<circle cx="48.0" cy="220.0" r="3.2" fill="#B4461C"><title>fire at 02-13 00h: 0</title></circle>
+<circle cx="125.0" cy="220.0" r="3.2" fill="#B4461C"><title>fire at 02-13 02h: 0</title></circle>
+<circle cx="202.0" cy="220.0" r="3.2" fill="#B4461C"><title>fire at 02-13 04h: 0</title></circle>
+<circle cx="279.0" cy="219.4" r="3.2" fill="#B4461C"><title>fire at 02-13 06h: 0.0033</title></circle>
+<circle cx="356.0" cy="214.1" r="3.2" fill="#B4461C"><title>fire at 02-13 08h: 0.0322167</title></circle>
+<circle cx="433.0" cy="209.3" r="3.2" fill="#B4461C"><title>fire at 02-13 10h: 0.0583333</title></circle>
+<circle cx="510.0" cy="194.6" r="3.2" fill="#B4461C"><title>fire at 02-13 12h: 0.137783</title></circle>
+<circle cx="587.0" cy="189.1" r="3.2" fill="#B4461C"><title>fire at 02-13 14h: 0.167767</title></circle>
+<circle cx="664.0" cy="189.1" r="3.2" fill="#B4461C"><title>fire at 02-13 16h: 0.167767</title></circle>
+<polyline points="48.0,220.0 125.0,220.0 202.0,220.0 279.0,219.4 356.0,214.1 433.0,209.3 510.0,194.6 587.0,189.1 664.0,189.1" fill="none" stroke="#B4461C" stroke-width="2" stroke-dasharray="6 3"/>
+<line x1="253.3" y1="264" x2="271.3" y2="264" stroke="#B4461C" stroke-width="2" stroke-dasharray="6 3"/>
+<text x="275.3" y="268" fill="#16211B">fire</text>
+<circle cx="48.0" cy="220.0" r="3.2" fill="#6B3E9B"><title>fire_hourly at 02-13 00h: 0</title></circle>
+<circle cx="125.0" cy="220.0" r="3.2" fill="#6B3E9B"><title>fire_hourly at 02-13 02h: 0</title></circle>
+<circle cx="202.0" cy="220.0" r="3.2" fill="#6B3E9B"><title>fire_hourly at 02-13 04h: 0</title></circle>
+<circle cx="279.0" cy="219.4" r="3.2" fill="#6B3E9B"><title>fire_hourly at 02-13 06h: 0.0033</title></circle>
+<circle cx="356.0" cy="214.1" r="3.2" fill="#6B3E9B"><title>fire_hourly at 02-13 08h: 0.0322167</title></circle>
+<circle cx="433.0" cy="209.3" r="3.2" fill="#6B3E9B"><title>fire_hourly at 02-13 10h: 0.0583333</title></circle>
+<circle cx="510.0" cy="194.6" r="3.2" fill="#6B3E9B"><title>fire_hourly at 02-13 12h: 0.137783</title></circle>
+<circle cx="587.0" cy="188.6" r="3.2" fill="#6B3E9B"><title>fire_hourly at 02-13 14h: 0.170533</title></circle>
+<circle cx="664.0" cy="188.6" r="3.2" fill="#6B3E9B"><title>fire_hourly at 02-13 16h: 0.170533</title></circle>
+<polyline points="48.0,220.0 125.0,220.0 202.0,220.0 279.0,219.4 356.0,214.1 433.0,209.3 510.0,194.6 587.0,188.6 664.0,188.6" fill="none" stroke="#6B3E9B" stroke-width="2" stroke-dasharray="2 3"/>
+<line x1="458.7" y1="264" x2="476.7" y2="264" stroke="#6B3E9B" stroke-width="2" stroke-dasharray="2 3"/>
+<text x="480.7" y="268" fill="#16211B">fire_hourly</text>
+</svg>

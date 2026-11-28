@@ -1,0 +1,467 @@
+{
+  "network": {
+    "conditions": [
+      "control",
+      "fire",
+      "fire_hourly"
+    ],
+    "thresholds": [
+      0.2,
+      0.35,
+      0.5,
+      0.75
+    ],
+    "by_condition": {
+      "control": {
+        "runs": 6,
+        "sweep": {
+          "0.2": {
+            "density": 0.17056666666666667,
+            "components": 6,
+            "largest_component": 16,
+            "isolates": 4,
+            "clustering": 0.6571833333333333,
+            "mean_degree": 4.093333333333334
+          },
+          "0.35": {
+            "density": 0.06888333333333334,
+            "components": 9.166666666666666,
+            "largest_component": 13.5,
+            "isolates": 7,
+            "clustering": 0.4199333333333333,
+            "mean_degree": 1.6533333333333333
+          },
+          "0.5": {
+            "density": 0.026683333333333333,
+            "components": 17.833333333333332,
+            "largest_component": 4.666666666666667,
+            "isolates": 14.833333333333334,
+            "clustering": 0.39816666666666667,
+            "mean_degree": 0.64
+          },
+          "0.75": {
+            "density": 0.0,
+            "components": 25,
+            "largest_component": 1,
+            "isolates": 25,
+            "clustering": null,
+            "mean_degree": 0.0
+          }
+        },
+        "final": {
+          "weighted_density": 0.06256666666666666,
+          "conversation_density": 0.17056666666666667,
+          "degree_gini": 0.36019999999999996,
+          "mean_familiarity": 0.3171333333333333,
+          "reciprocity": 1.0,
+          "records": 118.33333333333333,
+          "n": 25
+        },
+        "series": [
+          {
+            "sim_time": "2023-02-13T00:00:00",
+            "density": 0.0,
+            "mean_familiarity": 0.03,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T01:01:52.500000",
+            "density": 0.0,
+            "mean_familiarity": 0.0591,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T02:03:45",
+            "density": 0.0,
+            "mean_familiarity": 0.0873,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T03:05:37.500000",
+            "density": 0.0,
+            "mean_familiarity": 0.1146,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T04:07:30",
+            "density": 0.0,
+            "mean_familiarity": 0.141,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T05:09:22.500000",
+            "density": 0.0033,
+            "mean_familiarity": 0.2361,
+            "largest_component": 2
+          },
+          {
+            "sim_time": "2023-02-13T06:11:15",
+            "density": 0.0033,
+            "mean_familiarity": 0.2589,
+            "largest_component": 2
+          },
+          {
+            "sim_time": "2023-02-13T07:13:07.500000",
+            "density": 0.01,
+            "mean_familiarity": 0.33531666666666665,
+            "largest_component": 2
+          },
+          {
+            "sim_time": "2023-02-13T08:15:00",
+            "density": 0.03221666666666667,
+            "mean_familiarity": 0.29081666666666667,
+            "largest_component": 7.666666666666667
+          },
+          {
+            "sim_time": "2023-02-13T09:16:52.500000",
+            "density": 0.05276666666666667,
+            "mean_familiarity": 0.26803333333333335,
+            "largest_component": 13.333333333333334
+          },
+          {
+            "sim_time": "2023-02-13T10:18:45",
+            "density": 0.058333333333333334,
+            "mean_familiarity": 0.27116666666666667,
+            "largest_component": 13.666666666666666
+          },
+          {
+            "sim_time": "2023-02-13T11:20:37.500000",
+            "density": 0.06445,
+            "mean_familiarity": 0.27821666666666667,
+            "largest_component": 13.666666666666666
+          },
+          {
+            "sim_time": "2023-02-13T12:22:30",
+            "density": 0.13778333333333334,
+            "mean_familiarity": 0.2693833333333333,
+            "largest_component": 16
+          },
+          {
+            "sim_time": "2023-02-13T13:24:22.500000",
+            "density": 0.17056666666666667,
+            "mean_familiarity": 0.3064,
+            "largest_component": 16
+          },
+          {
+            "sim_time": "2023-02-13T14:26:15",
+            "density": 0.17056666666666667,
+            "mean_familiarity": 0.31098333333333333,
+            "largest_component": 16
+          },
+          {
+            "sim_time": "2023-02-13T15:28:07.500000",
+            "density": 0.17056666666666667,
+            "mean_familiarity": 0.3141,
+            "largest_component": 16
+          },
+          {
+            "sim_time": "2023-02-13T16:30:00",
+            "density": 0.17056666666666667,
+            "mean_familiarity": 0.3171333333333333,
+            "largest_component": 16
+          }
+        ]
+      },
+      "fire": {
+        "runs": 6,
+        "sweep": {
+          "0.2": {
+            "density": 0.16776666666666668,
+            "components": 6,
+            "largest_component": 16,
+            "isolates": 4,
+            "clustering": 0.6490833333333333,
+            "mean_degree": 4.026666666666666
+          },
+          "0.35": {
+            "density": 0.07110000000000001,
+            "components": 9,
+            "largest_component": 14.666666666666666,
+            "isolates": 7,
+            "clustering": 0.43548333333333333,
+            "mean_degree": 1.7066666666666666
+          },
+          "0.5": {
+            "density": 0.026683333333333333,
+            "components": 17.833333333333332,
+            "largest_component": 4.666666666666667,
+            "isolates": 14.833333333333334,
+            "clustering": 0.39816666666666667,
+            "mean_degree": 0.64
+          },
+          "0.75": {
+            "density": 0.0,
+            "components": 25,
+            "largest_component": 1,
+            "isolates": 25,
+            "clustering": null,
+            "mean_degree": 0.0
+          }
+        },
+        "final": {
+          "weighted_density": 0.06191666666666667,
+          "conversation_density": 0.16776666666666668,
+          "degree_gini": 0.3601833333333333,
+          "mean_familiarity": 0.31856666666666666,
+          "reciprocity": 1.0,
+          "records": 116.66666666666667,
+          "n": 25
+        },
+        "series": [
+          {
+            "sim_time": "2023-02-13T00:00:00",
+            "density": 0.0,
+            "mean_familiarity": 0.03,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T01:01:52.500000",
+            "density": 0.0,
+            "mean_familiarity": 0.0591,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T02:03:45",
+            "density": 0.0,
+            "mean_familiarity": 0.0873,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T03:05:37.500000",
+            "density": 0.0,
+            "mean_familiarity": 0.1146,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T04:07:30",
+            "density": 0.0,
+            "mean_familiarity": 0.141,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T05:09:22.500000",
+            "density": 0.0033,
+            "mean_familiarity": 0.2361,
+            "largest_component": 2
+          },
+          {
+            "sim_time": "2023-02-13T06:11:15",
+            "density": 0.0033,
+            "mean_familiarity": 0.2589,
+            "largest_component": 2
+          },
+          {
+            "sim_time": "2023-02-13T07:13:07.500000",
+            "density": 0.01,
+            "mean_familiarity": 0.33531666666666665,
+            "largest_component": 2
+          },
+          {
+            "sim_time": "2023-02-13T08:15:00",
+            "density": 0.03221666666666667,
+            "mean_familiarity": 0.29081666666666667,
+            "largest_component": 7.666666666666667
+          },
+          {
+            "sim_time": "2023-02-13T09:16:52.500000",
+            "density": 0.05276666666666667,
+            "mean_familiarity": 0.26803333333333335,
+            "largest_component": 13.333333333333334
+          },
+          {
+            "sim_time": "2023-02-13T10:18:45",
+            "density": 0.058333333333333334,
+            "mean_familiarity": 0.27116666666666667,
+            "largest_component": 13.666666666666666
+          },
+          {
+            "sim_time": "2023-02-13T11:20:37.500000",
+            "density": 0.06445,
+            "mean_familiarity": 0.27821666666666667,
+            "largest_component": 13.666666666666666
+          },
+          {
+            "sim_time": "2023-02-13T12:22:30",
+            "density": 0.13778333333333334,
+            "mean_familiarity": 0.2693833333333333,
+            "largest_component": 16
+          },
+          {
+            "sim_time": "2023-02-13T13:24:22.500000",
+            "density": 0.16776666666666668,
+            "mean_familiarity": 0.3078,
+            "largest_component": 16
+          },
+          {
+            "sim_time": "2023-02-13T14:26:15",
+            "density": 0.16776666666666668,
+            "mean_familiarity": 0.3123166666666667,
+            "largest_component": 16
+          },
+          {
+            "sim_time": "2023-02-13T15:28:07.500000",
+            "density": 0.16776666666666668,
+            "mean_familiarity": 0.31551666666666667,
+            "largest_component": 16
+          },
+          {
+            "sim_time": "2023-02-13T16:30:00",
+            "density": 0.16776666666666668,
+            "mean_familiarity": 0.31856666666666666,
+            "largest_component": 16
+          }
+        ]
+      },
+      "fire_hourly": {
+        "runs": 6,
+        "sweep": {
+          "0.2": {
+            "density": 0.17053333333333334,
+            "components": 6,
+            "largest_component": 16,
+            "isolates": 4,
+            "clustering": 0.6618166666666667,
+            "mean_degree": 4.093333333333334
+          },
+          "0.35": {
+            "density": 0.06776666666666667,
+            "components": 9.333333333333334,
+            "largest_component": 14.333333333333334,
+            "isolates": 7.333333333333333,
+            "clustering": 0.4220333333333333,
+            "mean_degree": 1.6266666666666667
+          },
+          "0.5": {
+            "density": 0.026116666666666667,
+            "components": 17.833333333333332,
+            "largest_component": 4.666666666666667,
+            "isolates": 14.833333333333334,
+            "clustering": 0.32038333333333335,
+            "mean_degree": 0.6266666666666667
+          },
+          "0.75": {
+            "density": 0.0,
+            "components": 25,
+            "largest_component": 1,
+            "isolates": 25,
+            "clustering": null,
+            "mean_degree": 0.0
+          }
+        },
+        "final": {
+          "weighted_density": 0.0622,
+          "conversation_density": 0.17053333333333334,
+          "degree_gini": 0.36396666666666666,
+          "mean_familiarity": 0.3217833333333333,
+          "reciprocity": 1.0,
+          "records": 116,
+          "n": 25
+        },
+        "series": [
+          {
+            "sim_time": "2023-02-13T00:00:00",
+            "density": 0.0,
+            "mean_familiarity": 0.03,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T01:01:52.500000",
+            "density": 0.0,
+            "mean_familiarity": 0.0591,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T02:03:45",
+            "density": 0.0,
+            "mean_familiarity": 0.0873,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T03:05:37.500000",
+            "density": 0.0,
+            "mean_familiarity": 0.1146,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T04:07:30",
+            "density": 0.0,
+            "mean_familiarity": 0.141,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T05:09:22.500000",
+            "density": 0.0033,
+            "mean_familiarity": 0.2361,
+            "largest_component": 2
+          },
+          {
+            "sim_time": "2023-02-13T06:11:15",
+            "density": 0.0033,
+            "mean_familiarity": 0.2589,
+            "largest_component": 2
+          },
+          {
+            "sim_time": "2023-02-13T07:13:07.500000",
+            "density": 0.01,
+            "mean_familiarity": 0.33531666666666665,
+            "largest_component": 2
+          },
+          {
+            "sim_time": "2023-02-13T08:15:00",
+            "density": 0.03221666666666667,
+            "mean_familiarity": 0.29081666666666667,
+            "largest_component": 7.666666666666667
+          },
+          {
+            "sim_time": "2023-02-13T09:16:52.500000",
+            "density": 0.05276666666666667,
+            "mean_familiarity": 0.26803333333333335,
+            "largest_component": 13.333333333333334
+          },
+          {
+            "sim_time": "2023-02-13T10:18:45",
+            "density": 0.058333333333333334,
+            "mean_familiarity": 0.27116666666666667,
+            "largest_component": 13.666666666666666
+          },
+          {
+            "sim_time": "2023-02-13T11:20:37.500000",
+            "density": 0.06445,
+            "mean_familiarity": 0.27821666666666667,
+            "largest_component": 13.666666666666666
+          },
+          {
+            "sim_time": "2023-02-13T12:22:30",
+            "density": 0.13778333333333334,
+            "mean_familiarity": 0.2693833333333333,
+            "largest_component": 16
+          },
+          {
+            "sim_time": "2023-02-13T13:24:22.500000",
+            "density": 0.17053333333333334,
+            "mean_familiarity": 0.3132666666666667,
+            "largest_component": 16
+          },
+          {
+            "sim_time": "2023-02-13T14:26:15",
+            "density": 0.17053333333333334,
+            "mean_familiarity": 0.3164,
+            "largest_component": 16
+          },
+          {
+            "sim_time": "2023-02-13T15:28:07.500000",
+            "density": 0.17053333333333334,
+            "mean_familiarity": 0.3191833333333333,
+            "largest_component": 16
+          },
+          {
+            "sim_time": "2023-02-13T16:30:00",
+            "density": 0.17053333333333334,
+            "mean_familiarity": 0.3217833333333333,
+            "largest_component": 16
+          }
+        ]
+      }
+    }
+  }
+}

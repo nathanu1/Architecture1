@@ -1,0 +1,2100 @@
+{
+  "condition": "full",
+  "runs": 8,
+  "anchor": "one unrelated memory dated 720 hours before the probe, importance 1, never queried",
+  "means": {
+    "plain": {
+      "recall_at_10": 0.4433,
+      "recall_at_30": 0.6061,
+      "recall_old_at_30": 0.2342,
+      "median_rank": 17.75,
+      "by_age": {
+        "0.5": {
+          "recall_at_30": 0.9475,
+          "normalized_recency": 0.9887
+        },
+        "3": {
+          "recall_at_30": 0.8592,
+          "normalized_recency": 0.9304
+        },
+        "8": {
+          "recall_at_30": 0.74,
+          "normalized_recency": 0.816
+        },
+        "20": {
+          "recall_at_30": 0.6217,
+          "normalized_recency": 0.5529
+        },
+        "32": {
+          "recall_at_30": 0.3442,
+          "normalized_recency": 0.3051
+        },
+        "44": {
+          "recall_at_30": 0.1242,
+          "normalized_recency": 0.0718
+        }
+      }
+    },
+    "anchored": {
+      "recall_at_10": 0.7097,
+      "recall_at_30": 0.806,
+      "recall_old_at_30": 0.7488,
+      "median_rank": 1.0,
+      "by_age": {
+        "0.5": {
+          "recall_at_30": 0.8958,
+          "normalized_recency": 0.9975
+        },
+        "3": {
+          "recall_at_30": 0.8717,
+          "normalized_recency": 0.9847
+        },
+        "8": {
+          "recall_at_30": 0.79,
+          "normalized_recency": 0.9597
+        },
+        "20": {
+          "recall_at_30": 0.7808,
+          "normalized_recency": 0.902
+        },
+        "32": {
+          "recall_at_30": 0.7617,
+          "normalized_recency": 0.8478
+        },
+        "44": {
+          "recall_at_30": 0.7358,
+          "normalized_recency": 0.7966
+        }
+      }
+    }
+  },
+  "old_fact_recall_at_30_gain_per_run": [
+    0.5166,
+    0.5134,
+    0.5367,
+    0.5167,
+    0.5033,
+    0.5033,
+    0.5167,
+    0.51
+  ],
+  "runs_where_the_anchor_raised_old_fact_recall": 8,
+  "per_run": [
+    {
+      "run_id": "full-s201",
+      "seed": 201,
+      "plain": {
+        "n": 900,
+        "recall_at_k": 0.4411,
+        "recall_at_30": 0.61,
+        "recall_curve": {
+          "1": 0.3244,
+          "3": 0.3856,
+          "5": 0.4033,
+          "10": 0.4411,
+          "20": 0.5256,
+          "30": 0.61,
+          "50": 0.7322,
+          "100": 0.8622
+        },
+        "mean_reciprocal_rank": 0.3761,
+        "median_rank": 18.0,
+        "mean_rank_percentile": 0.0581,
+        "by_age": {
+          "<=1h": 0.7533,
+          "<=24h": 0.5033,
+          "<=6h": 0.7333,
+          ">24h": 0.0767
+        },
+        "by_importance": {
+          "high": 0.73,
+          "low": 0.0767,
+          "mid": 0.5167
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.4378,
+            "recall_at_30": 0.6289,
+            "recall_curve": {
+              "1": 0.3644,
+              "3": 0.38,
+              "5": 0.4022,
+              "10": 0.4378,
+              "20": 0.5333,
+              "30": 0.6289,
+              "50": 0.7533,
+              "100": 0.8844
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.4444,
+            "recall_at_30": 0.5911,
+            "recall_curve": {
+              "1": 0.2844,
+              "3": 0.3911,
+              "5": 0.4044,
+              "10": 0.4444,
+              "20": 0.5178,
+              "30": 0.5911,
+              "50": 0.7111,
+              "100": 0.84
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.2367,
+          "recall_curve": {
+            "1": 0.01,
+            "3": 0.0333,
+            "5": 0.04,
+            "10": 0.0767,
+            "20": 0.1533,
+            "30": 0.2367,
+            "50": 0.38,
+            "100": 0.6433
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 0.55
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.7533,
+            "recall_at_30": 0.9467,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9887
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.7333,
+            "recall_at_30": 0.8667,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9304
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.58,
+            "recall_at_30": 0.7467,
+            "median_rank": 5,
+            "mean_normalized_recency": 0.816
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.4267,
+            "recall_at_30": 0.6267,
+            "median_rank": 19,
+            "mean_normalized_recency": 0.5529
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.1,
+            "recall_at_30": 0.34,
+            "median_rank": 54,
+            "mean_normalized_recency": 0.3051
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.0533,
+            "recall_at_30": 0.1333,
+            "median_rank": 92,
+            "mean_normalized_recency": 0.0718
+          }
+        },
+        "forgotten": 0
+      },
+      "anchored": {
+        "n": 900,
+        "recall_at_k": 0.7122,
+        "recall_at_30": 0.81,
+        "recall_curve": {
+          "1": 0.6244,
+          "3": 0.6556,
+          "5": 0.6689,
+          "10": 0.7122,
+          "20": 0.7589,
+          "30": 0.81,
+          "50": 0.9011,
+          "100": 0.9967
+        },
+        "mean_reciprocal_rank": 0.6565,
+        "median_rank": 1.0,
+        "mean_rank_percentile": 0.0166,
+        "by_age": {
+          "<=1h": 0.76,
+          "<=24h": 0.71,
+          "<=6h": 0.7667,
+          ">24h": 0.6633
+        },
+        "by_importance": {
+          "high": 1.0,
+          "low": 0.1733,
+          "mid": 0.9633
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.7356,
+            "recall_at_30": 0.8244,
+            "recall_curve": {
+              "1": 0.6578,
+              "3": 0.68,
+              "5": 0.6933,
+              "10": 0.7356,
+              "20": 0.78,
+              "30": 0.8244,
+              "50": 0.9267,
+              "100": 1.0
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.6889,
+            "recall_at_30": 0.7956,
+            "recall_curve": {
+              "1": 0.5911,
+              "3": 0.6311,
+              "5": 0.6444,
+              "10": 0.6889,
+              "20": 0.7378,
+              "30": 0.7956,
+              "50": 0.8756,
+              "100": 0.9933
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.7533,
+          "recall_curve": {
+            "1": 0.5667,
+            "3": 0.6,
+            "5": 0.6067,
+            "10": 0.6633,
+            "20": 0.71,
+            "30": 0.7533,
+            "50": 0.8267,
+            "100": 1.0
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 1.0
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.76,
+            "recall_at_30": 0.8867,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9975
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.7667,
+            "recall_at_30": 0.8667,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9847
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.7,
+            "recall_at_30": 0.8067,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9597
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.72,
+            "recall_at_30": 0.7933,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.902
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.68,
+            "recall_at_30": 0.7667,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.8478
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.6467,
+            "recall_at_30": 0.74,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.7966
+          }
+        },
+        "forgotten": 0
+      }
+    },
+    {
+      "run_id": "full-s202",
+      "seed": 202,
+      "plain": {
+        "n": 900,
+        "recall_at_k": 0.4444,
+        "recall_at_30": 0.6111,
+        "recall_curve": {
+          "1": 0.3244,
+          "3": 0.3944,
+          "5": 0.4122,
+          "10": 0.4444,
+          "20": 0.5189,
+          "30": 0.6111,
+          "50": 0.7144,
+          "100": 0.8556
+        },
+        "mean_reciprocal_rank": 0.3777,
+        "median_rank": 18.0,
+        "mean_rank_percentile": 0.0603,
+        "by_age": {
+          "<=1h": 0.76,
+          "<=24h": 0.4967,
+          "<=6h": 0.7533,
+          ">24h": 0.08
+        },
+        "by_importance": {
+          "high": 0.73,
+          "low": 0.09,
+          "mid": 0.5133
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.4422,
+            "recall_at_30": 0.6244,
+            "recall_curve": {
+              "1": 0.3644,
+              "3": 0.4,
+              "5": 0.4178,
+              "10": 0.4422,
+              "20": 0.5289,
+              "30": 0.6244,
+              "50": 0.7422,
+              "100": 0.8756
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.4467,
+            "recall_at_30": 0.5978,
+            "recall_curve": {
+              "1": 0.2844,
+              "3": 0.3889,
+              "5": 0.4067,
+              "10": 0.4467,
+              "20": 0.5089,
+              "30": 0.5978,
+              "50": 0.6867,
+              "100": 0.8356
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.2433,
+          "recall_curve": {
+            "1": 0.01,
+            "3": 0.04,
+            "5": 0.0533,
+            "10": 0.08,
+            "20": 0.15,
+            "30": 0.2433,
+            "50": 0.3733,
+            "100": 0.6233
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 0.57
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.76,
+            "recall_at_30": 0.96,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9887
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.7533,
+            "recall_at_30": 0.8533,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9304
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.5867,
+            "recall_at_30": 0.7333,
+            "median_rank": 4,
+            "mean_normalized_recency": 0.816
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.4067,
+            "recall_at_30": 0.6333,
+            "median_rank": 21,
+            "mean_normalized_recency": 0.5529
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.1133,
+            "recall_at_30": 0.3467,
+            "median_rank": 57,
+            "mean_normalized_recency": 0.3051
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.0467,
+            "recall_at_30": 0.14,
+            "median_rank": 101,
+            "mean_normalized_recency": 0.0718
+          }
+        },
+        "forgotten": 0
+      },
+      "anchored": {
+        "n": 900,
+        "recall_at_k": 0.7078,
+        "recall_at_30": 0.8044,
+        "recall_curve": {
+          "1": 0.6122,
+          "3": 0.6489,
+          "5": 0.67,
+          "10": 0.7078,
+          "20": 0.7478,
+          "30": 0.8044,
+          "50": 0.8867,
+          "100": 0.9944
+        },
+        "mean_reciprocal_rank": 0.6478,
+        "median_rank": 1.0,
+        "mean_rank_percentile": 0.0175,
+        "by_age": {
+          "<=1h": 0.7667,
+          "<=24h": 0.7133,
+          "<=6h": 0.76,
+          ">24h": 0.6467
+        },
+        "by_importance": {
+          "high": 1.0,
+          "low": 0.1833,
+          "mid": 0.94
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.7422,
+            "recall_at_30": 0.8111,
+            "recall_curve": {
+              "1": 0.6511,
+              "3": 0.6844,
+              "5": 0.7022,
+              "10": 0.7422,
+              "20": 0.7644,
+              "30": 0.8111,
+              "50": 0.9067,
+              "100": 0.9978
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.6733,
+            "recall_at_30": 0.7978,
+            "recall_curve": {
+              "1": 0.5733,
+              "3": 0.6133,
+              "5": 0.6378,
+              "10": 0.6733,
+              "20": 0.7311,
+              "30": 0.7978,
+              "50": 0.8667,
+              "100": 0.9911
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.7567,
+          "recall_curve": {
+            "1": 0.5267,
+            "3": 0.5733,
+            "5": 0.5867,
+            "10": 0.6467,
+            "20": 0.7,
+            "30": 0.7567,
+            "50": 0.8133,
+            "100": 0.9967
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 1.0
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.7667,
+            "recall_at_30": 0.8933,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9975
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.76,
+            "recall_at_30": 0.8667,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9847
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.7,
+            "recall_at_30": 0.78,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9597
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.7267,
+            "recall_at_30": 0.7733,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.902
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.6733,
+            "recall_at_30": 0.7667,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.8478
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.62,
+            "recall_at_30": 0.7467,
+            "median_rank": 2,
+            "mean_normalized_recency": 0.7966
+          }
+        },
+        "forgotten": 0
+      }
+    },
+    {
+      "run_id": "full-s203",
+      "seed": 203,
+      "plain": {
+        "n": 900,
+        "recall_at_k": 0.4378,
+        "recall_at_30": 0.5967,
+        "recall_curve": {
+          "1": 0.3222,
+          "3": 0.3844,
+          "5": 0.4067,
+          "10": 0.4378,
+          "20": 0.5233,
+          "30": 0.5967,
+          "50": 0.7111,
+          "100": 0.8578
+        },
+        "mean_reciprocal_rank": 0.374,
+        "median_rank": 18.0,
+        "mean_rank_percentile": 0.06,
+        "by_age": {
+          "<=1h": 0.76,
+          "<=24h": 0.49,
+          "<=6h": 0.7467,
+          ">24h": 0.07
+        },
+        "by_importance": {
+          "high": 0.7233,
+          "low": 0.0867,
+          "mid": 0.5033
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.4311,
+            "recall_at_30": 0.6133,
+            "recall_curve": {
+              "1": 0.3644,
+              "3": 0.3933,
+              "5": 0.4,
+              "10": 0.4311,
+              "20": 0.5311,
+              "30": 0.6133,
+              "50": 0.7333,
+              "100": 0.8778
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.4444,
+            "recall_at_30": 0.58,
+            "recall_curve": {
+              "1": 0.28,
+              "3": 0.3756,
+              "5": 0.4133,
+              "10": 0.4444,
+              "20": 0.5156,
+              "30": 0.58,
+              "50": 0.6889,
+              "100": 0.8378
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.22,
+          "recall_curve": {
+            "1": 0.0133,
+            "3": 0.0367,
+            "5": 0.05,
+            "10": 0.07,
+            "20": 0.1367,
+            "30": 0.22,
+            "50": 0.37,
+            "100": 0.63
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 0.53
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.76,
+            "recall_at_30": 0.9333,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9887
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.7467,
+            "recall_at_30": 0.8733,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9304
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.58,
+            "recall_at_30": 0.74,
+            "median_rank": 4,
+            "mean_normalized_recency": 0.816
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.4,
+            "recall_at_30": 0.5933,
+            "median_rank": 19,
+            "mean_normalized_recency": 0.5529
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.1,
+            "recall_at_30": 0.32,
+            "median_rank": 56,
+            "mean_normalized_recency": 0.3051
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.04,
+            "recall_at_30": 0.12,
+            "median_rank": 98,
+            "mean_normalized_recency": 0.0718
+          }
+        },
+        "forgotten": 0
+      },
+      "anchored": {
+        "n": 900,
+        "recall_at_k": 0.7078,
+        "recall_at_30": 0.8056,
+        "recall_curve": {
+          "1": 0.6111,
+          "3": 0.6489,
+          "5": 0.6689,
+          "10": 0.7078,
+          "20": 0.7489,
+          "30": 0.8056,
+          "50": 0.8822,
+          "100": 0.9956
+        },
+        "mean_reciprocal_rank": 0.6477,
+        "median_rank": 1.0,
+        "mean_rank_percentile": 0.0174,
+        "by_age": {
+          "<=1h": 0.7533,
+          "<=24h": 0.71,
+          "<=6h": 0.7667,
+          ">24h": 0.6533
+        },
+        "by_importance": {
+          "high": 1.0,
+          "low": 0.17,
+          "mid": 0.9533
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.7333,
+            "recall_at_30": 0.82,
+            "recall_curve": {
+              "1": 0.6467,
+              "3": 0.6778,
+              "5": 0.6978,
+              "10": 0.7333,
+              "20": 0.7733,
+              "30": 0.82,
+              "50": 0.8978,
+              "100": 0.9978
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.6822,
+            "recall_at_30": 0.7911,
+            "recall_curve": {
+              "1": 0.5756,
+              "3": 0.62,
+              "5": 0.64,
+              "10": 0.6822,
+              "20": 0.7244,
+              "30": 0.7911,
+              "50": 0.8667,
+              "100": 0.9933
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.7567,
+          "recall_curve": {
+            "1": 0.52,
+            "3": 0.5833,
+            "5": 0.6033,
+            "10": 0.6533,
+            "20": 0.6933,
+            "30": 0.7567,
+            "50": 0.8167,
+            "100": 0.9967
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 1.0
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.7533,
+            "recall_at_30": 0.8867,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9975
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.7667,
+            "recall_at_30": 0.86,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9847
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.7,
+            "recall_at_30": 0.7933,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9597
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.72,
+            "recall_at_30": 0.78,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.902
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.6733,
+            "recall_at_30": 0.7733,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.8478
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.6333,
+            "recall_at_30": 0.74,
+            "median_rank": 2,
+            "mean_normalized_recency": 0.7966
+          }
+        },
+        "forgotten": 0
+      }
+    },
+    {
+      "run_id": "full-s204",
+      "seed": 204,
+      "plain": {
+        "n": 900,
+        "recall_at_k": 0.4422,
+        "recall_at_30": 0.5944,
+        "recall_curve": {
+          "1": 0.3233,
+          "3": 0.39,
+          "5": 0.41,
+          "10": 0.4422,
+          "20": 0.5089,
+          "30": 0.5944,
+          "50": 0.7156,
+          "100": 0.8633
+        },
+        "mean_reciprocal_rank": 0.3759,
+        "median_rank": 19.0,
+        "mean_rank_percentile": 0.0591,
+        "by_age": {
+          "<=1h": 0.76,
+          "<=24h": 0.4967,
+          "<=6h": 0.7333,
+          ">24h": 0.0833
+        },
+        "by_importance": {
+          "high": 0.7367,
+          "low": 0.0833,
+          "mid": 0.5067
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.4356,
+            "recall_at_30": 0.6022,
+            "recall_curve": {
+              "1": 0.3644,
+              "3": 0.3978,
+              "5": 0.4133,
+              "10": 0.4356,
+              "20": 0.5178,
+              "30": 0.6022,
+              "50": 0.7444,
+              "100": 0.8867
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.4489,
+            "recall_at_30": 0.5867,
+            "recall_curve": {
+              "1": 0.2822,
+              "3": 0.3822,
+              "5": 0.4067,
+              "10": 0.4489,
+              "20": 0.5,
+              "30": 0.5867,
+              "50": 0.6867,
+              "100": 0.84
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.2133,
+          "recall_curve": {
+            "1": 0.01,
+            "3": 0.0367,
+            "5": 0.0567,
+            "10": 0.0833,
+            "20": 0.1267,
+            "30": 0.2133,
+            "50": 0.3667,
+            "100": 0.6433
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 0.51
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.76,
+            "recall_at_30": 0.9267,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9887
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.7333,
+            "recall_at_30": 0.84,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9304
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.5733,
+            "recall_at_30": 0.7467,
+            "median_rank": 5,
+            "mean_normalized_recency": 0.816
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.42,
+            "recall_at_30": 0.6267,
+            "median_rank": 18,
+            "mean_normalized_recency": 0.5529
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.1133,
+            "recall_at_30": 0.32,
+            "median_rank": 54,
+            "mean_normalized_recency": 0.3051
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.0533,
+            "recall_at_30": 0.1067,
+            "median_rank": 90,
+            "mean_normalized_recency": 0.0718
+          }
+        },
+        "forgotten": 0
+      },
+      "anchored": {
+        "n": 900,
+        "recall_at_k": 0.7078,
+        "recall_at_30": 0.7878,
+        "recall_curve": {
+          "1": 0.62,
+          "3": 0.6544,
+          "5": 0.6689,
+          "10": 0.7078,
+          "20": 0.7489,
+          "30": 0.7878,
+          "50": 0.8833,
+          "100": 0.9956
+        },
+        "mean_reciprocal_rank": 0.6532,
+        "median_rank": 1.0,
+        "mean_rank_percentile": 0.0179,
+        "by_age": {
+          "<=1h": 0.74,
+          "<=24h": 0.71,
+          "<=6h": 0.7467,
+          ">24h": 0.67
+        },
+        "by_importance": {
+          "high": 1.0,
+          "low": 0.1567,
+          "mid": 0.9667
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.7311,
+            "recall_at_30": 0.8067,
+            "recall_curve": {
+              "1": 0.6622,
+              "3": 0.6822,
+              "5": 0.6933,
+              "10": 0.7311,
+              "20": 0.7644,
+              "30": 0.8067,
+              "50": 0.9111,
+              "100": 0.9956
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.6844,
+            "recall_at_30": 0.7689,
+            "recall_curve": {
+              "1": 0.5778,
+              "3": 0.6267,
+              "5": 0.6444,
+              "10": 0.6844,
+              "20": 0.7333,
+              "30": 0.7689,
+              "50": 0.8556,
+              "100": 0.9956
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.73,
+          "recall_curve": {
+            "1": 0.54,
+            "3": 0.5933,
+            "5": 0.61,
+            "10": 0.67,
+            "20": 0.7033,
+            "30": 0.73,
+            "50": 0.8167,
+            "100": 0.9933
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 1.0
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.74,
+            "recall_at_30": 0.8733,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9975
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.7467,
+            "recall_at_30": 0.8467,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9847
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.7,
+            "recall_at_30": 0.7733,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9597
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.72,
+            "recall_at_30": 0.7733,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.902
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.6933,
+            "recall_at_30": 0.7467,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.8478
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.6467,
+            "recall_at_30": 0.7133,
+            "median_rank": 2,
+            "mean_normalized_recency": 0.7966
+          }
+        },
+        "forgotten": 0
+      }
+    },
+    {
+      "run_id": "full-s205",
+      "seed": 205,
+      "plain": {
+        "n": 900,
+        "recall_at_k": 0.4444,
+        "recall_at_30": 0.6011,
+        "recall_curve": {
+          "1": 0.3289,
+          "3": 0.3889,
+          "5": 0.41,
+          "10": 0.4444,
+          "20": 0.5222,
+          "30": 0.6011,
+          "50": 0.7122,
+          "100": 0.8544
+        },
+        "mean_reciprocal_rank": 0.3787,
+        "median_rank": 18.0,
+        "mean_rank_percentile": 0.0609,
+        "by_age": {
+          "<=1h": 0.7667,
+          "<=24h": 0.4933,
+          "<=6h": 0.7533,
+          ">24h": 0.08
+        },
+        "by_importance": {
+          "high": 0.7267,
+          "low": 0.0933,
+          "mid": 0.5133
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.4422,
+            "recall_at_30": 0.62,
+            "recall_curve": {
+              "1": 0.3689,
+              "3": 0.3911,
+              "5": 0.4133,
+              "10": 0.4422,
+              "20": 0.5356,
+              "30": 0.62,
+              "50": 0.74,
+              "100": 0.88
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.4467,
+            "recall_at_30": 0.5822,
+            "recall_curve": {
+              "1": 0.2889,
+              "3": 0.3867,
+              "5": 0.4067,
+              "10": 0.4467,
+              "20": 0.5089,
+              "30": 0.5822,
+              "50": 0.6844,
+              "100": 0.8289
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.2367,
+          "recall_curve": {
+            "1": 0.01,
+            "3": 0.0367,
+            "5": 0.05,
+            "10": 0.08,
+            "20": 0.15,
+            "30": 0.2367,
+            "50": 0.36,
+            "100": 0.62
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 0.57
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.7667,
+            "recall_at_30": 0.9333,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9887
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.7533,
+            "recall_at_30": 0.84,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9304
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.5667,
+            "recall_at_30": 0.7533,
+            "median_rank": 5,
+            "mean_normalized_recency": 0.816
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.42,
+            "recall_at_30": 0.6067,
+            "median_rank": 19,
+            "mean_normalized_recency": 0.5529
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.1067,
+            "recall_at_30": 0.3533,
+            "median_rank": 54,
+            "mean_normalized_recency": 0.3051
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.0533,
+            "recall_at_30": 0.12,
+            "median_rank": 98,
+            "mean_normalized_recency": 0.0718
+          }
+        },
+        "forgotten": 0
+      },
+      "anchored": {
+        "n": 900,
+        "recall_at_k": 0.7089,
+        "recall_at_30": 0.7989,
+        "recall_curve": {
+          "1": 0.6167,
+          "3": 0.6578,
+          "5": 0.6778,
+          "10": 0.7089,
+          "20": 0.7556,
+          "30": 0.7989,
+          "50": 0.8778,
+          "100": 0.9911
+        },
+        "mean_reciprocal_rank": 0.6524,
+        "median_rank": 1.0,
+        "mean_rank_percentile": 0.0179,
+        "by_age": {
+          "<=1h": 0.7733,
+          "<=24h": 0.71,
+          "<=6h": 0.7667,
+          ">24h": 0.6467
+        },
+        "by_importance": {
+          "high": 1.0,
+          "low": 0.1767,
+          "mid": 0.95
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.74,
+            "recall_at_30": 0.8222,
+            "recall_curve": {
+              "1": 0.6556,
+              "3": 0.6867,
+              "5": 0.7067,
+              "10": 0.74,
+              "20": 0.7822,
+              "30": 0.8222,
+              "50": 0.8933,
+              "100": 0.9956
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.6778,
+            "recall_at_30": 0.7756,
+            "recall_curve": {
+              "1": 0.5778,
+              "3": 0.6289,
+              "5": 0.6489,
+              "10": 0.6778,
+              "20": 0.7289,
+              "30": 0.7756,
+              "50": 0.8622,
+              "100": 0.9867
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.74,
+          "recall_curve": {
+            "1": 0.5333,
+            "3": 0.58,
+            "5": 0.6067,
+            "10": 0.6467,
+            "20": 0.7067,
+            "30": 0.74,
+            "50": 0.8067,
+            "100": 0.9833
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 1.0
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.7733,
+            "recall_at_30": 0.88,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9975
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.7667,
+            "recall_at_30": 0.8667,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9847
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.7,
+            "recall_at_30": 0.7867,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9597
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.72,
+            "recall_at_30": 0.78,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.902
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.6667,
+            "recall_at_30": 0.7533,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.8478
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.6267,
+            "recall_at_30": 0.7267,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.7966
+          }
+        },
+        "forgotten": 0
+      }
+    },
+    {
+      "run_id": "full-s206",
+      "seed": 206,
+      "plain": {
+        "n": 900,
+        "recall_at_k": 0.4578,
+        "recall_at_30": 0.6244,
+        "recall_curve": {
+          "1": 0.3244,
+          "3": 0.39,
+          "5": 0.4078,
+          "10": 0.4578,
+          "20": 0.5244,
+          "30": 0.6244,
+          "50": 0.72,
+          "100": 0.87
+        },
+        "mean_reciprocal_rank": 0.3776,
+        "median_rank": 16.0,
+        "mean_rank_percentile": 0.059,
+        "by_age": {
+          "<=1h": 0.8,
+          "<=24h": 0.5233,
+          "<=6h": 0.74,
+          ">24h": 0.08
+        },
+        "by_importance": {
+          "high": 0.7333,
+          "low": 0.1033,
+          "mid": 0.5367
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.4622,
+            "recall_at_30": 0.6267,
+            "recall_curve": {
+              "1": 0.3622,
+              "3": 0.3889,
+              "5": 0.4044,
+              "10": 0.4622,
+              "20": 0.54,
+              "30": 0.6267,
+              "50": 0.7467,
+              "100": 0.8911
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.4533,
+            "recall_at_30": 0.6222,
+            "recall_curve": {
+              "1": 0.2867,
+              "3": 0.3911,
+              "5": 0.4111,
+              "10": 0.4533,
+              "20": 0.5089,
+              "30": 0.6222,
+              "50": 0.6933,
+              "100": 0.8489
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.25,
+          "recall_curve": {
+            "1": 0.01,
+            "3": 0.0367,
+            "5": 0.0433,
+            "10": 0.08,
+            "20": 0.14,
+            "30": 0.25,
+            "50": 0.37,
+            "100": 0.6533
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 0.62
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.8,
+            "recall_at_30": 0.9867,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9887
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.74,
+            "recall_at_30": 0.8867,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9304
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.62,
+            "recall_at_30": 0.74,
+            "median_rank": 4,
+            "mean_normalized_recency": 0.816
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.4267,
+            "recall_at_30": 0.6333,
+            "median_rank": 17,
+            "mean_normalized_recency": 0.5529
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.12,
+            "recall_at_30": 0.36,
+            "median_rank": 56,
+            "mean_normalized_recency": 0.3051
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.04,
+            "recall_at_30": 0.14,
+            "median_rank": 87,
+            "mean_normalized_recency": 0.0718
+          }
+        },
+        "forgotten": 0
+      },
+      "anchored": {
+        "n": 900,
+        "recall_at_k": 0.7167,
+        "recall_at_30": 0.8211,
+        "recall_curve": {
+          "1": 0.6233,
+          "3": 0.6533,
+          "5": 0.6756,
+          "10": 0.7167,
+          "20": 0.7611,
+          "30": 0.8211,
+          "50": 0.9044,
+          "100": 1.0
+        },
+        "mean_reciprocal_rank": 0.6567,
+        "median_rank": 1.0,
+        "mean_rank_percentile": 0.0167,
+        "by_age": {
+          "<=1h": 0.7733,
+          "<=24h": 0.7067,
+          "<=6h": 0.7733,
+          ">24h": 0.67
+        },
+        "by_importance": {
+          "high": 1.0,
+          "low": 0.18,
+          "mid": 0.97
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.7378,
+            "recall_at_30": 0.84,
+            "recall_curve": {
+              "1": 0.6622,
+              "3": 0.6778,
+              "5": 0.6911,
+              "10": 0.7378,
+              "20": 0.7778,
+              "30": 0.84,
+              "50": 0.9267,
+              "100": 1.0
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.6956,
+            "recall_at_30": 0.8022,
+            "recall_curve": {
+              "1": 0.5844,
+              "3": 0.6289,
+              "5": 0.66,
+              "10": 0.6956,
+              "20": 0.7444,
+              "30": 0.8022,
+              "50": 0.8822,
+              "100": 1.0
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.7533,
+          "recall_curve": {
+            "1": 0.55,
+            "3": 0.5967,
+            "5": 0.63,
+            "10": 0.67,
+            "20": 0.71,
+            "30": 0.7533,
+            "50": 0.8367,
+            "100": 1.0
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 1.0
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.7733,
+            "recall_at_30": 0.92,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9975
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.7733,
+            "recall_at_30": 0.9067,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9847
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.7,
+            "recall_at_30": 0.8067,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9597
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.7133,
+            "recall_at_30": 0.7867,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.902
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.6933,
+            "recall_at_30": 0.7667,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.8478
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.6467,
+            "recall_at_30": 0.74,
+            "median_rank": 2,
+            "mean_normalized_recency": 0.7966
+          }
+        },
+        "forgotten": 0
+      }
+    },
+    {
+      "run_id": "full-s207",
+      "seed": 207,
+      "plain": {
+        "n": 900,
+        "recall_at_k": 0.4456,
+        "recall_at_30": 0.5967,
+        "recall_curve": {
+          "1": 0.3244,
+          "3": 0.3833,
+          "5": 0.4044,
+          "10": 0.4456,
+          "20": 0.5244,
+          "30": 0.5967,
+          "50": 0.7022,
+          "100": 0.8733
+        },
+        "mean_reciprocal_rank": 0.3764,
+        "median_rank": 18.0,
+        "mean_rank_percentile": 0.0589,
+        "by_age": {
+          "<=1h": 0.7467,
+          "<=24h": 0.5133,
+          "<=6h": 0.7467,
+          ">24h": 0.0767
+        },
+        "by_importance": {
+          "high": 0.7267,
+          "low": 0.08,
+          "mid": 0.53
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.4444,
+            "recall_at_30": 0.6111,
+            "recall_curve": {
+              "1": 0.3644,
+              "3": 0.3844,
+              "5": 0.4022,
+              "10": 0.4444,
+              "20": 0.5356,
+              "30": 0.6111,
+              "50": 0.7267,
+              "100": 0.8956
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.4467,
+            "recall_at_30": 0.5822,
+            "recall_curve": {
+              "1": 0.2844,
+              "3": 0.3822,
+              "5": 0.4067,
+              "10": 0.4467,
+              "20": 0.5133,
+              "30": 0.5822,
+              "50": 0.6778,
+              "100": 0.8511
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.23,
+          "recall_curve": {
+            "1": 0.01,
+            "3": 0.0367,
+            "5": 0.0467,
+            "10": 0.0767,
+            "20": 0.1467,
+            "30": 0.23,
+            "50": 0.36,
+            "100": 0.66
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 0.55
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.7467,
+            "recall_at_30": 0.94,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9887
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.7467,
+            "recall_at_30": 0.8467,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9304
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.6133,
+            "recall_at_30": 0.7267,
+            "median_rank": 6,
+            "mean_normalized_recency": 0.816
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.4133,
+            "recall_at_30": 0.6067,
+            "median_rank": 19,
+            "mean_normalized_recency": 0.5529
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.1133,
+            "recall_at_30": 0.3533,
+            "median_rank": 56,
+            "mean_normalized_recency": 0.3051
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.04,
+            "recall_at_30": 0.1067,
+            "median_rank": 89,
+            "mean_normalized_recency": 0.0718
+          }
+        },
+        "forgotten": 0
+      },
+      "anchored": {
+        "n": 900,
+        "recall_at_k": 0.7078,
+        "recall_at_30": 0.8044,
+        "recall_curve": {
+          "1": 0.6244,
+          "3": 0.6578,
+          "5": 0.6789,
+          "10": 0.7078,
+          "20": 0.7567,
+          "30": 0.8044,
+          "50": 0.8889,
+          "100": 0.9989
+        },
+        "mean_reciprocal_rank": 0.6573,
+        "median_rank": 1.0,
+        "mean_rank_percentile": 0.0174,
+        "by_age": {
+          "<=1h": 0.7533,
+          "<=24h": 0.7033,
+          "<=6h": 0.7533,
+          ">24h": 0.6667
+        },
+        "by_importance": {
+          "high": 1.0,
+          "low": 0.16,
+          "mid": 0.9633
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.7311,
+            "recall_at_30": 0.8133,
+            "recall_curve": {
+              "1": 0.6622,
+              "3": 0.6822,
+              "5": 0.7,
+              "10": 0.7311,
+              "20": 0.7733,
+              "30": 0.8133,
+              "50": 0.9089,
+              "100": 1.0
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.6844,
+            "recall_at_30": 0.7956,
+            "recall_curve": {
+              "1": 0.5867,
+              "3": 0.6333,
+              "5": 0.6578,
+              "10": 0.6844,
+              "20": 0.74,
+              "30": 0.7956,
+              "50": 0.8689,
+              "100": 0.9978
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.7467,
+          "recall_curve": {
+            "1": 0.5533,
+            "3": 0.5967,
+            "5": 0.6167,
+            "10": 0.6667,
+            "20": 0.7167,
+            "30": 0.7467,
+            "50": 0.8233,
+            "100": 1.0
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 1.0
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.7533,
+            "recall_at_30": 0.8867,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9975
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.7533,
+            "recall_at_30": 0.8733,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9847
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.6867,
+            "recall_at_30": 0.7867,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9597
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.72,
+            "recall_at_30": 0.7867,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.902
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.6867,
+            "recall_at_30": 0.7533,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.8478
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.6467,
+            "recall_at_30": 0.74,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.7966
+          }
+        },
+        "forgotten": 0
+      }
+    },
+    {
+      "run_id": "full-s208",
+      "seed": 208,
+      "plain": {
+        "n": 900,
+        "recall_at_k": 0.4333,
+        "recall_at_30": 0.6144,
+        "recall_curve": {
+          "1": 0.3189,
+          "3": 0.3822,
+          "5": 0.4089,
+          "10": 0.4333,
+          "20": 0.5256,
+          "30": 0.6144,
+          "50": 0.73,
+          "100": 0.8667
+        },
+        "mean_reciprocal_rank": 0.3726,
+        "median_rank": 17.0,
+        "mean_rank_percentile": 0.0589,
+        "by_age": {
+          "<=1h": 0.7533,
+          "<=24h": 0.4867,
+          "<=6h": 0.7267,
+          ">24h": 0.0733
+        },
+        "by_importance": {
+          "high": 0.7267,
+          "low": 0.0733,
+          "mid": 0.5
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.4311,
+            "recall_at_30": 0.6289,
+            "recall_curve": {
+              "1": 0.36,
+              "3": 0.3822,
+              "5": 0.4044,
+              "10": 0.4311,
+              "20": 0.5356,
+              "30": 0.6289,
+              "50": 0.7578,
+              "100": 0.8933
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.4356,
+            "recall_at_30": 0.6,
+            "recall_curve": {
+              "1": 0.2778,
+              "3": 0.3822,
+              "5": 0.4133,
+              "10": 0.4356,
+              "20": 0.5156,
+              "30": 0.6,
+              "50": 0.7022,
+              "100": 0.84
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.2433,
+          "recall_curve": {
+            "1": 0.01,
+            "3": 0.0333,
+            "5": 0.0467,
+            "10": 0.0733,
+            "20": 0.1567,
+            "30": 0.2433,
+            "50": 0.3967,
+            "100": 0.65
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 0.56
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.7533,
+            "recall_at_30": 0.9533,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9887
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.7267,
+            "recall_at_30": 0.8667,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9304
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.58,
+            "recall_at_30": 0.7333,
+            "median_rank": 5,
+            "mean_normalized_recency": 0.816
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.3933,
+            "recall_at_30": 0.6467,
+            "median_rank": 21,
+            "mean_normalized_recency": 0.5529
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.1,
+            "recall_at_30": 0.36,
+            "median_rank": 50,
+            "mean_normalized_recency": 0.3051
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.0467,
+            "recall_at_30": 0.1267,
+            "median_rank": 95,
+            "mean_normalized_recency": 0.0718
+          }
+        },
+        "forgotten": 0
+      },
+      "anchored": {
+        "n": 900,
+        "recall_at_k": 0.7089,
+        "recall_at_30": 0.8156,
+        "recall_curve": {
+          "1": 0.6222,
+          "3": 0.6533,
+          "5": 0.6733,
+          "10": 0.7089,
+          "20": 0.7622,
+          "30": 0.8156,
+          "50": 0.9067,
+          "100": 0.9922
+        },
+        "mean_reciprocal_rank": 0.6557,
+        "median_rank": 1.0,
+        "mean_rank_percentile": 0.0172,
+        "by_age": {
+          "<=1h": 0.7467,
+          "<=24h": 0.7033,
+          "<=6h": 0.7533,
+          ">24h": 0.6733
+        },
+        "by_importance": {
+          "high": 1.0,
+          "low": 0.15,
+          "mid": 0.9767
+        },
+        "by_style": {
+          "lexical": {
+            "n": 450,
+            "recall_at_k": 0.7267,
+            "recall_at_30": 0.8311,
+            "recall_curve": {
+              "1": 0.66,
+              "3": 0.6822,
+              "5": 0.6911,
+              "10": 0.7267,
+              "20": 0.7822,
+              "30": 0.8311,
+              "50": 0.9222,
+              "100": 0.9978
+            }
+          },
+          "paraphrase": {
+            "n": 450,
+            "recall_at_k": 0.6911,
+            "recall_at_30": 0.8,
+            "recall_curve": {
+              "1": 0.5844,
+              "3": 0.6244,
+              "5": 0.6556,
+              "10": 0.6911,
+              "20": 0.7422,
+              "30": 0.8,
+              "50": 0.8911,
+              "100": 0.9867
+            }
+          }
+        },
+        "old": {
+          "n": 300,
+          "recall_at_30": 0.7533,
+          "recall_curve": {
+            "1": 0.5467,
+            "3": 0.5967,
+            "5": 0.6167,
+            "10": 0.6733,
+            "20": 0.7167,
+            "30": 0.7533,
+            "50": 0.85,
+            "100": 0.99
+          }
+        },
+        "old_important": {
+          "n": 100,
+          "recall_at_30": 1.0
+        },
+        "by_age_hours": {
+          "0.5": {
+            "n": 150,
+            "recall_at_k": 0.7467,
+            "recall_at_30": 0.94,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9975
+          },
+          "3": {
+            "n": 150,
+            "recall_at_k": 0.7533,
+            "recall_at_30": 0.8867,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9847
+          },
+          "8": {
+            "n": 150,
+            "recall_at_k": 0.6867,
+            "recall_at_30": 0.7867,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.9597
+          },
+          "20": {
+            "n": 150,
+            "recall_at_k": 0.72,
+            "recall_at_30": 0.7733,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.902
+          },
+          "32": {
+            "n": 150,
+            "recall_at_k": 0.6933,
+            "recall_at_30": 0.7667,
+            "median_rank": 1,
+            "mean_normalized_recency": 0.8478
+          },
+          "44": {
+            "n": 150,
+            "recall_at_k": 0.6533,
+            "recall_at_30": 0.74,
+            "median_rank": 2,
+            "mean_normalized_recency": 0.7966
+          }
+        },
+        "forgotten": 0
+      }
+    }
+  ]
+}

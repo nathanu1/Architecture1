@@ -1,0 +1,853 @@
+{
+  "control-s1": {
+    "fire_reactions": [],
+    "all_reaction_decisions": {
+      "talk": 2,
+      "continue": 7
+    },
+    "fire_memories": [],
+    "conversations": [
+      {
+        "start": "09:15",
+        "participants": [
+          "isabella_rodriguez",
+          "klaus_mueller"
+        ],
+        "mentions_fire": false
+      }
+    ],
+    "failures": [
+      {
+        "time": "09:15",
+        "type": "plan_failure",
+        "agent": "isabella_rodriguez",
+        "error": "replan: output invalid after bounded repairs"
+      },
+      {
+        "time": "09:15",
+        "type": "plan_failure",
+        "agent": "klaus_mueller",
+        "error": "replan: output invalid after bounded repairs"
+      },
+      {
+        "time": "09:16",
+        "type": "plan_failure",
+        "agent": "klaus_mueller",
+        "error": "decompose: output invalid after bounded repairs"
+      },
+      {
+        "time": "09:30",
+        "type": "plan_failure",
+        "agent": "maria_lopez",
+        "error": "hourly_schedule: output invalid after bounded repairs"
+      }
+    ],
+    "actions": [
+      {
+        "time": "09:16",
+        "activity": "Check and purchase Valentine's Day decorations",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:26",
+        "activity": "Order party favors and candies",
+        "address": "Hobbs Cafe:cafe:refrigerator"
+      },
+      {
+        "time": "09:34",
+        "activity": "Make a playlist for the party",
+        "address": "Hobbs Cafe:cafe:piano"
+      },
+      {
+        "time": "09:40",
+        "activity": "Create invitations for customers",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:50",
+        "activity": "Prepare party games and activities",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:55",
+        "activity": "Finalize the party schedule",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      }
+    ],
+    "actions_about_the_fire": 0,
+    "actions_total": 6,
+    "interview": {
+      "question": "Did anything unusual happen at Hobbs Cafe this morning?",
+      "answer": "No, everything seems normal this morning. I just opened up the cafe a bit early to get ready for our customers and make sure everything is in order.",
+      "mentions_fire": false,
+      "retrieved": 30
+    }
+  },
+  "fire-s1": {
+    "fire_reactions": [
+      {
+        "time": "09:10",
+        "agent": "isabella_rodriguez",
+        "decision": "wait",
+        "new_activity": null,
+        "minutes": 30,
+        "reason": "Isabella Rodriguez should wait for the fire to be extinguished before reacting or continuing with her current activity."
+      },
+      {
+        "time": "09:10",
+        "agent": "isabella_rodriguez",
+        "decision": "wait",
+        "new_activity": null,
+        "minutes": 20,
+        "reason": "Isabella Rodriguez should wait until the fire is extinguished before reacting or continuing with her current activity."
+      },
+      {
+        "time": "09:15",
+        "agent": "klaus_mueller",
+        "decision": "continue",
+        "new_activity": null,
+        "minutes": null,
+        "reason": "Klaus Mueller is in the middle of checking social media on his phone during breakfast, and there's no pressing reason to interrupt his activity."
+      },
+      {
+        "time": "09:15",
+        "agent": "klaus_mueller",
+        "decision": "react",
+        "new_activity": "Call the fire department to report the incident, then head back to Oak Hill College dormitory",
+        "minutes": 15,
+        "reason": "Klaus Mueller should react to the observation as he has no control over fires and wants to ensure his safety before visiting Hobbs Cafe later."
+      },
+      {
+        "time": "09:15",
+        "agent": "klaus_mueller",
+        "decision": "react",
+        "new_activity": "Call the fire department to report the incident, then head back to Oak Hill College dormitory at Dorm for Oak Hill College:common room:common room sofa",
+        "minutes": 10,
+        "reason": "Klaus Mueller should react to the observation due to safety concerns and potential risk to himself or others."
+      },
+      {
+        "time": "09:34",
+        "agent": "klaus_mueller",
+        "decision": "continue",
+        "new_activity": null,
+        "minutes": null,
+        "reason": "Klaus Mueller is currently in the process of planning research notes for his paper, and waiting or reacting to Isabella's presence might disrupt this focus."
+      }
+    ],
+    "all_reaction_decisions": {
+      "wait": 2,
+      "continue": 4,
+      "react": 2,
+      "talk": 2
+    },
+    "fire_memories": [
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 2,
+        "text": "Isabella Rodriguez is waiting (Isabella Rodriguez should wait for the fire to be extinguished before reacting or continuing with her current activity)"
+      },
+      {
+        "time": "09:15",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "Isabella Rodriguez is waiting (Isabella Rodriguez should wait until the fire is extinguished before reacting or continuing with her current activity)"
+      },
+      {
+        "time": "09:15",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:15",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 8,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:15",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:15",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 2,
+        "text": "Klaus Mueller is Call the fire department to report the incident, then head back to Oak Hill College dormitory"
+      },
+      {
+        "time": "09:15",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:15",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "Klaus Mueller is Call the fire department to report the incident, then head back to Oak Hill College dormitory"
+      },
+      {
+        "time": "09:16",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 2,
+        "text": "Isabella Rodriguez is waiting (Isabella Rodriguez should wait until the fire is extinguished before reacting or continuing with her current activity)"
+      },
+      {
+        "time": "09:16",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:16",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 6,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:34",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 2,
+        "text": "Isabella Rodriguez is waiting (Isabella Rodriguez should wait for the fire to be extinguished before reacting or continuing with her current activity)"
+      },
+      {
+        "time": "09:34",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "Isabella Rodriguez is waiting (Isabella Rodriguez should wait for the fire to be extinguished before reacting or continuing with her current activity)"
+      },
+      {
+        "time": "09:34",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:34",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 8,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:40",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:40",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 3,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:40",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 1,
+        "text": "Isabella Rodriguez needs to wait for the fire to be extinguished before reacting or continuing with her current activity"
+      },
+      {
+        "time": "09:40",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 1,
+        "text": "The cooking area at Hobbs Cafe can catch fire, as seen on multiple occasions because of 24, 25, 28"
+      },
+      {
+        "time": "09:40",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 1,
+        "text": "Isabella Rodriguez takes steps to ensure the cafe's safety and cleanliness, such as waiting for fires to be extinguished."
+      },
+      {
+        "time": "09:40",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 6,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:40",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:42",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:42",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:43",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:43",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 3,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:43",
+        "owner": "klaus_mueller",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 1,
+        "text": "Isabella Rodriguez is waiting for the fire to be extinguished before reacting or continuing with her current activity."
+      },
+      {
+        "time": "09:43",
+        "owner": "klaus_mueller",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 8,
+        "text": "The Hobbs Cafe is experiencing a fire, which may affect Klaus Mueller's plans to meet Isabella Rodriguez or eat breakfast there."
+      },
+      {
+        "time": "09:51",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 8,
+        "text": "cooking area is burning"
+      }
+    ],
+    "conversations": [
+      {
+        "start": "09:40",
+        "participants": [
+          "isabella_rodriguez",
+          "klaus_mueller"
+        ],
+        "mentions_fire": false
+      }
+    ],
+    "failures": [
+      {
+        "time": "09:30",
+        "type": "plan_failure",
+        "agent": "maria_lopez",
+        "error": "hourly_schedule: output invalid after bounded repairs"
+      },
+      {
+        "time": "09:40",
+        "type": "plan_failure",
+        "agent": "isabella_rodriguez",
+        "error": "replan: output invalid after bounded repairs"
+      },
+      {
+        "time": "09:40",
+        "type": "plan_failure",
+        "agent": "klaus_mueller",
+        "error": "replan: output invalid after bounded repairs"
+      },
+      {
+        "time": "09:42",
+        "type": "plan_failure",
+        "agent": "isabella_rodriguez",
+        "error": "decompose: output invalid after bounded repairs"
+      },
+      {
+        "time": "09:42",
+        "type": "plan_failure",
+        "agent": "klaus_mueller",
+        "error": "decompose: output invalid after bounded repairs"
+      }
+    ],
+    "actions": [
+      {
+        "time": "09:40",
+        "activity": "Prepare Party Materials for Valentine's Day",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:42",
+        "activity": "Prepare Party Materials for Valentine's Day",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      }
+    ],
+    "actions_about_the_fire": 0,
+    "actions_total": 2,
+    "interview": {
+      "question": "Did anything unusual happen at Hobbs Cafe this morning?",
+      "answer": "No, everything seems normal this morning. I just got the fire in the cooking area under control and it's business as usual. Klaus Mueller was here chatting with me about our Valentine's Day plans, and we're both excited for the party on Friday.",
+      "mentions_fire": true,
+      "retrieved": 30
+    }
+  },
+  "control-s2": {
+    "fire_reactions": [],
+    "all_reaction_decisions": {
+      "talk": 2,
+      "react": 5,
+      "continue": 2
+    },
+    "fire_memories": [],
+    "conversations": [
+      {
+        "start": "09:51",
+        "participants": [
+          "maria_lopez",
+          "klaus_mueller"
+        ],
+        "mentions_fire": false
+      }
+    ],
+    "failures": [],
+    "actions": [],
+    "actions_about_the_fire": 0,
+    "actions_total": 0,
+    "interview": {
+      "question": "Did anything unusual happen at Hobbs Cafe this morning?",
+      "answer": "No, everything seems normal this morning. I just opened the cafe at 8am and it's been a quiet day so far.",
+      "mentions_fire": false,
+      "retrieved": 30
+    }
+  },
+  "fire-s2": {
+    "fire_reactions": [
+      {
+        "time": "09:10",
+        "agent": "isabella_rodriguez",
+        "decision": "react",
+        "new_activity": "Open windows for ventilation at Hobbs Cafe",
+        "minutes": 20,
+        "reason": "She needs to address the fire in Hobbs Cafe before continuing with her Valentine's Day party preparations."
+      },
+      {
+        "time": "09:10",
+        "agent": "isabella_rodriguez",
+        "decision": "react",
+        "new_activity": "call the fire department",
+        "minutes": 15,
+        "reason": "to prevent further damage and ensure customer safety"
+      }
+    ],
+    "all_reaction_decisions": {
+      "react": 7,
+      "talk": 2,
+      "continue": 2
+    },
+    "fire_memories": [
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 1,
+        "text": "Isabella Rodriguez is call the fire department"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 6,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:26",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:26",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 3,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:30",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:30",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:40",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 4,
+        "text": "Isabella Rodriguez has a responsibility to ensure the safety of her customers and colleagues, including responding to emergencies such as fires."
+      },
+      {
+        "time": "09:40",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 1,
+        "text": "Isabella Rodriguez is diligent about ensuring the safety of her customers and staff, including responding to emergencies such as fires."
+      },
+      {
+        "time": "09:41",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:41",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 7,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:48",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:48",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:56",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 6,
+        "text": "cooking area is burning"
+      }
+    ],
+    "conversations": [
+      {
+        "start": "09:51",
+        "participants": [
+          "maria_lopez",
+          "klaus_mueller"
+        ],
+        "mentions_fire": false
+      }
+    ],
+    "failures": [
+      {
+        "time": "09:10",
+        "type": "plan_failure",
+        "agent": "isabella_rodriguez",
+        "error": "replan: output invalid after bounded repairs"
+      },
+      {
+        "time": "09:10",
+        "type": "plan_failure",
+        "agent": "isabella_rodriguez",
+        "error": "replan: output invalid after bounded repairs"
+      }
+    ],
+    "actions": [
+      {
+        "time": "09:10",
+        "activity": "Open windows for ventilation at Hobbs Cafe",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:10",
+        "activity": "call the fire department",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:25",
+        "activity": "Check Valentine's Day party invitations",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:30",
+        "activity": "Design a custom banner with hearts and flowers",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:40",
+        "activity": "Order heart-shaped balloons for the party",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:48",
+        "activity": "Send out reminders to regular customers on Valentine's Day",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:55",
+        "activity": "Finalize party decorations and table settings",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      }
+    ],
+    "actions_about_the_fire": 1,
+    "actions_total": 7,
+    "interview": {
+      "question": "Did anything unusual happen at Hobbs Cafe this morning?",
+      "answer": "Yes, I noticed that the cooking area is on fire. I had to take immediate action to ensure everyone's safety. I opened all the windows for ventilation and notified my colleagues about the situation.",
+      "mentions_fire": true,
+      "retrieved": 30
+    }
+  },
+  "control-s3": {
+    "fire_reactions": [],
+    "all_reaction_decisions": {},
+    "fire_memories": [],
+    "conversations": [],
+    "failures": [
+      {
+        "time": "09:30",
+        "type": "plan_failure",
+        "agent": "maria_lopez",
+        "error": "day_plan: output invalid after bounded repairs"
+      }
+    ],
+    "actions": [],
+    "actions_about_the_fire": 0,
+    "actions_total": 0,
+    "interview": {
+      "question": "Did anything unusual happen at Hobbs Cafe this morning?",
+      "answer": "No, everything seems normal this morning. I opened the cafe on time and everything is in order.",
+      "mentions_fire": false,
+      "retrieved": 30
+    }
+  },
+  "fire-s3": {
+    "fire_reactions": [
+      {
+        "time": "09:10",
+        "agent": "isabella_rodriguez",
+        "decision": "wait",
+        "new_activity": null,
+        "minutes": 40,
+        "reason": "Isabella Rodriguez is currently preparing for her Valentine's Day party and does not want to be distracted by the fire until she has finished gathering all necessary materials."
+      },
+      {
+        "time": "09:10",
+        "agent": "isabella_rodriguez",
+        "decision": "react",
+        "new_activity": "Call the fire department to report the incident and assess damage",
+        "minutes": 30,
+        "reason": "The fire in the cooking area is distracting and may pose a risk to customers and staff."
+      }
+    ],
+    "all_reaction_decisions": {
+      "wait": 1,
+      "react": 1
+    },
+    "fire_memories": [
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 6,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 4,
+        "text": "Isabella Rodriguez is waiting (Isabella Rodriguez is currently preparing for her Valentine's Day party and does not want to be distracted by the fire until she has finished gathering all necessary materials)"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 1,
+        "text": "Isabella Rodriguez is Call the fire department to report the incident and assess damage"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 3,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:50",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "cooking area is burning"
+      }
+    ],
+    "conversations": [],
+    "failures": [
+      {
+        "time": "09:30",
+        "type": "plan_failure",
+        "agent": "maria_lopez",
+        "error": "day_plan: output invalid after bounded repairs"
+      }
+    ],
+    "actions": [
+      {
+        "time": "09:10",
+        "activity": "Call the fire department to report the incident and assess damage",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:40",
+        "activity": "waiting",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:50",
+        "activity": "Prepare Party Materials for Valentine's Day",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:55",
+        "activity": "Prepare Party Materials for Valentine's Day",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      }
+    ],
+    "actions_about_the_fire": 1,
+    "actions_total": 4,
+    "interview": {
+      "question": "Did anything unusual happen at Hobbs Cafe this morning?",
+      "answer": "No, everything seems normal this morning. I just opened up the cafe and everything is in order. I haven't noticed anything out of the ordinary yet.",
+      "mentions_fire": false,
+      "retrieved": 30
+    }
+  }
+}

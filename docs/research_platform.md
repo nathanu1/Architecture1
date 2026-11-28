@@ -63,6 +63,7 @@ retrieval:
     importance_bonus: 0.1     # per importance point above one
 planning:
   decompose: true             # false = hourly-only planner (no 5-15 min tasks, no replan calls)
+  fit_durations: false        # true = correct a decomposition's minutes instead of rejecting it
 social:
   track: true                 # keep relationship records (no calls, no prompt change)
   appraisal: none             # llm = one appraisal call per participant per conversation
@@ -95,6 +96,14 @@ the values before and after.
 **Hourly-only planner.** With `planning.decompose: false` each hour block is followed as one
 task and an interruption resumes the block without a replan call. Day and hour planning are
 unchanged.
+
+**Fitted task durations.** A small model writes sensible task lists whose minutes do not add
+up (Llama 3.2 3B: 43 of 56 decompositions and replans rejected, all for arithmetic). With
+`planning.fit_durations: true` the planner clamps each duration to the task range and
+adjusts the last tasks until the total equals the window; activities and their order are
+kept, the raw answer stays in the ledger, and each fit is a `plan_fitted` event. Off by
+default; a run with it on lists it as an extension. `examples/round2_plan_fit.py` replays
+recorded ledgers through the fit without model calls. See `experiments/round2.md` §6.1.
 
 ## 3. Measures
 

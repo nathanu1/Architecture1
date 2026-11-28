@@ -211,6 +211,7 @@ The full list, with sources, is in the spec (§3 and §6). In short:
 ```yaml
 retrieval.forgetting: {enabled: false, decay: 0.5, threshold: -1.0, importance_bonus: 0.1}
 planning.decompose: true          # false = hourly-only planner
+planning.fit_durations: false     # true = fit task minutes to the window instead of rejecting the plan
 social: {track: true, appraisal: none, inform_prompts: false, tie_threshold: 0.2, ...}
 ```
 

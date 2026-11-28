@@ -1,0 +1,160 @@
+{
+  "network": {
+    "conditions": [
+      "control",
+      "fire"
+    ],
+    "thresholds": [
+      0.2,
+      0.35,
+      0.5,
+      0.75
+    ],
+    "by_condition": {
+      "control": {
+        "runs": 3,
+        "sweep": {
+          "0.2": {
+            "density": 0.22219999999999998,
+            "components": 2.3333333333333335,
+            "largest_component": 1.6666666666666667,
+            "isolates": 1.6666666666666667,
+            "clustering": null,
+            "mean_degree": 0.4446666666666667
+          },
+          "0.35": {
+            "density": 0.0,
+            "components": 3,
+            "largest_component": 1,
+            "isolates": 3,
+            "clustering": null,
+            "mean_degree": 0.0
+          },
+          "0.5": {
+            "density": 0.0,
+            "components": 3,
+            "largest_component": 1,
+            "isolates": 3,
+            "clustering": null,
+            "mean_degree": 0.0
+          },
+          "0.75": {
+            "density": 0.0,
+            "components": 3,
+            "largest_component": 1,
+            "isolates": 3,
+            "clustering": null,
+            "mean_degree": 0.0
+          }
+        },
+        "final": {
+          "weighted_density": 0.060533333333333335,
+          "conversation_density": 0.22219999999999998,
+          "degree_gini": 0.3333,
+          "mean_familiarity": 0.2725,
+          "reciprocity": 1.0,
+          "records": 1.3333333333333333,
+          "n": 3
+        },
+        "series": [
+          {
+            "sim_time": "2023-02-13T07:00:00",
+            "density": 0.0,
+            "mean_familiarity": null,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T08:00:00",
+            "density": 0.0,
+            "mean_familiarity": null,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T09:00:00",
+            "density": 0.0,
+            "mean_familiarity": null,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T10:00:00",
+            "density": 0.22219999999999998,
+            "mean_familiarity": 0.2725,
+            "largest_component": 1.6666666666666667
+          }
+        ]
+      },
+      "fire": {
+        "runs": 3,
+        "sweep": {
+          "0.2": {
+            "density": 0.22219999999999998,
+            "components": 2.3333333333333335,
+            "largest_component": 1.6666666666666667,
+            "isolates": 1.6666666666666667,
+            "clustering": null,
+            "mean_degree": 0.4446666666666667
+          },
+          "0.35": {
+            "density": 0.0,
+            "components": 3,
+            "largest_component": 1,
+            "isolates": 3,
+            "clustering": null,
+            "mean_degree": 0.0
+          },
+          "0.5": {
+            "density": 0.0,
+            "components": 3,
+            "largest_component": 1,
+            "isolates": 3,
+            "clustering": null,
+            "mean_degree": 0.0
+          },
+          "0.75": {
+            "density": 0.0,
+            "components": 3,
+            "largest_component": 1,
+            "isolates": 3,
+            "clustering": null,
+            "mean_degree": 0.0
+          }
+        },
+        "final": {
+          "weighted_density": 0.060533333333333335,
+          "conversation_density": 0.22219999999999998,
+          "degree_gini": 0.3333,
+          "mean_familiarity": 0.2725,
+          "reciprocity": 1.0,
+          "records": 1.3333333333333333,
+          "n": 3
+        },
+        "series": [
+          {
+            "sim_time": "2023-02-13T07:00:00",
+            "density": 0.0,
+            "mean_familiarity": null,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T08:00:00",
+            "density": 0.0,
+            "mean_familiarity": null,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T09:00:00",
+            "density": 0.0,
+            "mean_familiarity": null,
+            "largest_component": 1
+          },
+          {
+            "sim_time": "2023-02-13T10:00:00",
+            "density": 0.22219999999999998,
+            "mean_familiarity": 0.2725,
+            "largest_component": 1.6666666666666667
+          }
+        ]
+      }
+    }
+  }
+}
