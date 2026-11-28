@@ -133,7 +133,7 @@ The repository documents completed offline simulations with five and 25 agents, 
 | 25 | 07:00–09:15 | 2,525 |
 | 35 | 07:00–09:10 | 4,537 |
 
-Round two of the experiments adds 83 offline runs of the 25-resident town for two simulated days (retrieval with real sentence embeddings, network emergence, a fire as counterfactual forks) and a fire experiment on **Llama 3.2 3B through llama-cpp-python's server**: one recorded morning of three residents, forked into futures with and without a fire. Results, including the predictions that failed, are in [`docs/experiments/round2.md`](docs/experiments/round2.md).
+Round two of the experiments adds 83 offline runs of the 25-resident town for two simulated days (retrieval with real sentence embeddings, network emergence, a fire as counterfactual forks) and a fire experiment on **Llama 3.2 3B through llama-cpp-python's server**: one recorded morning of three residents, forked into futures with and without a fire, and again with an opt-in fit of task durations that removed every rejected task list. Results, including the predictions that failed, are in [`docs/experiments/round2.md`](docs/experiments/round2.md).
 
 These runs check the local model path from start to finish. They do not establish human-like behavior or reproduce the paper's human-rated results. Detailed timings, validation failures, and limitations are in the [town guide](docs/game.md#running-it).
 

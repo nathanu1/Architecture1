@@ -1,0 +1,76 @@
+{
+  "name": "fire_llama32_fit",
+  "base_config": "configs/llamacpp_pilot.yaml",
+  "conditions": {
+    "fire_fit": [
+      "scenario.end=2023-02-13T10:00:00",
+      "planning.fit_durations=true"
+    ]
+  },
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "question": "Does fitting task durations to the window remove the 3B model's decomposition failures in a live run, and does a resident with a working task plan respond to the fire differently?",
+  "hypothesis": "H1: no decomposition or replanning call is rejected for its arithmetic (experiment D: 43 of 56 such calls rejected; replayed offline, the fit accepts 41 of the 43). H2: plan failures per fork fall below those of the strict `fire` fork with the same seed in all three seeds; the failures that remain are day plans and hourly schedules with times out of order, which the fit does not touch. H3 (no prediction of direction): the reaction to the fire and the interview answer are reported next to those of the strict forks.",
+  "primary_outcomes": [
+    "plan_failures",
+    "adaptation_perceivers",
+    "adaptation_changed_share",
+    "replans_per_agent"
+  ],
+  "evaluate_relationships": false,
+  "min_minutes": 10.0,
+  "output_dir": "runs/experiments",
+  "path": "configs/experiments/fire_llama32_fit.yaml",
+  "metrics": [
+    "adaptation",
+    "behavior",
+    "beliefs",
+    "network",
+    "usage"
+  ],
+  "metric_params": {
+    "adaptation": {
+      "at": "2023-02-13T09:10:00",
+      "keywords": [
+        "fire",
+        "burning",
+        "smoke",
+        "flame"
+      ],
+      "window_minutes": 50
+    }
+  },
+  "fork_from": {
+    "run_dir": "runs/llama_fire_source",
+    "snapshot": "fork"
+  },
+  "interventions": {
+    "fire_fit": [
+      {
+        "kind": "ambient",
+        "at": "2023-02-13T09:10:00",
+        "id": "cafe_fire",
+        "tile": [
+          78,
+          19
+        ],
+        "subject": "fire",
+        "predicate": "is",
+        "object": "burning",
+        "description": "a fire is burning in Hobbs Cafe",
+        "until": "2023-02-13T09:50:00"
+      },
+      {
+        "kind": "object_state",
+        "at": "2023-02-13T09:10:00",
+        "address": "the Ville:Hobbs Cafe:cafe:cooking area",
+        "state": "burning"
+      }
+    ]
+  },
+  "determinism_check": false,
+  "contrasts": []
+}

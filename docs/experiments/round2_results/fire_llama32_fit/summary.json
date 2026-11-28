@@ -1,0 +1,581 @@
+{
+  "protocol": "fire_llama32_fit",
+  "unit": "run",
+  "conditions": {
+    "fire_fit": {
+      "runs": 3,
+      "completed": 3,
+      "outcomes": {
+        "plan_failures": {
+          "n": 3,
+          "mean": 5.333,
+          "sd": 0.577,
+          "ci95": [
+            5,
+            6
+          ],
+          "median": 5,
+          "min": 5,
+          "max": 6
+        },
+        "adaptation_perceivers": {
+          "n": 3,
+          "mean": 1.333,
+          "sd": 0.577,
+          "ci95": [
+            1,
+            2
+          ],
+          "median": 1,
+          "min": 1,
+          "max": 2
+        },
+        "adaptation_changed_share": {
+          "n": 3,
+          "mean": 0.444,
+          "sd": 0.193,
+          "ci95": [
+            0.333,
+            0.667
+          ],
+          "median": 0.333,
+          "min": 0.333,
+          "max": 0.667
+        },
+        "replans_per_agent": {
+          "n": 3,
+          "mean": 2.889,
+          "sd": 2.694,
+          "ci95": [
+            1.333,
+            6.0
+          ],
+          "median": 1.333,
+          "min": 1.333,
+          "max": 6.0
+        },
+        "adaptation_changed_among_perceivers": {
+          "n": 3,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "adaptation_median_latency_min": {
+          "n": 3,
+          "mean": 5.167,
+          "sd": 8.949,
+          "ci95": [
+            0.0,
+            15.5
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 15.5
+        },
+        "adaptation_median_reaction_after_perceiving_min": {
+          "n": 3,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "adaptation_perceivers_at_onset": {
+          "n": 3,
+          "mean": 1,
+          "sd": 0.0,
+          "ci95": [
+            1,
+            1
+          ],
+          "median": 1,
+          "min": 1,
+          "max": 1
+        },
+        "adaptation_mentions": {
+          "n": 3,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "adaptation_agents_mentioning": {
+          "n": 3,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "scheduled_share": {
+          "n": 3,
+          "mean": 0.714,
+          "sd": 0.139,
+          "ci95": [
+            0.557,
+            0.82
+          ],
+          "median": 0.766,
+          "min": 0.5574,
+          "max": 0.82
+        },
+        "plan_adherence": {
+          "n": 3,
+          "mean": 0.884,
+          "sd": 0.111,
+          "ci95": [
+            0.778,
+            1.0
+          ],
+          "median": 0.875,
+          "min": 0.7778,
+          "max": 1.0
+        },
+        "idle_share": {
+          "n": 3,
+          "mean": 0.285,
+          "sd": 0.041,
+          "ci95": [
+            0.255,
+            0.332
+          ],
+          "median": 0.269,
+          "min": 0.2549,
+          "max": 0.3323
+        },
+        "reaction_rate": {
+          "n": 3,
+          "mean": 0.786,
+          "sd": 0.185,
+          "ci95": [
+            0.667,
+            1.0
+          ],
+          "median": 0.6923,
+          "min": 0.6667,
+          "max": 1.0
+        },
+        "conversations_per_agent": {
+          "n": 3,
+          "mean": 0.667,
+          "sd": 0.0,
+          "ci95": [
+            0.667,
+            0.667
+          ],
+          "median": 0.667,
+          "min": 0.667,
+          "max": 0.667
+        },
+        "action_failures": {
+          "n": 3,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "constraint_refusals": {
+          "n": 3,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "valentines_holders_pct": {
+          "n": 3,
+          "mean": 44.433,
+          "sd": 19.283,
+          "ci95": [
+            33.3,
+            66.7
+          ],
+          "median": 33.3,
+          "min": 33.3,
+          "max": 66.7
+        },
+        "valentines_knowledge_coverage": {
+          "n": 3,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "valentines_conflicting_details": {
+          "n": 3,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "mayor_holders_pct": {
+          "n": 3,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "mayor_knowledge_coverage": {
+          "n": 0
+        },
+        "mayor_conflicting_details": {
+          "n": 3,
+          "mean": 0,
+          "sd": 0.0,
+          "ci95": [
+            0,
+            0
+          ],
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "network_density": {
+          "n": 3,
+          "mean": 0.333,
+          "sd": 0.0,
+          "ci95": [
+            0.333,
+            0.333
+          ],
+          "median": 0.3333,
+          "min": 0.3333,
+          "max": 0.3333
+        },
+        "network_edges": {
+          "n": 3,
+          "mean": 1,
+          "sd": 0.0,
+          "ci95": [
+            1,
+            1
+          ],
+          "median": 1,
+          "min": 1,
+          "max": 1
+        },
+        "network_components": {
+          "n": 3,
+          "mean": 2,
+          "sd": 0.0,
+          "ci95": [
+            2,
+            2
+          ],
+          "median": 2,
+          "min": 2,
+          "max": 2
+        },
+        "network_largest_component": {
+          "n": 3,
+          "mean": 2,
+          "sd": 0.0,
+          "ci95": [
+            2,
+            2
+          ],
+          "median": 2,
+          "min": 2,
+          "max": 2
+        },
+        "network_isolates": {
+          "n": 3,
+          "mean": 1,
+          "sd": 0.0,
+          "ci95": [
+            1,
+            1
+          ],
+          "median": 1,
+          "min": 1,
+          "max": 1
+        },
+        "network_reciprocity": {
+          "n": 3,
+          "mean": 1.0,
+          "sd": 0.0,
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "median": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "network_clustering": {
+          "n": 0
+        },
+        "network_weighted_density": {
+          "n": 3,
+          "mean": 0.091,
+          "sd": 0.0,
+          "ci95": [
+            0.091,
+            0.091
+          ],
+          "median": 0.0908,
+          "min": 0.0908,
+          "max": 0.0908
+        },
+        "network_conversation_density": {
+          "n": 3,
+          "mean": 0.333,
+          "sd": 0.0,
+          "ci95": [
+            0.333,
+            0.333
+          ],
+          "median": 0.3333,
+          "min": 0.3333,
+          "max": 0.3333
+        },
+        "network_degree_gini": {
+          "n": 3,
+          "mean": 0.333,
+          "sd": 0.0,
+          "ci95": [
+            0.333,
+            0.333
+          ],
+          "median": 0.3333,
+          "min": 0.3333,
+          "max": 0.3333
+        },
+        "mean_familiarity": {
+          "n": 3,
+          "mean": 0.273,
+          "sd": 0.0,
+          "ci95": [
+            0.273,
+            0.273
+          ],
+          "median": 0.2725,
+          "min": 0.2725,
+          "max": 0.2725
+        },
+        "mean_valence": {
+          "n": 0
+        },
+        "relationship_records": {
+          "n": 3,
+          "mean": 2,
+          "sd": 0.0,
+          "ci95": [
+            2,
+            2
+          ],
+          "median": 2,
+          "min": 2,
+          "max": 2
+        },
+        "network_density_t20": {
+          "n": 3,
+          "mean": 0.333,
+          "sd": 0.0,
+          "ci95": [
+            0.333,
+            0.333
+          ],
+          "median": 0.3333,
+          "min": 0.3333,
+          "max": 0.3333
+        },
+        "network_density_t35": {
+          "n": 3,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "network_density_t50": {
+          "n": 3,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "network_density_t75": {
+          "n": 3,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "calls": {
+          "n": 3,
+          "mean": 235,
+          "sd": 108.056,
+          "ci95": [
+            161,
+            359
+          ],
+          "median": 185,
+          "min": 161,
+          "max": 359
+        },
+        "input_tokens": {
+          "n": 3,
+          "mean": 110491.333,
+          "sd": 53422.427,
+          "ci95": [
+            74324,
+            171852
+          ],
+          "median": 85298,
+          "min": 74324,
+          "max": 171852
+        },
+        "output_tokens": {
+          "n": 3,
+          "mean": 7723.333,
+          "sd": 3643.4,
+          "ci95": [
+            5456,
+            11926
+          ],
+          "median": 5788,
+          "min": 5456,
+          "max": 11926
+        },
+        "cost_usd": {
+          "n": 3,
+          "mean": 0.0,
+          "sd": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "runtime_s": {
+          "n": 3,
+          "mean": 2063.967,
+          "sd": 1020.233,
+          "ci95": [
+            1432.8,
+            3241.0
+          ],
+          "median": 1518.1,
+          "min": 1432.8,
+          "max": 3241.0
+        }
+      }
+    }
+  },
+  "comparisons": {},
+  "excluded": [],
+  "outcomes": [
+    "plan_failures",
+    "adaptation_perceivers",
+    "adaptation_changed_share",
+    "replans_per_agent",
+    "adaptation_changed_among_perceivers",
+    "adaptation_median_latency_min",
+    "adaptation_median_reaction_after_perceiving_min",
+    "adaptation_perceivers_at_onset",
+    "adaptation_mentions",
+    "adaptation_agents_mentioning",
+    "scheduled_share",
+    "plan_adherence",
+    "idle_share",
+    "reaction_rate",
+    "conversations_per_agent",
+    "action_failures",
+    "constraint_refusals",
+    "valentines_holders_pct",
+    "valentines_knowledge_coverage",
+    "valentines_conflicting_details",
+    "mayor_holders_pct",
+    "mayor_knowledge_coverage",
+    "mayor_conflicting_details",
+    "network_density",
+    "network_edges",
+    "network_components",
+    "network_largest_component",
+    "network_isolates",
+    "network_reciprocity",
+    "network_clustering",
+    "network_weighted_density",
+    "network_conversation_density",
+    "network_degree_gini",
+    "mean_familiarity",
+    "mean_valence",
+    "relationship_records",
+    "network_density_t20",
+    "network_density_t35",
+    "network_density_t50",
+    "network_density_t75",
+    "calls",
+    "input_tokens",
+    "output_tokens",
+    "cost_usd",
+    "runtime_s"
+  ],
+  "primary": [
+    "plan_failures",
+    "adaptation_perceivers",
+    "adaptation_changed_share",
+    "replans_per_agent"
+  ],
+  "metric_failures": {}
+}

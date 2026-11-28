@@ -39,7 +39,11 @@ reported as failed.
   out of order); the other 676 answers were valid
   on the first attempt.
 * Plan fitting (D2). A new opt-in setting corrects a plan's minutes and keeps its
-  activities. It accepts 41 of the 43 decompositions and replans the strict planner rejected.
+  activities. Replayed on D's answers it accepts 41 of the 43 decompositions and replans
+  the strict planner rejected. Live on three new forks, none of 32 was rejected (26 needed
+  correcting) and plan failures after the fork fell from 7, 5 and 4 to 2, 1 and 1. The
+  fire was handled and reported no better, and one fork spent 160 model calls on two
+  residents reacting to each other's reactions for ninety simulated seconds.
 
 ## 1. What round one could and could not show
 
@@ -542,8 +546,9 @@ printed by [`examples/round2_fire_report.py`](../../examples/round2_fire_report.
   decisions long, is identical text in both futures. Between seeds, 5 of 11 shared requests
   matched. So here the seed is a sample of the model, and the fire's effect within a seed is
   not confounded with sampling. The report's standard note that hosted models do not
-  reproduce samples does not apply to this server; the one differing answer of 191 is
-  unexplained.
+  reproduce samples does not apply to this server within one session; the one differing
+  answer of 191 is unexplained. Section 6.1 shows that it does apply across a restart of
+  the server.
 * **Three seeds are three anecdotes.** One reaction by the cafe's owner to wait, one to air
   the room, one to phone for help: the spread is the finding. Rates need many more forks,
   and at 4.5 seconds a call on this CPU a fork costs up to half an hour.
@@ -579,6 +584,84 @@ minutes in total. Two typical cases, both for a 60-minute window:
 `[5, 10, 8, 12, 5, 10, 15]` (65 minutes) becomes `[5, 10, 8, 12, 5, 10, 10]`, and
 `[5, 10, 8, 12, 5, 10]` (50 minutes) becomes `[5, 10, 8, 12, 10, 15]`.
 
+**Live, on the same forks.** The three fire forks of experiment D were run again from the
+same recorded morning with the setting on: 705 model calls, 103 minutes of model time
+(331,000 prompt tokens, 23,000 output tokens). All three completed. A first attempt was lost
+to a restart of the container 54 calls in and was run again from the start; the numbers below
+are from the complete rerun. Generated report:
+[`round2_results/fire_llama32_fit/report.md`](round2_results/fire_llama32_fit/report.md).
+
+| Seed | Plan failures after the fork, strict → fitted | Decomposition and replan answers rejected, strict → fitted | Answers the fit corrected | Actions after 09:00, strict → fitted | Model calls, strict → fitted |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 7 → 2 | 12 of 15 → 0 of 20 | 17 of 20 | 11 → 33 | 186 → 359 |
+| 2 | 5 → 1 | 9 of 11 → 0 of 5 | 3 of 5 | 21 → 22 | 204 → 185 |
+| 3 | 4 → 1 | 4 of 5 → 0 of 7 | 6 of 7 | 6 → 19 | 47 → 161 |
+
+"Strict" is the `fire` fork of experiment D with the same seed. The report's own plan-failure
+count covers the whole run and so includes four failures of the shared morning: 11, 9 and 8
+strict against 6, 5 and 5 fitted.
+
+| Registered | Outcome |
+| --- | --- |
+| H1 no decomposition or replan is rejected for its arithmetic | **Yes**, 0 of 32. The model's arithmetic was no better than before: 26 of the 32 answers had minutes that did not fit (all 8 decompositions, 18 of 24 replans; 15 summed above the window, 11 below) and were corrected, with 4 tasks dropped and 243 minutes moved. None was beyond fitting. |
+| H2 plan failures fall below the strict fork of the same seed in all three seeds; what remains is day plans and schedules | **Yes**, 3 of 3. Failures at the task and replan level went from 5, 4 and 2 to none. The four that remain are all Maria's hourly schedule: 8 of 10 hourly schedules were rejected (a block that ends before it starts, or blocks out of order) and 2 of 8 day plans (times out of order), the errors of experiment D. |
+| H3 reaction and interview, no prediction | Reported below. Nothing in them is better with fitted plans. |
+
+| Seed | Isabella's decisions on seeing the fire | Isabella, 09:10 to 10:00 | "Did anything unusual happen at Hobbs Cafe this morning?" |
+| --- | --- | --- | --- |
+| 1 | "check on the fire with a fire extinguisher", "check the cooking area with a fire extinguisher" | the extinguisher until 09:26, the exchange with Klaus described below, small talk about coffee at 09:30, "Organizing the cafe's Valentine's Day menu" at 09:40 | "Yes, a fire started in the back of the cafe when I arrived this morning. It's been burning steadily ever since." |
+| 2 | "call the emergency services", "call the fire department" (five minutes each) | from 09:15: "Order extra cups, plates, and napkins for the party", cleaning, a playlist, the seating | "I opened the cafe at 8am as usual, and everything seemed normal so far. I did notice that one of our ovens is smoking a bit more than usual, but I haven't had time to investigate yet." |
+| 3 | "Check if Hobbs Cafe has a fire extinguisher and make sure it is easily accessible", "Check if Hobbs Cafe has a fire alarm and make sure it is functioning properly" (20 minutes) | the alarm check again at 09:30, "Order party hats and balloons online" at 09:45 | "I did notice that the coffee area is a bit smoky, which is unusual. I'm not sure what's causing it, but I'll need to check on it later." |
+
+**Reading.**
+
+* **The fit does what it was built for, and the model still cannot add.** Every one of the
+  eight decompositions had the wrong total. Under strict validation each would have cost a
+  repair call and, five times in six, the plan. With the fit the residents had task lists:
+  in seed 3, where the strict fork lost every plan at 09:00 and made 47 calls in its hour,
+  the fitted fork carried out 19 actions. A working plan costs calls, because every task is
+  placed and grounded: seed 3 went from 47 calls to 161.
+* **What is left is the other arithmetic.** Maria's hourly schedule failed in every fork
+  and she had no plan until the 09:30 retry (seeds 2 and 3) or for the whole hour (seed 1).
+  Day plans and schedules are now the only source of plan failures with this model
+  (next steps, item 3).
+* **A working plan did not make the fire matter more.** All six first decisions were actions
+  this time and none was to wait, but in seed 2 the response lasted five minutes of a
+  forty-minute fire, and the replan that followed was a list of party errands. A plan that
+  is accepted is a plan to go back to; the fit does nothing for a model that schedules a
+  playlist in a burning room. Again nobody left the building and no conversation mentioned
+  the fire.
+* **The interview answers repeat experiment D's result.** One of three states that there was
+  a fire, with the wrong start. Two turn it into smoke of unknown cause that she has "not
+  had time to investigate", in forks where she had called the fire department (seed 2) and
+  where the prompt held twelve lines about the fire (seed 3; sixteen and ten in seeds 1 and
+  2). The importance ratings are as before: "a fire is burning in Hobbs Cafe" was rated 25
+  times, 14 of them 1 or 2, median 2.
+* **Two residents can react to each other at every step.** In seed 1 Klaus was at breakfast
+  in the cafe. At 09:26:00 he reacted to the burning cooking area ("call fire department").
+  Ten seconds later Isabella reacted to his call, he to her concern, she to his question,
+  and so on: twelve decisions to react in ninety simulated seconds, ten of them to the
+  other's previous reaction, each with its own accepted replan, ending when Isabella chose
+  to continue a phone call to Maria that existed only as her own action. Those two
+  simulated minutes took 160 model calls and 25 of the fork's 54 minutes of model time, and
+  explain its 359 calls. The
+  fit is not the cause: a reaction acts whether or not the replan after it is accepted, and
+  the strict seed 2 fork has a shorter run of the same kind at 09:52 between Maria and
+  Klaus. Nothing in the reaction step keeps a resident from reacting to an action that is
+  itself a reaction to her, at every 10-second step (next steps, item 5).
+* **"Same seed" did not carry across a restart of the model server.** The protocol was
+  written to pair each fitted fork with the strict fork of its seed: same past, same
+  requests, same seed, so the same samples until the first fitted plan. That did not
+  happen. The server had been restarted between the two experiments, and of 67 requests
+  that a strict fork and its fitted fork had in common (same prompt, same occurrence), 45
+  came back with the same text; the first request of every fork, Isabella's 09:00
+  decomposition, came back different in all three seeds. Within experiment D's single
+  server session the figure was 190 of 191. The cause was not determined; state that the
+  server keeps between requests, such as its cache of prompt prefixes, is a candidate and
+  is untested. So the fitted forks are three new samples of the model, not three matched
+  counterfactuals. H1 and H2 do not depend on the matching (they count answers by kind);
+  any difference in how the fire was handled does, and none is claimed.
+
 ## 7. What this round established
 
 1. **In this architecture, with real embeddings, relevance alone finds a planted fact every
@@ -601,9 +684,10 @@ minutes in total. Two typical cases, both for a 60-minute window:
 5. **Arrival time and reaction time are different quantities**, and the adaptation measure
    now reports both.
 6. **A 3B open-weight model on a CPU can run this architecture, with specific and measurable
-   weaknesses**: plan arithmetic (fixable outside the model, section 6.1), importance
-   ratings without signal, reactions that do not last, and answers that contradict the
-   retrieved context.
+   weaknesses**: plan arithmetic (fixed outside the model for task lists and confirmed in
+   live forks, section 6.1; still open for day plans and schedules), importance ratings
+   without signal, reactions that do not last, and answers that contradict the retrieved
+   context.
 7. **Two defects were found and fixed because the scale or the model changed**: repeated
    requests drawing the same sample on seeded servers, and a memory probe that re-read the
    stream on every query.
@@ -617,8 +701,13 @@ minutes in total. Two typical cases, both for a 60-minute window:
   appears thousands of times); a real model's stream is more varied and the planted facts
   would compete with more near-neighbors. The relevance-only ceiling of 1.00 should be
   expected to fall.
-* **Experiment D is six forks of one morning with one small model.** It supports "this
-  happened", not "this happens at rate r". The interview was one question to one resident.
+* **Experiments D and D2 are nine forks of one morning with one small model.** They support
+  "this happened", not "this happens at rate r". The interview was one question to one
+  resident.
+* **D2 is not a matched comparison of behavior.** The model server was restarted between D
+  and D2 and identical requests no longer returned identical samples (section 6.1). The
+  counts of rejected plans stand; a difference in how the fire was handled between a strict
+  and a fitted fork would be a difference between two samples.
 * **The p-values are descriptive.** With eight seeds the paired floor is 0.0078 and a Holm
   family of six leaves 0.047 at best; with six seeds nothing survives adjustment, and with
   three the floor is 0.25. Directions and their consistency across seeds are the evidence.
@@ -645,16 +734,24 @@ minutes in total. Two typical cases, both for a 60-minute window:
    importance term and the reflection trigger carry no signal. Candidates: rating by
    comparison against anchor examples, or a coarse three-level scale mapped to 2, 5 and 8.
    The memory probe can score either on recorded streams.
-5. **Reactions that last.** A reaction is planned once, with a duration, and the observation
-   that caused it does not prompt a second decision while it persists. Re-deciding when a
-   reaction ends and its cause is still perceived is a small change to the reaction step,
-   and experiment D's forks are the test.
-6. **Word of mouth with a real model.** Experiment D had one or two residents near the fire
+5. **Reactions that last, and reactions that stop.** A reaction is planned once, with a
+   duration, and the observation that caused it does not prompt a second decision while it
+   persists. Re-deciding when a reaction ends and its cause is still perceived is a small
+   change to the reaction step. The opposite defect is in section 6.1: two residents reacted
+   to each other's reactions twelve times in ninety seconds. A resident should not react to
+   an action that is a reaction to her own, or not more than once within a few minutes.
+   Experiment D's forks are the test for both.
+6. **Sampling across server sessions.** Identical requests with identical seeds returned
+   different text after the model server was restarted (45 of 67 the same, against 190 of
+   191 within a session). Until that is understood, the conditions of an experiment have
+   to run in one server session. The test is cheap: send a fixed list of requests to a
+   fresh server twice, with and without the server's prompt cache.
+7. **Word of mouth with a real model.** Experiment D had one or two residents near the fire
    and its only conversation there was about the party. The informative version is C2's
    design (a busy cafe at lunch) on a real model.
-7. **Longer horizons for forgetting.** Two days is short for an activation rule whose decay is
+8. **Longer horizons for forgetting.** Two days is short for an activation rule whose decay is
    a power law over hours; a week-long mock run costs about half an hour of CPU here.
-8. The proposals of the research review (confidence calibration, a social knowledge graph,
+9. The proposals of the research review (confidence calibration, a social knowledge graph,
    norm emergence, a goal ledger, cross-model replication) are unchanged and still open.
 
 ## 10. Reproducing this round
@@ -666,12 +763,13 @@ GA_SQLITE_SYNCHRONOUS=OFF uv run ga experiment --protocol configs/experiments/so
 GA_SQLITE_SYNCHRONOUS=OFF uv run ga experiment --protocol configs/experiments/adaptation_fork_v2.yaml --execute --jobs 4
 uv run python examples/round2_horizon.py runs/experiments/memory_retrieval_v2
 
-# real model (needs llama-cpp-python[server] and the GGUF file; about four hours on four cores)
+# real model (needs llama-cpp-python[server] and the GGUF file; about four and a half hours on four cores)
 python -m llama_cpp.server --model Llama-3.2-3B-Instruct-Q4_K_M.gguf --model_alias llama3.2-3b-q4 --n_ctx 8192 --n_threads 4 --port 8088
 uv run ga run --config configs/llamacpp_pilot.yaml --run-id llama_fire_source   # interrupt after 09:00, snapshot as "fork"
 uv run ga experiment --protocol configs/experiments/fire_llama32.yaml --execute
 uv run ga experiment --protocol configs/experiments/fire_llama32_fit.yaml --execute
 uv run python examples/round2_fire_report.py runs/experiments/fire_llama32 --at 2023-02-13T09:10:00 --agent isabella_rodriguez --ask "Did anything unusual happen at Hobbs Cafe this morning?"
+uv run python examples/round2_fire_report.py runs/experiments/fire_llama32_fit --at 2023-02-13T09:10:00 --agent isabella_rodriguez --ask "Did anything unusual happen at Hobbs Cafe this morning?"
 uv run python examples/round2_plan_fit.py runs/experiments/fire_llama32 runs/llama_fire_source
 
 # rebuild any report from its saved rows after changing the analysis

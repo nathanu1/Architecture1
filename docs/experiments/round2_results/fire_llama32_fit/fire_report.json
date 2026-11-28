@@ -1,0 +1,1065 @@
+{
+  "fire_fit-s1": {
+    "fire_reactions": [
+      {
+        "time": "09:10",
+        "agent": "isabella_rodriguez",
+        "decision": "react",
+        "new_activity": "check on the fire with a fire extinguisher, 2 minutes",
+        "minutes": 2,
+        "reason": "to ensure the fire is completely extinguished and prevent any accidents or damage to the cafe."
+      },
+      {
+        "time": "09:10",
+        "agent": "isabella_rodriguez",
+        "decision": "react",
+        "new_activity": "check the cooking area with a fire extinguisher",
+        "minutes": 2,
+        "reason": "The cooking area is burning and could be a fire hazard, requiring immediate attention to ensure safety."
+      },
+      {
+        "time": "09:25",
+        "agent": "klaus_mueller",
+        "decision": "talk",
+        "new_activity": null,
+        "minutes": null,
+        "reason": "Klaus Mueller values kindness and helpfulness, as evidenced by his close friendship with Maria Lopez. Isabella Rodriguez's actions to prevent a potential fire in the cooking area demonstrate these same traits. As an inquisitive person, Klaus would likely be curious about Isabella's motivations and ask her questions.\n\nKlaus also feels a sense of gratitude towards Isabella for taking action to ensure everyone's safety in the cafe.\n\nGiven that Klaus is a sociological student, he understands the importance of community and social responsibility. Initiating a conversation with Isabella would allow him to build a connection with this kind stranger and learn more about her values and perspectives."
+      },
+      {
+        "time": "09:26",
+        "agent": "klaus_mueller",
+        "decision": "react",
+        "new_activity": "call fire department",
+        "minutes": 10,
+        "reason": "Klaus Mueller should react to the observation as it is a safety concern and his attention is needed."
+      },
+      {
+        "time": "09:26",
+        "agent": "isabella_rodriguez",
+        "decision": "react",
+        "new_activity": "check on Klaus Mueller's well-being at Hobbs Cafe:cafe:behind the cafe counter",
+        "minutes": 5,
+        "reason": "Klaus Mueller's sudden phone call to the fire department warrants attention and concern."
+      },
+      {
+        "time": "09:26",
+        "agent": "klaus_mueller",
+        "decision": "react",
+        "new_activity": "call the cafe's staff to inquire about the cause of the fire and seek assistance with extinguishing the flames",
+        "minutes": 15,
+        "reason": "Klaus Mueller should react to the observation as he has plans to lunch at Hobbs Cafe and does not know how the fire started or what actions he can take to prevent it from spreading."
+      },
+      {
+        "time": "09:26",
+        "agent": "isabella_rodriguez",
+        "decision": "react",
+        "new_activity": "answer phone call to assist Klaus Mueller in extinguishing flames",
+        "minutes": 10,
+        "reason": "Klaus Mueller is on the phone with the cafe's staff regarding a fire emergency, which requires Isabella Rodriguez's attention and assistance."
+      },
+      {
+        "time": "09:26",
+        "agent": "klaus_mueller",
+        "decision": "react",
+        "new_activity": "go to Hobbs Cafe to assess the damage and begin putting out the fire himself",
+        "minutes": 10,
+        "reason": "Klaus Mueller should react to the observation and take immediate action to extinguish the flames at Hobbs Cafe."
+      },
+      {
+        "time": "09:27",
+        "agent": "isabella_rodriguez",
+        "decision": "react",
+        "new_activity": "call 911 and alert Maria Lopez about the emergency",
+        "minutes": 10,
+        "reason": "Klaus Mueller is attempting to put out a fire in the cafe, which may escalate the situation if not handled properly."
+      }
+    ],
+    "all_reaction_decisions": {
+      "react": 16,
+      "talk": 2,
+      "continue": 8
+    },
+    "fire_memories": [
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 6,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 1,
+        "text": "Isabella Rodriguez is check on the fire with a fire extinguisher, 2 minutes"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 9,
+        "text": "behind the cafe counter is burning"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 1,
+        "text": "Isabella Rodriguez is check the cooking area with a fire extinguisher"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:22",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 1,
+        "text": "Isabella Rodriguez is Check the cooking area with a fire extinguisher"
+      },
+      {
+        "time": "09:25",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "Isabella Rodriguez is Check the cooking area with a fire extinguisher"
+      },
+      {
+        "time": "09:25",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:25",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 8,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:25",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 6,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:25",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:26",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 2,
+        "text": "Klaus Mueller is call fire department"
+      },
+      {
+        "time": "09:26",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:26",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "Klaus Mueller is call fire department"
+      },
+      {
+        "time": "09:26",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 1,
+        "text": "Isabella Rodriguez takes safety precautions seriously, including checking the cooking area with a fire extinguisher."
+      },
+      {
+        "time": "09:26",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 9,
+        "text": "A fire broke out in Hobbs Cafe, causing disruption to Isabella's plans for the day"
+      },
+      {
+        "time": "09:26",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 1,
+        "text": "Isabella Rodriguez prioritizes tasks and takes action to address emergencies, such as checking the cooking area for fires"
+      },
+      {
+        "time": "09:26",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 1,
+        "text": "Isabella Rodriguez prioritizes safety and fire prevention at Hobbs Cafe, taking steps to check on the fire from 22:00-23:00 and using a fire extinguisher."
+      },
+      {
+        "time": "09:26",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 6,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:26",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:26",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:26",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 4,
+        "text": "Klaus Mueller is call the cafe's staff to inquire about the cause of the fire and seek assistance with extinguishing the flames"
+      },
+      {
+        "time": "09:26",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "Klaus Mueller is call the cafe's staff to inquire about the cause of the fire and seek assistance with extinguishing the flames"
+      },
+      {
+        "time": "09:26",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "Isabella Rodriguez is answer phone call to assist Klaus Mueller in extinguishing flames"
+      },
+      {
+        "time": "09:26",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:26",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 1,
+        "text": "Isabella Rodriguez is answer phone call to assist Klaus Mueller in extinguishing flames"
+      },
+      {
+        "time": "09:26",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 3,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:27",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 1,
+        "text": "Klaus Mueller is go to Hobbs Cafe to assess the damage and begin putting out the fire himself"
+      },
+      {
+        "time": "09:27",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 6,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:27",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:27",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "Klaus Mueller is go to Hobbs Cafe to assess the damage and begin putting out the fire himself"
+      },
+      {
+        "time": "09:27",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:27",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 3,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:27",
+        "owner": "klaus_mueller",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 8,
+        "text": "Klaus Mueller is responsible for resolving the cafe fire, as he calls the staff to inquire about the cause of the fire and later call the fire department."
+      },
+      {
+        "time": "09:27",
+        "owner": "klaus_mueller",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 9,
+        "text": "A fire occurred at Hobbs Cafe on Monday, February 13."
+      },
+      {
+        "time": "09:27",
+        "owner": "klaus_mueller",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 2,
+        "text": "Klaus Mueller was involved in extinguishing the flames from his location behind the cafe counter."
+      },
+      {
+        "time": "09:27",
+        "owner": "klaus_mueller",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 1,
+        "text": "Klaus Mueller had a conversation with Isabella Rodriguez before and after the fire, discussing his coffee order."
+      },
+      {
+        "time": "09:27",
+        "owner": "klaus_mueller",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 8,
+        "text": "Klaus Mueller has to deal with an unexpected situation, such as a fire, and takes initiative to address it."
+      },
+      {
+        "time": "09:27",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:27",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 9,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:30",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 9,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:30",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:30",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:31",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 8,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:32",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 6,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:35",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 7,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:35",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 3,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:40",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:40",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 6,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:40",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:45",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:45",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 6,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:45",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:45",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:50",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:55",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 8,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:57",
+        "owner": "klaus_mueller",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:57",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 3,
+        "text": "cooking area is burning"
+      }
+    ],
+    "conversations": [
+      {
+        "start": "09:25",
+        "participants": [
+          "isabella_rodriguez",
+          "klaus_mueller"
+        ],
+        "mentions_fire": false
+      }
+    ],
+    "failures": [
+      {
+        "time": "09:30",
+        "type": "plan_failure",
+        "agent": "maria_lopez",
+        "error": "hourly_schedule: output invalid after bounded repairs"
+      }
+    ],
+    "actions": [
+      {
+        "time": "09:10",
+        "activity": "check on the fire with a fire extinguisher, 2 minutes",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:10",
+        "activity": "check the cooking area with a fire extinguisher",
+        "address": "Hobbs Cafe:cafe:cooking area"
+      },
+      {
+        "time": "09:12",
+        "activity": "Final check of party materials",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:12",
+        "activity": "Check the cooking area with a fire extinguisher",
+        "address": "Hobbs Cafe:cafe:cooking area"
+      },
+      {
+        "time": "09:22",
+        "activity": "Check the cooking area with a fire extinguisher",
+        "address": "Hobbs Cafe:cafe:cooking area"
+      },
+      {
+        "time": "09:26",
+        "activity": "Confirming party details with Maria Lopez and Klaus Mueller",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:26",
+        "activity": "check on Klaus Mueller's well-being at Hobbs Cafe:cafe:behind the cafe counter",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:26",
+        "activity": "ask Klaus Mueller how he is doing and if everything is okay at the cafe",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:26",
+        "activity": "answer phone call to assist Klaus Mueller in extinguishing flames",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:27",
+        "activity": "call 911 and alert Maria Lopez about the emergency",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:27",
+        "activity": "call Maria Lopez on phone",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:30",
+        "activity": "ask Klaus Mueller about his day and preferences for coffee without additional drinks",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:35",
+        "activity": "ask Klaus Mueller about his day and preferences for coffee without additional drinks",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:40",
+        "activity": "Organizing the cafe's Valentine's Day menu",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:45",
+        "activity": "Sending out invitations to regular customers",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:50",
+        "activity": "Making a list of party favors to give out",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:55",
+        "activity": "Setting up a playlist for the party",
+        "address": "Hobbs Cafe:cafe:piano"
+      }
+    ],
+    "actions_about_the_fire": 5,
+    "actions_total": 17,
+    "interview": {
+      "question": "Did anything unusual happen at Hobbs Cafe this morning?",
+      "answer": "Yes, a fire started in the back of the cafe when I arrived this morning. It's been burning steadily ever since.",
+      "mentions_fire": true,
+      "retrieved": 30
+    }
+  },
+  "fire_fit-s2": {
+    "fire_reactions": [
+      {
+        "time": "09:10",
+        "agent": "isabella_rodriguez",
+        "decision": "react",
+        "new_activity": "call the emergency services",
+        "minutes": 5,
+        "reason": "There is a fire burning in the cafe, posing a risk to safety and potentially damaging property."
+      },
+      {
+        "time": "09:10",
+        "agent": "isabella_rodriguez",
+        "decision": "react",
+        "new_activity": "call the fire department",
+        "minutes": 5,
+        "reason": "the cooking area is burning, which poses a fire hazard and requires immediate attention"
+      }
+    ],
+    "all_reaction_decisions": {
+      "react": 2,
+      "talk": 2,
+      "continue": 2
+    },
+    "fire_memories": [
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 6,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 1,
+        "text": "Isabella Rodriguez is call the fire department"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:11",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 1,
+        "text": "Isabella Rodriguez is call the fire department"
+      },
+      {
+        "time": "09:15",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:15",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 3,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:35",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:35",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:35",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 8,
+        "text": "A fire in the cafe prompts Isabella Rodriguez to take emergency actions."
+      },
+      {
+        "time": "09:35",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 2,
+        "text": "Isabella Rodriguez is capable of handling unexpected situations, such as fires in the cafe."
+      },
+      {
+        "time": "09:35",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 1,
+        "text": "Hobbs Cafe has an incident involving a fire in the cooking area."
+      },
+      {
+        "time": "09:35",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 1,
+        "text": "Isabella Rodriguez is handling emergencies, such as fires."
+      },
+      {
+        "time": "09:50",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 9,
+        "text": "cooking area is burning"
+      }
+    ],
+    "conversations": [
+      {
+        "start": "09:57",
+        "participants": [
+          "maria_lopez",
+          "klaus_mueller"
+        ],
+        "mentions_fire": false
+      }
+    ],
+    "failures": [],
+    "actions": [
+      {
+        "time": "09:10",
+        "activity": "call the emergency services",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:10",
+        "activity": "call the fire department",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:15",
+        "activity": "Order extra cups, plates, and napkins for the party",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:23",
+        "activity": "Clean and sanitize all party areas in the cafe",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:35",
+        "activity": "Prepare a playlist of soft music to play during the party",
+        "address": "Hobbs Cafe:cafe:piano"
+      },
+      {
+        "time": "09:50",
+        "activity": "Finalize the seating arrangement for the party",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:55",
+        "activity": "Double-check all preparations and make sure everything is in order",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      }
+    ],
+    "actions_about_the_fire": 1,
+    "actions_total": 7,
+    "interview": {
+      "question": "Did anything unusual happen at Hobbs Cafe this morning?",
+      "answer": "I opened the cafe at 8am as usual, and everything seemed normal so far. I did notice that one of our ovens is smoking a bit more than usual, but I haven't had time to investigate yet.",
+      "mentions_fire": false,
+      "retrieved": 30
+    }
+  },
+  "fire_fit-s3": {
+    "fire_reactions": [
+      {
+        "time": "09:10",
+        "agent": "isabella_rodriguez",
+        "decision": "react",
+        "new_activity": "Check if Hobbs Cafe has a fire extinguisher and make sure it is easily accessible.",
+        "minutes": 5,
+        "reason": "To address the fire and prioritize safety to prevent any potential harm or damage."
+      },
+      {
+        "time": "09:10",
+        "agent": "isabella_rodriguez",
+        "decision": "react",
+        "new_activity": "Check if Hobbs Cafe has a fire alarm and make sure it is functioning properly",
+        "minutes": 20,
+        "reason": "The cooking area is burning and could potentially cause a fire, posing a risk to the safety of customers and staff."
+      }
+    ],
+    "all_reaction_decisions": {
+      "react": 2,
+      "talk": 2
+    },
+    "fire_memories": [
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 1,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 1,
+        "text": "Isabella Rodriguez is Check if Hobbs Cafe has a fire extinguisher and make sure it is easily accessible."
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 1,
+        "text": "Isabella Rodriguez is Check if Hobbs Cafe has a fire alarm and make sure it is functioning properly"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 4,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:10",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 3,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:30",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "executed_action",
+        "importance": 1,
+        "text": "Isabella Rodriguez is Check if Hobbs Cafe has a fire alarm and make sure it is functioning properly"
+      },
+      {
+        "time": "09:31",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:32",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 2,
+        "text": "cooking area is burning"
+      },
+      {
+        "time": "09:46",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 9,
+        "text": "a fire is burning in Hobbs Cafe"
+      },
+      {
+        "time": "09:46",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 1,
+        "text": "Isabella Rodriguez is proactive about fire safety and preparedness."
+      },
+      {
+        "time": "09:46",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 2,
+        "text": "Hobbs Cafe has safety concerns, including a fire alarm and extinguisher not functioning or easily accessible."
+      },
+      {
+        "time": "09:46",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 1,
+        "text": "Hobbs Cafe has a fire extinguisher and Isabella Rodriguez checks its accessibility."
+      },
+      {
+        "time": "09:46",
+        "owner": "isabella_rodriguez",
+        "kind": "reflection",
+        "origin": "inference",
+        "importance": 1,
+        "text": "Hobbs Cafe has a fire alarm and Isabella Rodriguez checks its functionality."
+      },
+      {
+        "time": "09:47",
+        "owner": "isabella_rodriguez",
+        "kind": "observation",
+        "origin": "direct_observation",
+        "importance": 9,
+        "text": "cooking area is burning"
+      }
+    ],
+    "conversations": [
+      {
+        "start": "09:31",
+        "participants": [
+          "maria_lopez",
+          "klaus_mueller"
+        ],
+        "mentions_fire": false
+      }
+    ],
+    "failures": [],
+    "actions": [
+      {
+        "time": "09:10",
+        "activity": "Check if Hobbs Cafe has a fire extinguisher and make sure it is easily accessible.",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:10",
+        "activity": "Check if Hobbs Cafe has a fire alarm and make sure it is functioning properly",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:30",
+        "activity": "Check if Hobbs Cafe has a fire alarm and make sure it is functioning properly",
+        "address": "Hobbs Cafe:cafe:behind the cafe counter"
+      },
+      {
+        "time": "09:45",
+        "activity": "Order party hats and balloons online",
+        "address": "Hobbs Cafe:cafe:cafe customer seating"
+      },
+      {
+        "time": "09:50",
+        "activity": "Create a playlist for the party",
+        "address": "Hobbs Cafe:cafe:piano"
+      }
+    ],
+    "actions_about_the_fire": 3,
+    "actions_total": 5,
+    "interview": {
+      "question": "Did anything unusual happen at Hobbs Cafe this morning?",
+      "answer": "I did notice that the coffee area is a bit smoky, which is unusual. I'm not sure what's causing it, but I'll need to check on it later.",
+      "mentions_fire": false,
+      "retrieved": 30
+    }
+  }
+}

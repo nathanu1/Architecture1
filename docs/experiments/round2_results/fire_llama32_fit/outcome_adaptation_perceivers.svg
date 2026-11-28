@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="240" font-family="IBM Plex Mono, monospace" font-size="11">
+<text x="48" y="20" fill="#16211B" font-size="13">adaptation perceivers</text>
+<line x1="48" y1="210.0" x2="404" y2="210.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="214.0" text-anchor="end" fill="#5B6B61">0</text>
+<line x1="48" y1="123.0" x2="404" y2="123.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="127.0" text-anchor="end" fill="#5B6B61">1</text>
+<line x1="48" y1="36.0" x2="404" y2="36.0" stroke="#5B6B61" stroke-opacity="0.35"/>
+<text x="42" y="40.0" text-anchor="end" fill="#5B6B61">2</text>
+<circle cx="226.0" cy="36.0" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>fire_fit-s1: 2</title></circle>
+<circle cx="226.0" cy="123.0" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>fire_fit-s2: 1</title></circle>
+<circle cx="235.0" cy="123.0" r="4.5" fill="#2353AC" fill-opacity="0.8"><title>fire_fit-s3: 1</title></circle>
+<line x1="119.2" y1="94.0" x2="332.8" y2="94.0" stroke="#16211B" stroke-width="2"/>
+<text x="336.8" y="98.0" fill="#16211B">1.33</text>
+<text x="226.0" y="228" text-anchor="middle" fill="#16211B">fire_fit (n=3)</text>
+</svg>
